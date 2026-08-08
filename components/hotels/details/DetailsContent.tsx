@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import {
+  BedBunkFreeIcons,
   Briefcase,
   Dumbbell,
   Leaf,
+  Star,
   UtensilsCrossed,
   Waves,
   Wifi01FreeIcons,
@@ -61,7 +63,7 @@ const amenities: Amenity[] = [
 
 const RoomAccommodationCard = () => {
   return (
-    <div className="flex overflow-hidden w-full flex-col max-h-80 md:max-h-60  md:flex-row gap-4 border border-border rounded-xl">
+    <section className="flex overflow-hidden w-full flex-col max-h-80 md:max-h-60  md:flex-row gap-4 border border-border rounded-xl">
       <div className="w-full md:w-60 lg:w-80 h-full overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1721132447246-5d33f3008b05?q=80&w=1035&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -75,8 +77,9 @@ const RoomAccommodationCard = () => {
         <div className="flex justify-between items-end">
           <div className="flex flex-col gap-px">
             <span className="font-bold">Deluxe Room</span>
-            <span className="text-sm text-muted-foreground">
-              1 King Bed, City View
+            <span className="text-sm text-muted-foreground flex items-center gap-1">
+              <HugeiconsIcon icon={BedBunkFreeIcons} size={16} /> 1 King Bed,
+              City View
             </span>
           </div>
           <span className="text-xs font-bold p-2 px-4 bg-secondary  rounded-full">
@@ -99,6 +102,39 @@ const RoomAccommodationCard = () => {
           </div>
         </div>
       </div>
+    </section>
+  );
+};
+
+const ReviewsCard = () => {
+  return (
+    <div className="p-6 flex flex-col gap-4 rounded-xl bg-primary/5">
+      <div className="flex gap-2 w-full justify-between items-end">
+        <div className="flex gap-2.5">
+          <div className="flex gap-2 size-12 rounded-full bg-amber-600"></div>
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[16px] font-bold">Emmanuel M.</span>
+            <span className="text-muted-foreground text-[14px]">
+              Stayed in Jan 2024
+            </span>
+          </div>
+        </div>
+        <div className="flex gap-1 items-center">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <HugeiconsIcon
+              icon={Star}
+              key={i}
+              size={18}
+              className="fill-yellow-400 text-yellow-400"
+            />
+          ))}
+        </div>
+      </div>
+      <p className="italic text-[14px] text-muted-foreground">
+        "The service at the Hilton remains unmatched in Yaoundé. The staff is
+        attentive, and the executive lounge offers the perfect quiet spot for
+        business meetings."
+      </p>
     </div>
   );
 };
@@ -155,6 +191,35 @@ export const DetailsContent = () => {
           <h3 className="text-2xl font-bold pb-2">Accommodation</h3>
           <div className="flex flex-col gap-4">
             <RoomAccommodationCard />
+            <RoomAccommodationCard />
+            <RoomAccommodationCard />
+          </div>
+        </div>
+
+        {/* Guest Experience */}
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between pb-3 border-b border-border items-end">
+            <h2 className="text-2xl font-bold pb-2">Guest Experiences</h2>
+            <div className="flex gap-2 items-end">
+              <div className="flex flex-col gap-0.5">
+                <span className="font-bold text-xl">4.8 / 5</span>
+                <span className="text-[14px] text-muted-foreground">
+                  Based on 1,240 reviews
+                </span>
+              </div>
+              <div className=" p-2 rounded-md size-10 bg-primary/30 text-primary text-xl flex items-center justify-center">
+                4.8
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-6">
+            <ReviewsCard />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <div className="flex justify-between items-end">
+            <h2 className="text-2xl font-bold pb-2">Important Information</h2>
           </div>
         </div>
       </div>

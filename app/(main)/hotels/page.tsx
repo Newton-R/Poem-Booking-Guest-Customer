@@ -44,7 +44,7 @@ const HotelsPage = () => {
     <main className="flex flex-col gap-20">
       <HeroMain />
       <div className="flex container-x gap-8 relative min-h-screen">
-        <div className="w-80 bg-background sticky p-6 flex flex-col gap-2 top-(--nav-height) border border-border rounded-2xl h-100">
+        <div className="w-80 bg-background sticky p-6 flex flex-col gap-2 top-[calc(10px+var(--nav-height))] border border-border rounded-2xl h-100">
           <div className="flex mb-4 pb-4 border-b border-border justify-between items-center">
             <span>Filters</span>
             <HugeiconsIcon icon={Filter} size={18} />
