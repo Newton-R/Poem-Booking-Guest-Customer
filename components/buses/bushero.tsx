@@ -18,11 +18,13 @@ export const BusesHero = () => {
         <div className="w-full h-[600px] mt-(--nav-height) container-x border-b border-border flex flex-col justify-center">
           <div className="flex flex-col gap-6 text-start w-full max-w-[50%]">
             <h1 className="text-6xl flex flex-col gap-2 font-bold">
-              <span className="text-white font-bold">The Sahelian Beauty</span>
+              <span className="text-white font-bold">
+                Redefining the Road. Luxury Bus Travel.
+              </span>
             </h1>
             <p className="text-gray-100">
-              Curated comfort across the nation from the mist of Mount Cameroon
-              to the vibrant street of Douala. Explore Cameroon in one place.
+              Experience the gold standard of travel across Cameroon with
+              premium fleets, verified safety, and world-class service.
             </p>
             <Button className="p-6 w-40 flex items-center gap-2 ">
               Explore Hotels <HugeiconsIcon icon={ArrowRight01FreeIcons} />

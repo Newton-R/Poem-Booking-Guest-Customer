@@ -1,9 +1,15 @@
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
+  ArrowRight,
   BedBunkFreeIcons,
   Briefcase,
+  CircleCheck,
+  Clock,
+  CustomerService01FreeIcons,
   Dumbbell,
   Leaf,
+  Search,
   Star,
   UtensilsCrossed,
   Waves,
@@ -108,7 +114,7 @@ const RoomAccommodationCard = () => {
 
 const ReviewsCard = () => {
   return (
-    <div className="p-6 flex flex-col gap-4 rounded-xl bg-primary/5">
+    <div className="p-6 flex flex-col gap-4 rounded-xl bg-bg-mute">
       <div className="flex gap-2 w-full justify-between items-end">
         <div className="flex gap-2.5">
           <div className="flex gap-2 size-12 rounded-full bg-amber-600"></div>
@@ -140,6 +146,11 @@ const ReviewsCard = () => {
 };
 
 export const DetailsContent = () => {
+  const policies = [
+    "Cancellation: Free up to 24h before arrival for most bookings.",
+    "Children: Free stay for children under 12 using existing bedding.",
+    "Pets: Service animals only.",
+  ];
   return (
     <div className="container-x mb-20 flex gap-8">
       <div className="flex flex-col gap-20 flex-1">
@@ -221,9 +232,104 @@ export const DetailsContent = () => {
           <div className="flex justify-between items-end">
             <h2 className="text-2xl font-bold pb-2">Important Information</h2>
           </div>
+          <div className="w-full bg-bg-mute p-6 flex flex-col md:flex-row gap-6 rounded-2xl">
+            <div className="flex flex-col flex-1 gap-2">
+              <span className="font-bold flex gap-2 items-center text-xl">
+                <HugeiconsIcon
+                  className="text-primary font-bold"
+                  icon={Clock}
+                  size={18}
+                />
+                Check-in & Check-out
+              </span>
+              <div className="w-full flex mt-2 text-muted-foreground justify-between items-center border-b border-border pb-3">
+                <span>Check-In</span>
+                <span>From 14:00</span>
+              </div>
+              <div className="w-full flex text-muted-foreground justify-between items-center border-b border-border pb-3">
+                <span>Check-Out</span>
+                <span>Until 12:00</span>
+              </div>
+              <p className="text-[14px] italic text-destructive">
+                Express check-in available for Hilton Honors members.
+              </p>
+            </div>
+            <div className="flex flex-col flex-1 gap-2">
+              <span className="font-bold flex gap-2 mb-2 items-center text-xl">
+                <HugeiconsIcon
+                  className="text-primary font-bold"
+                  icon={Search}
+                  size={18}
+                />
+                Property Policies
+              </span>
+              {policies.map((policy, i) => (
+                <div className="flex gap-2 items-start text-[14px]" key={i}>
+                  <HugeiconsIcon
+                    icon={CircleCheck}
+                    className="mt-0.5"
+                    size={18}
+                  />
+                  <p>{policy}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
-      <div className="w-90 h-100 bg-black"></div>
+      <div className="flex flex-col w-full max-w-90 gap-4">
+        <div className="flex flex-col border border-secondary-foreground rounded-2xl overflow-hidden">
+          <div className="p-6 bg-secondary-foreground text-white flex justify-between">
+            <div className="flex flex-col">
+              <span className="text-xs">STARTING FROM</span>
+              <span>
+                <span className="text-2xl font-bold">145,000 XAF</span>
+                <span className="text-xs"> /night</span>
+              </span>
+            </div>
+            <span className="bg-primary text-black p-1 px-2 rounded-md text-xs h-fit font-bold">
+              BEST PRICE
+            </span>
+          </div>
+          <form className="flex flex-col gap-4 p-6">
+            <div className="flex justify-between items-center gap-6">
+              <div className="flex flex-1 flex-col gap-1">
+                <label className="text-[10px]">CHECK-IN</label>
+                <Input
+                  placeholder=""
+                  type="date"
+                  className="p-2 bg-white h-10"
+                />
+              </div>
+              <div className="flex flex-1 flex-col gap-1">
+                <label className="text-[10px]">CHECK-OUT</label>
+                <Input
+                  placeholder=""
+                  type="date"
+                  className="p-2 bg-white h-10"
+                />
+              </div>
+            </div>
+            <Button className={"p-6"}>
+              Check Availability <HugeiconsIcon icon={ArrowRight} />
+            </Button>
+          </form>
+        </div>
+        <div className="p-5 flex items-center bg-primary/30 border border-primary rounded-2xl gap-2">
+          <div className="p-2 bg-primary rounded-full">
+            <HugeiconsIcon
+              className="text-black font-bold"
+              icon={CustomerService01FreeIcons}
+            />
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <span className="font-bold">Need help booking?</span>
+            <span className="font-bold text-primary">
+              Contact local experts
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
