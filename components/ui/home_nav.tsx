@@ -22,21 +22,21 @@ export const HomeNavbar = () => {
       link: "/hotels",
       key: "hotels",
     },
-    {
-      label: "Appartments",
-      link: "/appartments",
-      key: "appartments",
-    },
+    // {
+    //   label: "Appartments",
+    //   link: "/appartments",
+    //   key: "appartments",
+    // },
     {
       label: "Buses",
       link: "/buses",
       key: "buses",
     },
-    {
-      label: "Restaurants",
-      link: "/restaurants",
-      key: "restaurants",
-    },
+    // {
+    //   label: "Restaurants",
+    //   link: "/restaurants",
+    //   key: "restaurants",
+    // },
   ];
   return (
     <div className="w-full z-90 fixed top-0 border-b bg-background border-border">

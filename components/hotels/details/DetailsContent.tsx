@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,6 +20,8 @@ import {
 import { IconSvgObject } from "@hugeicons/core-free-icons/types";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 type Amenity = {
@@ -67,7 +70,8 @@ const amenities: Amenity[] = [
   },
 ];
 
-const RoomAccommodationCard = () => {
+const RoomAccommodationCard = ({ index }: { index: number }) => {
+  const pathname = usePathname();
   return (
     <section className="flex overflow-hidden w-full flex-col max-h-80 md:max-h-60  md:flex-row gap-4 border border-border rounded-xl">
       <div className="w-full md:w-60 lg:w-80 h-full overflow-hidden">
@@ -102,9 +106,11 @@ const RoomAccommodationCard = () => {
               <span className="text-xs text-muted-foreground">Starts at</span>
               <span className="font-bold text-lg">80,000XAF</span>
             </div>
-            <Button className="bg-primary text-white p-4 hover:bg-primary/90">
-              Book Now
-            </Button>
+            <Link href={`${pathname}/${index}`}>
+              <Button className="bg-primary text-white p-4 hover:bg-primary/90">
+                Book Now
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -201,9 +207,9 @@ export const DetailsContent = () => {
         <div className="flex flex-col gap-4">
           <h3 className="text-2xl font-bold pb-2">Accommodation</h3>
           <div className="flex flex-col gap-4">
-            <RoomAccommodationCard />
-            <RoomAccommodationCard />
-            <RoomAccommodationCard />
+            <RoomAccommodationCard index={0} />
+            <RoomAccommodationCard index={1} />
+            <RoomAccommodationCard index={2} />
           </div>
         </div>
 
