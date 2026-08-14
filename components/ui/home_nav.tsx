@@ -15,22 +15,27 @@ export const HomeNavbar = () => {
     {
       label: "Home",
       link: "/",
+      key: "op",
     },
     {
       label: "Hotels",
       link: "/hotels",
+      key: "hotels",
     },
     {
       label: "Appartments",
       link: "/appartments",
+      key: "appartments",
     },
     {
       label: "Buses",
       link: "/buses",
+      key: "buses",
     },
     {
       label: "Restaurants",
       link: "/restaurants",
+      key: "restaurants",
     },
   ];
   return (
@@ -46,7 +51,9 @@ export const HomeNavbar = () => {
               <Link
                 className={cn(
                   "cursor-pointer hover:underline underline-offset-4",
-                  isActive(link.link) && "underline text-primary",
+                  isActive(link.link) || pathname.split("/").includes(link.key)
+                    ? "underline text-primary"
+                    : "",
                 )}
                 href={link.link}
                 key={i}

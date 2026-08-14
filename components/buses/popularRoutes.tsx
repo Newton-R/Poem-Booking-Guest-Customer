@@ -3,6 +3,7 @@ import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft, ArrowRight } from "@hugeicons/core-free-icons";
 import { BusRouteCard } from "../ui/busrouteCard";
+import Link from "next/link";
 
 export const PopularRoutesSection = () => {
   return (
@@ -14,9 +15,11 @@ export const PopularRoutesSection = () => {
             Connecting you to the heart of Cameroon with style.
           </p>
         </div>
-        <Button variant={"link"}>
-          View all routes <HugeiconsIcon icon={ArrowRight} />
-        </Button>
+        <Link href={"/buses/all"}>
+          <Button variant={"link"}>
+            View all routes <HugeiconsIcon icon={ArrowRight} />
+          </Button>
+        </Link>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 3 }).map((_, i) => (
