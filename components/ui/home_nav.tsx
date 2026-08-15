@@ -5,6 +5,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ShoppingCart } from "@hugeicons/core-free-icons";
 
 export const HomeNavbar = () => {
   const pathname = usePathname();
@@ -63,7 +65,10 @@ export const HomeNavbar = () => {
             ))}
           </div>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center gap-4">
+          <Link href={"/cart"} className={cn("", pathname === "/cart" ? "text-primary" : "text-muted-foreground")}>
+            <HugeiconsIcon icon={ShoppingCart} size={20} />
+          </Link>
           <Button
             className={
               "text-[14px] bg-secondary-foreground text-white rounded-full p-5 px-6"
