@@ -2,51 +2,68 @@
 import { cn } from "@/lib/utils";
 import {
   Calendar,
+  CircleQuestionMarkIcon,
   DashboardSquare01Icon,
   RibbonIcon,
   User,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 export const AccountSideBar = () => {
+  const pathname = usePathname();
   const links = [
     {
       text: "Dashboard",
       icon: DashboardSquare01Icon,
+      link: "/account",
       key: "account",
     },
     {
       text: "My Bookings",
       icon: Calendar,
       key: "bookings",
+      link: "/account/bookings",
     },
     {
       text: "Loyalty & Rewards",
       icon: RibbonIcon,
       key: "loyalty",
+      link: "/account/rewards",
     },
     {
       text: "Profile",
       icon: User,
       key: "profile",
+      link: "/account/profile",
+    },
+    {
+      text: "Support",
+      icon: CircleQuestionMarkIcon,
+      key: "support",
+      link: "/account/support",
     },
   ];
   return (
     <div className="h-full">
       <div className="sticky top-[calc(var(--nav-height)+20px)] h-fit flex gap-4 flex-col">
         <div className="flex flex-col gap-2">
-          {links.map((link, i) => (
-            <div
+          {links.map((link) => (
+            <Link
+              href={link.link}
               key={link.key}
               className={cn(
                 "flex items-center gap-2 p-3 rounded-md",
-                i === 0 ? "bg-secondary-foreground text-white" : "",
+                pathname.includes(link.key) || pathname === link.link
+                  ? "bg-secondary-foreground text-white"
+                  : "",
               )}
             >
               <HugeiconsIcon icon={link.icon} size={20} />
               <span>{link.text}</span>
-            </div>
+            </Link>
           ))}
         </div>
         <div className="p-6 rounded-2xl bg-secondary-foreground text-white flex flex-col gap-2">

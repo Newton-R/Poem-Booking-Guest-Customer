@@ -58,8 +58,8 @@ export const AccountOverviewBlock = () => {
   return (
     <section className="w-full flex flex-col gap-6">
       <div className="flex flex-col md:flex-row gap-4 justify-between items-end">
-        <div className="flex flex-col">
-          <h1 className="text-5xl font-bold">Hello, Amadou.</h1>
+        <div className="flex flex-col gap-1">
+          <h1 className="md:text-4xl text-2xl font-bold">Hello, Amadou.</h1>
           <p className="text-muted-foreground text-[14px]">
             Welcome back to your Poem Booking portal.
           </p>
