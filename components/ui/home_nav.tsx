@@ -66,16 +66,27 @@ export const HomeNavbar = () => {
           </div>
         </div>
         <div className="flex items-center gap-4">
-          <Link href={"/cart"} className={cn("", pathname === "/cart" ? "text-primary" : "text-muted-foreground")}>
+          <Link
+            href={"/cart"}
+            className={cn(
+              "",
+              pathname === "/cart" ? "text-primary" : "text-muted-foreground",
+            )}
+          >
             <HugeiconsIcon icon={ShoppingCart} size={20} />
           </Link>
-          <Button
-            className={
-              "text-[14px] bg-secondary-foreground text-white rounded-full p-5 px-6"
-            }
-          >
-            Login
-          </Button>
+          <Link href={"/account"}>
+            <Button
+              className={cn(
+                "text-[14px] bg-secondary-foreground hover:bg-secondary-foreground/80 text-white rounded-full p-5 px-6",
+                pathname.includes("/account")
+                  ? "bg-primary hover:bg-primary/80"
+                  : "",
+              )}
+            >
+              Account
+            </Button>
+          </Link>
         </div>
       </div>
     </div>
