@@ -1,0 +1,64 @@
+"use client";
+import { cn } from "@/lib/utils";
+import {
+  Calendar,
+  DashboardSquare01Icon,
+  RibbonIcon,
+  User,
+} from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import React from "react";
+
+export const AccountSideBar = () => {
+  const links = [
+    {
+      text: "Dashboard",
+      icon: DashboardSquare01Icon,
+      key: "account",
+    },
+    {
+      text: "My Bookings",
+      icon: Calendar,
+      key: "bookings",
+    },
+    {
+      text: "Loyalty & Rewards",
+      icon: RibbonIcon,
+      key: "loyalty",
+    },
+    {
+      text: "Profile",
+      icon: User,
+      key: "profile",
+    },
+  ];
+  return (
+    <div className="h-full">
+      <div className="sticky top-[calc(var(--nav-height)+20px)] h-fit flex gap-4 flex-col">
+        <div className="flex flex-col gap-2">
+          {links.map((link, i) => (
+            <div
+              key={link.key}
+              className={cn(
+                "flex items-center gap-2 p-3 rounded-md",
+                i === 0 ? "bg-secondary-foreground text-white" : "",
+              )}
+            >
+              <HugeiconsIcon icon={link.icon} size={20} />
+              <span>{link.text}</span>
+            </div>
+          ))}
+        </div>
+        <div className="p-6 rounded-2xl bg-secondary-foreground text-white flex flex-col gap-2">
+          <span className="opacity-80">Balance</span>
+          <div className="flex flex-col gap-2">
+            <span className="text-2xl font-bold text-primary">2,450 XP</span>
+            <span className="p-1 rounded-md w-fit text-xs bg-primary/20 text-primary">
+              GOLD TIER
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
