@@ -4,6 +4,7 @@ import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight } from "@hugeicons/core-free-icons";
 import { HotelCard, HotelInfoPlus } from "../ui/hotelcard";
+import { hotels } from "@/lib/data";
 
 export const FeaturedHotels = () => {
   return (
@@ -24,9 +25,10 @@ export const FeaturedHotels = () => {
         </Link>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <HotelInfoPlus key={i} />
-        ))}
+        {hotels.map(
+          (hotel, i) =>
+            hotel.featured && <HotelInfoPlus hotel={hotel} key={i} />,
+        )}
       </div>
     </section>
   );

@@ -1,0 +1,154 @@
+export type HotelAmenity = {
+  id: string;
+  name: string;
+  description: string;
+};
+
+export type HotelReview = {
+  id: string;
+  guestName: string;
+  guestInitials: string;
+  stayDate: string;
+  rating: number;
+  message: string;
+};
+
+export type RoomType = {
+  id: string;
+  name: string;
+  description: string;
+  bed: string;
+  view: string;
+  capacity: number;
+  size: number;
+  price: number;
+  formattedPrice?: string;
+  currency: "XAF";
+  image: string;
+  amenities: string[];
+  featured?: boolean;
+};
+
+export type Hotel = {
+  id: string;
+  slug: string;
+  name: string;
+  tagline: string;
+  description: string;
+  collectionIds: string[];
+  city: string;
+  region: string;
+  address: string;
+  rating: number;
+  reviewCount: number;
+  image: string;
+  images: string[];
+  startingPrice: number;
+  formattedStartingPrice?: string;
+  currency: "XAF";
+  amenities: HotelAmenity[];
+  rooms: RoomType[];
+  checkIn: string;
+  checkOut: string;
+  policies: string[];
+  reviews?: HotelReview[];
+  featured?: boolean;
+};
+
+export type HotelCollection = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  image: string;
+  hotelIds: string[];
+};
+
+export type BusAmenity =
+  | "WiFi"
+  | "Charging ports"
+  | "Air conditioning"
+  | "Refreshments"
+  | "Extra legroom";
+
+export type BusOperator = {
+  id: string;
+  name: string;
+  description: string;
+  logo: string;
+  rating: number;
+  amenities: BusAmenity[];
+  classes: string[];
+  featured?: boolean;
+};
+
+export type BusDeparture = {
+  id: string;
+  operatorId: string;
+  departureTime: string;
+  arrivalTime: string;
+  duration: string;
+  class: "VIP" | "Classic";
+  price: number;
+  availableSeats: number;
+  amenities: BusAmenity[];
+  formattedPrice?: string;
+};
+
+export type BusRoute = {
+  id: string;
+  slug: string;
+  origin: string;
+  destination: string;
+  originStation: string;
+  destinationStation: string;
+  duration: string;
+  distanceKm: number;
+  frequency: string;
+  image: string;
+  departures: BusDeparture[];
+  featured?: boolean;
+};
+
+export type Dish = {
+  id: string;
+  restaurantId: string;
+  name: string;
+  category: string;
+  description: string;
+  price: number;
+  currency: "XAF";
+  image: string;
+  ingredients: string[];
+  dietaryTags: string[];
+  spicyLevel: "None" | "Mild" | "Medium" | "Hot";
+  available: boolean;
+  addOns: { name: string; price: number }[];
+  formattedPrice?: string;
+};
+
+export type Restaurant = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  tagline: string;
+  category: string;
+  categories: string[];
+  city: string;
+  region: string;
+  address: string;
+  rating: number;
+  reviewCount: number;
+  image: string;
+  isOpen: boolean;
+  deliveryMinutes: string;
+  deliveryFee: number;
+  formattedDeliveryFee?: string;
+  priceRange: "XAF" | "XAF XAF" | "XAF XAF XAF" | "XAF XAF XAF XAF";
+  openingHours: { days: string; hours: string }[];
+  phone: string;
+  email: string;
+  dishes: Dish[];
+  featured?: boolean;
+};

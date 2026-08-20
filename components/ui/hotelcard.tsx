@@ -3,6 +3,9 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import React from "react";
 import { Button } from "./button";
+import { Hotel } from "@/lib/types";
+import { formatPrice } from "@/lib/data";
+import Link from "next/link";
 
 export const HotelCard = () => {
   return (
@@ -37,7 +40,7 @@ export const HotelCard = () => {
         <div className="flex justify-between items-center">
           <span className="flex flex-col gap-1">
             <span className="text-xs">Starts at</span>
-            <span className="text-2xl font-bold">80,000XAF</span>
+            <span className="text-2xl font-bold">80,000 XAF</span>
           </span>
           <HugeiconsIcon icon={ChevronRight} size={18} />
         </div>
@@ -46,13 +49,13 @@ export const HotelCard = () => {
   );
 };
 
-export const HotelInfoPlus = () => {
+export const HotelInfoPlus = ({ hotel }: { hotel: Hotel }) => {
   return (
     <div className="border border-border rounded-xl flex overflow-hidden bg-white flex-col h-90">
       <div className="w-full relative flex-1 overflow-hidden">
         <Image
           alt="demo Image"
-          src={"/default.png"}
+          src={hotel.image}
           width={400}
           height={400}
           className="w-full h-full object-cover"
@@ -63,15 +66,15 @@ export const HotelInfoPlus = () => {
             size={10}
             className="fill-primary text-primary"
           />
-          4.9
+          {hotel.rating}
         </span>
       </div>
       <div className="p-4 flex flex-col gap-4 ">
         <div className="flex flex-col gap-0.5">
-          <span className="font-bold">Krystal Palace</span>
+          <span className="font-bold">{hotel.name}</span>
           <span className="text-xs flex gap-0.5 text-muted-foreground">
             <HugeiconsIcon icon={Location} size={16} />
-            Douala, Littoral
+            {hotel.city}, {hotel.region}
           </span>
         </div>
         <div className="flex flex-col gap-0.5">
@@ -79,15 +82,22 @@ export const HotelInfoPlus = () => {
             STARTING FROM
           </span>
           <span className="text-xs flex items-end gap-0.5 text-muted-foreground">
-            <span className="text-2xl font-bold text-black">140,000 XAF</span>/
-            night
+            <span className="text-2xl font-bold text-black">
+              {hotel.formattedStartingPrice ??
+                formatPrice(hotel.startingPrice, hotel.currency)}
+            </span>
+            / night
           </span>
         </div>
         <div className="flex justify-between gap-2 items-center">
-          <Button className={"p-4 flex-1"} variant={"outline"}>
-            Details
-          </Button>
-          <Button className={"p-4 flex-1"}>Book Now</Button>
+          <Link href={`/hotels/${hotel.id}`} className="flex-1">
+            <Button className={"p-4 w-full"} variant={"outline"}>
+              Details
+            </Button>
+          </Link>
+          <Link href={`/hotels/${hotel.id}`} className="flex-1">
+            <Button className={"p-4 w-full"}>Book Now</Button>
+          </Link>
         </div>
       </div>
     </div>
