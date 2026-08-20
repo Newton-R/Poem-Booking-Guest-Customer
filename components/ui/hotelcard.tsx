@@ -1,7 +1,8 @@
-import { ChevronRight, Star } from "@hugeicons/core-free-icons";
+import { ChevronRight, Location, Star } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import React from "react";
+import { Button } from "./button";
 
 export const HotelCard = () => {
   return (
@@ -39,6 +40,54 @@ export const HotelCard = () => {
             <span className="text-2xl font-bold">80,000XAF</span>
           </span>
           <HugeiconsIcon icon={ChevronRight} size={18} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const HotelInfoPlus = () => {
+  return (
+    <div className="border border-border rounded-xl flex overflow-hidden bg-white flex-col h-90">
+      <div className="w-full relative flex-1 overflow-hidden">
+        <Image
+          alt="demo Image"
+          src={"/default.png"}
+          width={400}
+          height={400}
+          className="w-full h-full object-cover"
+        />
+        <span className="text-primary absolute top-2 right-2 text-[12px] p-1 px-2 rounded-full bg-white/90 text-xs flex items-center gap-1">
+          <HugeiconsIcon
+            icon={Star}
+            size={10}
+            className="fill-primary text-primary"
+          />
+          4.9
+        </span>
+      </div>
+      <div className="p-4 flex flex-col gap-4 ">
+        <div className="flex flex-col gap-0.5">
+          <span className="font-bold">Krystal Palace</span>
+          <span className="text-xs flex gap-0.5 text-muted-foreground">
+            <HugeiconsIcon icon={Location} size={16} />
+            Douala, Littoral
+          </span>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <span className="font-bold text-[10px] text-muted-foreground">
+            STARTING FROM
+          </span>
+          <span className="text-xs flex items-end gap-0.5 text-muted-foreground">
+            <span className="text-2xl font-bold text-black">140,000 XAF</span>/
+            night
+          </span>
+        </div>
+        <div className="flex justify-between gap-2 items-center">
+          <Button className={"p-4 flex-1"} variant={"outline"}>
+            Details
+          </Button>
+          <Button className={"p-4 flex-1"}>Book Now</Button>
         </div>
       </div>
     </div>

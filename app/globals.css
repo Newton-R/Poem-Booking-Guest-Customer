@@ -141,6 +141,9 @@ section h2 {
   @apply text-3xl font-bold;
 }
 
+.small-mute {
+  @apply text-xs text-muted-foreground;
+}
 @layer base {
   * {
     @apply border-border outline-ring/50;
