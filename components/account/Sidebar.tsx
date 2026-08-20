@@ -19,25 +19,31 @@ export const AccountSideBar = () => {
       text: "Dashboard",
       icon: DashboardSquare01Icon,
       link: "/account",
-      key: "account",
+      key: "bef",
     },
     {
       text: "My Bookings",
       icon: Calendar,
-      key: "bookings",
-      link: "/account/bookings",
+      key: "booking",
+      link: "/account/booking",
     },
     {
       text: "Loyalty & Rewards",
       icon: RibbonIcon,
       key: "loyalty",
-      link: "/account/rewards",
+      link: "/account/loyalty",
     },
     {
       text: "Profile",
       icon: User,
       key: "profile",
       link: "/account/profile",
+    },
+    {
+      text: "Refer a Friend",
+      icon: RibbonIcon,
+      key: "refer",
+      link: "/account/refer",
     },
     {
       text: "Support",
@@ -55,9 +61,9 @@ export const AccountSideBar = () => {
               href={link.link}
               key={link.key}
               className={cn(
-                "flex items-center gap-2 p-3 rounded-md",
+                "flex items-center gap-2 p-3 rounded-md hover:bg-bg-mute/90",
                 pathname.includes(link.key) || pathname === link.link
-                  ? "bg-secondary-foreground text-white"
+                  ? "bg-secondary-foreground hover:bg-secondary-foreground/90 text-white"
                   : "",
               )}
             >

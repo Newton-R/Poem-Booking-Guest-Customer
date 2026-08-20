@@ -3,7 +3,7 @@ import React from "react";
 import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight } from "@hugeicons/core-free-icons";
-import { HotelCard } from "../ui/hotelcard";
+import { HotelCard, HotelInfoPlus } from "../ui/hotelcard";
 
 export const FeaturedHotels = () => {
   return (
@@ -17,15 +17,15 @@ export const FeaturedHotels = () => {
             prestigious neighbourhood.
           </p>
         </div>
-        <Link href={"/"} className="cursor-pointer">
+        <Link href={"/hotels/all"} className="cursor-pointer">
           <Button variant={"link"}>
             View all <HugeiconsIcon icon={ArrowRight} size={20} />
           </Button>
         </Link>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {Array.from({ length: 4 }).map((_, i) => (
-          <HotelCard key={i} />
+          <HotelInfoPlus key={i} />
         ))}
       </div>
     </section>
