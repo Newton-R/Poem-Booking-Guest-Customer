@@ -9,6 +9,7 @@ import {
   ArrowRight,
 } from "@hugeicons/core-free-icons";
 import { CollectionCard } from "../ui/collectionCard";
+import { hotelCollections } from "@/lib/data";
 
 export const CollectionsSection = () => {
   return (
@@ -25,8 +26,8 @@ export const CollectionsSection = () => {
         </Link>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <CollectionCard key={i} />
+        {hotelCollections.map((collection, i) => (
+          <CollectionCard collection={collection} key={i} />
         ))}
       </div>
       <Button

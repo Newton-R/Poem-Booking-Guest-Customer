@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Combobox,
   ComboboxContent,
@@ -7,10 +6,58 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox";
-import React from "react";
+import { Button } from "@/components/ui/button";
+import { regions } from "@/lib/data";
+import React, { useState } from "react";
 
-export const AllHotelsHero = () => {
-  const frameworks = ["Next.js", "SvelteKit", "Nuxt.js", "Remix", "Astro"];
+export type HotelFilters = {
+  region: string;
+  priceRange: string;
+  rating: string;
+  collectionId: string;
+};
+
+interface FilterBlock {
+  onChange?: (filters: HotelFilters) => void;
+}
+
+export const AllHotelsHero = ({ onChange }: FilterBlock) => {
+  const priceRanges = [
+    "under-100000",
+    "100000-150000",
+    "150000-250000",
+    "over-250000",
+  ];
+  const ratings = ["4.5", "4", "3.5"];
+  const collections = [
+    "coastal-escapes",
+    "city-signatures",
+    "nature-retreats",
+    "heritage-stays",
+  ];
+  const [filters, setFilters] = useState<HotelFilters>({
+    region: "",
+    priceRange: "",
+    rating: "",
+    collectionId: "",
+  });
+
+  const updateFilter = (key: keyof HotelFilters, value: string) => {
+    const nextFilters = { ...filters, [key]: value };
+    setFilters(nextFilters);
+    onChange?.(nextFilters);
+  };
+
+  const clearFilters = () => {
+    const emptyFilters: HotelFilters = {
+      region: "",
+      priceRange: "",
+      rating: "",
+      collectionId: "",
+    };
+    setFilters(emptyFilters);
+    onChange?.(emptyFilters);
+  };
 
   return (
     <div className="mt-(--nav-height) w-full py-8 flex flex-col gap-4">
@@ -26,11 +73,12 @@ export const AllHotelsHero = () => {
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end py-6 border-y border-border mt-7">
         <div className="flex flex-col gap-1">
           <span className="text-xs text-muted-foreground">Location</span>
-          <Combobox items={frameworks}>
-            <ComboboxInput
-              className={"h-10"}
-              placeholder="Select a framework"
-            />
+          <Combobox
+            value={filters.region}
+            onInputValueChange={(value) => updateFilter("region", value)}
+            items={regions}
+          >
+            <ComboboxInput className={"h-10"} placeholder="Select a Region" />
             <ComboboxContent>
               <ComboboxEmpty>No items found.</ComboboxEmpty>
               <ComboboxList>
@@ -45,17 +93,21 @@ export const AllHotelsHero = () => {
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-xs text-muted-foreground">Price Range</span>
-          <Combobox items={frameworks}>
+          <Combobox
+            value={filters.priceRange}
+            onInputValueChange={(value) => updateFilter("priceRange", value)}
+            items={priceRanges}
+          >
             <ComboboxInput
               className={"h-10"}
-              placeholder="Select a framework"
+              placeholder="Select a price range"
             />
             <ComboboxContent>
               <ComboboxEmpty>No items found.</ComboboxEmpty>
               <ComboboxList>
                 {(item) => (
                   <ComboboxItem key={item} value={item}>
-                    {item}
+                    {item.replaceAll("-", " ")}
                   </ComboboxItem>
                 )}
               </ComboboxList>
@@ -64,17 +116,18 @@ export const AllHotelsHero = () => {
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-xs text-muted-foreground">Rating</span>
-          <Combobox items={frameworks}>
-            <ComboboxInput
-              className={"h-10"}
-              placeholder="Select a framework"
-            />
+          <Combobox
+            value={filters.rating}
+            onInputValueChange={(value) => updateFilter("rating", value)}
+            items={ratings}
+          >
+            <ComboboxInput className={"h-10"} placeholder="Select a rating" />
             <ComboboxContent>
               <ComboboxEmpty>No items found.</ComboboxEmpty>
               <ComboboxList>
                 {(item) => (
                   <ComboboxItem key={item} value={item}>
-                    {item}
+                    {item}+ stars
                   </ComboboxItem>
                 )}
               </ComboboxList>
@@ -83,17 +136,21 @@ export const AllHotelsHero = () => {
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-xs text-muted-foreground">Collections</span>
-          <Combobox items={frameworks}>
+          <Combobox
+            value={filters.collectionId}
+            onInputValueChange={(value) => updateFilter("collectionId", value)}
+            items={collections}
+          >
             <ComboboxInput
               className={"h-10"}
-              placeholder="Select a framework"
+              placeholder="Select a collection"
             />
             <ComboboxContent>
               <ComboboxEmpty>No items found.</ComboboxEmpty>
               <ComboboxList>
                 {(item) => (
                   <ComboboxItem key={item} value={item}>
-                    {item}
+                    {item.replaceAll("-", " ")}
                   </ComboboxItem>
                 )}
               </ComboboxList>
@@ -101,11 +158,12 @@ export const AllHotelsHero = () => {
           </Combobox>
         </div>
         <Button
-          className={
-            "bg-secondary-foreground hover:bg-secondary-foreground/90 p-5"
-          }
+          type="button"
+          variant="outline"
+          className="h-10"
+          onClick={clearFilters}
         >
-          Apply Filter
+          Clear all filters
         </Button>
       </div>
     </div>

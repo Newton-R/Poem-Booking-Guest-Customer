@@ -1,28 +1,18 @@
 import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
+import { Hotel } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Location, Star } from "@hugeicons/core-free-icons";
+import { AlertTriangle, Location, Star } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import React from "react";
 
-export const DetailsHero = () => {
-  const hotelImages = [
-    {
-      img: "https://images.unsplash.com/photo-1626808642875-0aa545482dfb?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      className: "col-span-2 row-span-2",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1544894079-e81a9eb1da8b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      className: "col-span-1 row-span-1",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      className: "col-span-1 row-span-1",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1501183007986-d0d080b147f9?q=80&w=987&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      className: "col-span-2 row-span-1",
-    },
-  ];
+export const DetailsHero = ({ hotel }: { hotel: Hotel }) => {
   return (
     <div className="hero grid grid-rows-2 gap-2 bg-secondary-foreground grid-cols-4 relative">
       <div className="absolute top-0 left-0 w-full h-full  flex items-end p-6 bg-black/60 z-10">
@@ -36,34 +26,50 @@ export const DetailsHero = () => {
                       icon={Star}
                       key={i}
                       size={18}
-                      className="text-yellow-400 fill-yellow-400 text-[14px]"
+                      className={cn(
+                        "text-yellow-400  text-[14px]",
+                        i < hotel.rating ? "fill-yellow-400" : "",
+                      )}
                     />
                   ))}
                 </span>
               </div>
               <span className="text-4xl font-bold text-white">
-                The Hilton yaounde
+                {hotel.name}
               </span>
               <span className="flex items-center gap-2 text-white">
                 <HugeiconsIcon icon={Location} size={18} />
-                <span>Yaounde, Cameroon</span>
+                <span>
+                  {hotel.city}, {hotel.region}
+                </span>
               </span>
             </div>
-            <div className="flex gap-2 text-white ">
+            {/* <div className="flex gap-2 text-white ">
               <Button className={"p-4 px-5 rounded-full"}>
                 View all Photos
               </Button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
-      {hotelImages.map((image, index) => (
+      {hotel.images.map((image, index) => (
         <div
           key={index}
-          className={cn("rounded-2xl overflow-hidden", image.className)}
+          className={cn(
+            "rounded-2xl overflow-hidden",
+            index === 0
+              ? "col-span-2 row-span-2"
+              : index === 1
+                ? "col-span-1 row-span-1"
+                : index === 2
+                  ? "col-span-1 row-span-1"
+                  : index === 3
+                    ? "col-span-2 row-span-1"
+                    : "",
+          )}
         >
           <img
-            src={image.img}
+            src={image}
             alt={`Hotel ${index + 1}`}
             className="w-full h-full object-cover"
           />

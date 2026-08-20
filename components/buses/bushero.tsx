@@ -1,4 +1,6 @@
+"use client";
 import {
+  ArrowRight,
   ArrowRight01FreeIcons,
   Bed,
   Building01Icon,
@@ -10,6 +12,16 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import React from "react";
 import { Button } from "../ui/button";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "../ui/combobox";
+import { regions } from "@/lib/data";
+import { DatePickerDemo } from "../ui/date-picker";
 
 export const BusesHero = () => {
   return (
@@ -31,47 +43,63 @@ export const BusesHero = () => {
             </Button>
           </div>
 
-          <div className="w-full md:w-[85%] mt-8 shadow-md text-black bg-white rounded-2xl border border-border flex flex-col">
-            <div className="w-full text-[14px] p-4 border-b border-border flex flex-row items-center">
-              <span className="flex items-center gap-2 px-2">
-                <HugeiconsIcon icon={Bed} size={18} />
-                Hotels
-              </span>
-              <span className="flex items-center px-2 gap-2">
-                <HugeiconsIcon icon={Building01Icon} size={18} />
-                Appartments
-              </span>
-              <span className="flex items-center px-2 gap-2">
-                <HugeiconsIcon icon={Bus01FreeIcons} size={18} />
-                Buses
-              </span>
-            </div>
-            <div className="w-full text-[14px] p-4 justify-between flex items-center">
+          <div className="w-full md:w-[85%] mt-8 shadow-md gap-4 text-black p-6 bg-white rounded-2xl border border-border flex flex-col">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="flex flex-col gap-1">
                 <span className="font-bold flex gap-1 items-center">
                   <HugeiconsIcon icon={Location} size={12} />
-                  Location
+                  Origin
                 </span>
-                <p className="text-muted-foreground">
-                  Where are you heading to?
-                </p>
+                <Combobox items={regions}>
+                  <ComboboxInput
+                    className={"h-10"}
+                    placeholder="Select an Origin"
+                  />
+                  <ComboboxContent>
+                    <ComboboxEmpty>No items found.</ComboboxEmpty>
+                    <ComboboxList>
+                      {(item) => (
+                        <ComboboxItem key={item} value={item}>
+                          {item}
+                        </ComboboxItem>
+                      )}
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
+              </div>
+              <div className="flex flex-col gap-1">
+                <span className="font-bold flex gap-1 items-center">
+                  <HugeiconsIcon icon={Location} size={12} />
+                  Destination
+                </span>
+                <Combobox items={regions}>
+                  <ComboboxInput
+                    className={"h-10"}
+                    placeholder="Select destination"
+                  />
+                  <ComboboxContent>
+                    <ComboboxEmpty>No items found.</ComboboxEmpty>
+                    <ComboboxList>
+                      {(item) => (
+                        <ComboboxItem key={item} value={item}>
+                          {item}
+                        </ComboboxItem>
+                      )}
+                    </ComboboxList>
+                  </ComboboxContent>
+                </Combobox>
               </div>
               <div className="flex flex-col gap-1">
                 <span className="font-bold flex gap-1 items-center">
                   <HugeiconsIcon icon={Calendar} size={12} />
-                  Dates
+                  Departure
                 </span>
-                <p className="text-muted-foreground">Check in - Check out</p>
+                <DatePickerDemo />
               </div>
-              <div className="flex flex-col gap-1">
-                <span className="font-bold flex gap-1 items-center">
-                  <HugeiconsIcon icon={People} size={12} />
-                  Guests
-                </span>
-                <p className="text-muted-foreground">2 Adults, 1 room</p>
-              </div>
-              <div className=""></div>
             </div>
+            <Button className={" p-5 w-full"}>
+              Find Best Routes <HugeiconsIcon icon={ArrowRight} size={20} />
+            </Button>
           </div>
         </div>
       </div>

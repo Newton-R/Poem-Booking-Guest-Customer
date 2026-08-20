@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Hotel, RoomType } from "@/lib/types";
 import {
   ArrowRight,
   BedBunkFreeIcons,
@@ -15,7 +16,6 @@ import {
   UtensilsCrossed,
   Waves,
   Wifi01FreeIcons,
-  WifiIcon,
 } from "@hugeicons/core-free-icons";
 import { IconSvgObject } from "@hugeicons/core-free-icons/types";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -24,60 +24,24 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-type Amenity = {
-  id: string;
-  icon: IconSvgObject;
-  title: string;
-  subtitle: string;
+const amenityIcons: Record<string, IconSvgObject> = {
+  wifi: Wifi01FreeIcons,
+  pool: Waves,
+  gym: Dumbbell,
+  restaurant: UtensilsCrossed,
+  dining: UtensilsCrossed,
+  spa: Leaf,
+  business: Briefcase,
 };
 
-const amenities: Amenity[] = [
-  {
-    id: "wifi",
-    icon: Wifi01FreeIcons,
-    title: "Free High-Speed WiFi",
-    subtitle: "Unlimited Access",
-  },
-  {
-    id: "pool",
-    icon: Waves,
-    title: "Olympic Swimming Pool",
-    subtitle: "Heated & Outdoor",
-  },
-  {
-    id: "gym",
-    icon: Dumbbell,
-    title: "State-of-the-art Gym",
-    subtitle: "24/7 Access",
-  },
-  {
-    id: "restaurant",
-    icon: UtensilsCrossed,
-    title: "Gourmet Restaurants",
-    subtitle: "Fine Dining",
-  },
-  {
-    id: "spa",
-    icon: Leaf,
-    title: "Luxury Wellness Spa",
-    subtitle: "Full Service",
-  },
-  {
-    id: "business",
-    icon: Briefcase,
-    title: "Executive Business Center",
-    subtitle: "Meetings & Tech",
-  },
-];
-
-const RoomAccommodationCard = ({ index }: { index: number }) => {
+const RoomAccommodationCard = ({ room }: { room: RoomType }) => {
   const pathname = usePathname();
   return (
     <section className="flex overflow-hidden w-full flex-col max-h-80 md:max-h-60  md:flex-row gap-4 border border-border rounded-xl">
       <div className="w-full md:w-60 lg:w-80 h-full overflow-hidden">
         <Image
-          src="https://images.unsplash.com/photo-1721132447246-5d33f3008b05?q=80&w=1035&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-          alt="Deluxe Room"
+          src={room.image}
+          alt={room.name}
           className="w-full h-full object-cover"
           width={320}
           height={240}
@@ -86,10 +50,10 @@ const RoomAccommodationCard = ({ index }: { index: number }) => {
       <div className="flex flex-col gap-2 flex-1 p-4 px-2 ">
         <div className="flex justify-between items-end">
           <div className="flex flex-col gap-px">
-            <span className="font-bold">Deluxe Room</span>
+            <span className="font-bold">{room.name}</span>
             <span className="text-sm text-muted-foreground flex items-center gap-1">
-              <HugeiconsIcon icon={BedBunkFreeIcons} size={16} /> 1 King Bed,
-              City View
+              <HugeiconsIcon icon={BedBunkFreeIcons} size={16} /> {room.bed} ,
+              {room.view}
             </span>
           </div>
           <span className="text-xs font-bold p-2 px-4 bg-secondary  rounded-full">
@@ -97,16 +61,15 @@ const RoomAccommodationCard = ({ index }: { index: number }) => {
           </span>
         </div>
         <p className="text-sm text-muted-foreground pb-3 border-b mt-4 border-border">
-          Perfect for couples and business travelers seeking comfort and
-          convenience.
+          {room.description}
         </p>
         <div className="flex justify-between items-center mt-3">
           <div className="flex gap-2 w-full justify-between items-end">
             <div className="flex flex-col gap-1 text-sm">
               <span className="text-xs text-muted-foreground">Starts at</span>
-              <span className="font-bold text-lg">80,000XAF</span>
+              <span className="font-bold text-lg">{room.formattedPrice}</span>
             </div>
-            <Link href={`${pathname}/${index}`}>
+            <Link href={`${pathname}/${room.id}`}>
               <Button className="bg-primary text-white p-4 hover:bg-primary/90">
                 Book Now
               </Button>
@@ -118,16 +81,22 @@ const RoomAccommodationCard = ({ index }: { index: number }) => {
   );
 };
 
-const ReviewsCard = () => {
+const ReviewsCard = ({
+  review,
+}: {
+  review: NonNullable<Hotel["reviews"]>[number];
+}) => {
   return (
     <div className="p-6 flex flex-col gap-4 rounded-xl bg-bg-mute">
       <div className="flex gap-2 w-full justify-between items-end">
         <div className="flex gap-2.5">
-          <div className="flex gap-2 size-12 rounded-full bg-amber-600"></div>
+          <div className="flex size-12 items-center justify-center rounded-full bg-amber-600 font-bold text-white">
+            {review.guestInitials}
+          </div>
           <div className="flex flex-col gap-0.5">
-            <span className="text-[16px] font-bold">Emmanuel M.</span>
+            <span className="text-[16px] font-bold">{review.guestName}</span>
             <span className="text-muted-foreground text-[14px]">
-              Stayed in Jan 2024
+              Stayed in {review.stayDate}
             </span>
           </div>
         </div>
@@ -137,21 +106,23 @@ const ReviewsCard = () => {
               icon={Star}
               key={i}
               size={18}
-              className="fill-yellow-400 text-yellow-400"
+              className={
+                i < review.rating
+                  ? "fill-yellow-400 text-yellow-400"
+                  : "text-muted-foreground"
+              }
             />
           ))}
         </div>
       </div>
       <p className="italic text-[14px] text-muted-foreground">
-        "The service at the Hilton remains unmatched in Yaoundé. The staff is
-        attentive, and the executive lounge offers the perfect quiet spot for
-        business meetings."
+        “{review.message}”
       </p>
     </div>
   );
 };
 
-export const DetailsContent = () => {
+export const DetailsContent = ({ hotel }: { hotel: Hotel }) => {
   const policies = [
     "Cancellation: Free up to 24h before arrival for most bookings.",
     "Children: Free stay for children under 12 using existing bedding.",
@@ -164,39 +135,33 @@ export const DetailsContent = () => {
           <h3 className="text-2xl font-bold border-b border-border pb-2">
             Hotel Details
           </h3>
-          <p>
-            Standing as a landmark of sophistication in the heart of Cameroon's
-            capital, The Hilton Yaoundé represents the pinnacle of international
-            hospitality combined with local warmth. Since its inauguration, it
-            has been the preferred destination for global leaders, business
-            moguls, and travelers seeking an uncompromising standard of service.
-          </p>
-          <p>
+          <p>{hotel.description}</p>
+          {/* <p>
             The hotel seamlessly blends corporate efficiency with 'Curated
             Comfort,' offering panoramic views of the city's lush hills. Its
             architectural grandeur and meticulously designed interiors reflect a
             commitment to luxury that has defined the Yaoundé skyline for
             decades.
-          </p>
+          </p> */}
         </div>
 
         {/* Amenities section */}
         <div className="flex flex-col gap-4">
           <h3 className="text-2xl font-bold pb-2">Amenities </h3>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {amenities.map((amenity) => (
+            {hotel.amenities.map((amenity) => (
               <div
                 key={amenity.id}
                 className="flex flex-col bg-primary/5 items-center text-center p-4 border border-border rounded-lg hover:shadow-md transition-shadow"
               >
                 <HugeiconsIcon
-                  icon={amenity.icon}
+                  icon={amenityIcons[amenity.id] ?? CircleCheck}
                   size={28}
                   className="mb-4 text-primary"
                 />
-                <h4 className="font-semibold">{amenity.title}</h4>
+                <h4 className="font-semibold">{amenity.name}</h4>
                 <p className="text-sm text-muted-foreground">
-                  {amenity.subtitle}
+                  {amenity.description}
                 </p>
               </div>
             ))}
@@ -207,9 +172,9 @@ export const DetailsContent = () => {
         <div className="flex flex-col gap-4">
           <h3 className="text-2xl font-bold pb-2">Accommodation</h3>
           <div className="flex flex-col gap-4">
-            <RoomAccommodationCard index={0} />
-            <RoomAccommodationCard index={1} />
-            <RoomAccommodationCard index={2} />
+            {hotel.rooms.map((room, i) => (
+              <RoomAccommodationCard room={room} key={i} />
+            ))}
           </div>
         </div>
 
@@ -219,18 +184,20 @@ export const DetailsContent = () => {
             <h2 className="text-2xl font-bold pb-2">Guest Experiences</h2>
             <div className="flex gap-2 items-end">
               <div className="flex flex-col gap-0.5">
-                <span className="font-bold text-xl">4.8 / 5</span>
+                <span className="font-bold text-xl">{hotel.rating} / 5</span>
                 <span className="text-[14px] text-muted-foreground">
-                  Based on 1,240 reviews
+                  Based on {hotel.reviewCount} reviews
                 </span>
               </div>
               <div className=" p-2 rounded-md size-10 bg-primary/30 text-primary text-xl flex items-center justify-center">
-                4.8
+                {hotel.rating}
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-6">
-            <ReviewsCard />
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {(hotel.reviews ?? []).map((review) => (
+              <ReviewsCard review={review} key={review.id} />
+            ))}
           </div>
         </div>
 
@@ -250,11 +217,11 @@ export const DetailsContent = () => {
               </span>
               <div className="w-full flex mt-2 text-muted-foreground justify-between items-center border-b border-border pb-3">
                 <span>Check-In</span>
-                <span>From 14:00</span>
+                <span>From {hotel.checkIn}</span>
               </div>
               <div className="w-full flex text-muted-foreground justify-between items-center border-b border-border pb-3">
                 <span>Check-Out</span>
-                <span>Until 12:00</span>
+                <span>Until {hotel.checkOut}</span>
               </div>
               <p className="text-[14px] italic text-destructive">
                 Express check-in available for Hilton Honors members.
@@ -289,7 +256,9 @@ export const DetailsContent = () => {
             <div className="flex flex-col">
               <span className="text-xs">STARTING FROM</span>
               <span>
-                <span className="text-2xl font-bold">145,000 XAF</span>
+                <span className="text-2xl font-bold">
+                  {hotel.formattedStartingPrice}
+                </span>
                 <span className="text-xs"> /night</span>
               </span>
             </div>
