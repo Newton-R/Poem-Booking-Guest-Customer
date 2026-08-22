@@ -1,3 +1,4 @@
+import { LoadingGridHero } from "@/components/loaders/hoteldetails/GridHero";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -12,7 +13,12 @@ import { AlertTriangle, Location, Star } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import React from "react";
 
-export const DetailsHero = ({ hotel }: { hotel: Hotel }) => {
+export const DetailsHero = ({ hotel, isLoading }: { hotel: Hotel, isLoading: boolean }) => {
+
+  if (isLoading) {
+    return <LoadingGridHero />
+  }
+
   return (
     <div className="hero grid grid-rows-2 gap-2 bg-secondary-foreground grid-cols-4 relative">
       <div className="absolute top-0 left-0 w-full h-full  flex items-end p-6 bg-black/60 z-10">

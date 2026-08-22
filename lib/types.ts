@@ -13,9 +13,21 @@ export type HotelReview = {
   message: string;
 };
 
+export type RoomCategory =
+  | "Standard"
+  | "Deluxe"
+  | "Suite"
+  | "Family"
+  | "Villa"
+  | "Studio"
+  | "Cabin"
+  | "Penthouse"
+  | "Twin";
+
 export type RoomType = {
   id: string;
   name: string;
+  type?: RoomCategory;
   description: string;
   bed: string;
   view: string;
@@ -25,8 +37,15 @@ export type RoomType = {
   formattedPrice?: string;
   currency: "XAF";
   image: string;
+  images?: string[];
+  availability: {
+    checkIn: string;
+    checkOut: string;
+  }[];
   amenities: string[];
   featured?: boolean;
+  premium?: boolean;
+  popular?: boolean;
 };
 
 export type Hotel = {
@@ -95,11 +114,20 @@ export type BusDeparture = {
   formattedPrice?: string;
 };
 
+export type BusRegion =
+  | "Littoral"
+  | "Central"
+  | "North West"
+  | "South West"
+  | "North East"
+  | "South East";
+
 export type BusRoute = {
   id: string;
   slug: string;
   origin: string;
   destination: string;
+  region: BusRegion;
   originStation: string;
   destinationStation: string;
   duration: string;

@@ -7,6 +7,7 @@ import type {
   HotelReview,
   Restaurant,
 } from "./types";
+import type { RoomCategory, BusRegion } from "./types";
 
 export const regions = [
   "Far North",
@@ -22,6 +23,29 @@ export const regions = [
 ];
 export const formatPrice = (price: number, currency = "XAF") =>
   `${new Intl.NumberFormat("en-US").format(price)} ${currency}`;
+
+const roomImages = [
+  "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aG90ZWwlMjByb29tfGVufDB8fDB8fHww",
+  "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=1200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8aG90ZWwlMjByb29tfGVufDB8fDB8fHww",
+  "https://images.unsplash.com/photo-1631049552057-403cdb8f0658?w=1200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGhvdGVsJTIwcm9vbXxlbnwwfHwwfHx8MA%3D%3D",
+  "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=1200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGhvdGVsJTIwcm9vbXxlbnwwfHwwfHx8MA%3D%3D",
+  "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=1200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGhvdGVsJTIwcm9vbXxlbnwwfHwwfHx8MA%3D%3D",
+  "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGhvdGVsJTIwcm9vbXxlbnwwfHwwfHx8MA%3D%3D",
+  "https://images.unsplash.com/photo-1568495248636-6432b97bd949?w=1200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTl8fGhvdGVsJTIwcm9vbXxlbnwwfHwwfHx8MA%3D%3D",
+  "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=1200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fGhvdGVsJTIwcm9vbXxlbnwwfHwwfHx8MA%3D%3D",
+];
+
+export const roomTypes: RoomCategory[] = [
+  "Standard",
+  "Deluxe",
+  "Suite",
+  "Family",
+  "Villa",
+  "Studio",
+  "Cabin",
+  "Penthouse",
+  "Twin",
+];
 
 const restaurantImage = [
   "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8cmVzdGF1cmFudHxlbnwwfHwwfHx8MA%3D%3D",
@@ -151,6 +175,10 @@ const baseHotels: Hotel[] = [
       {
         id: "hilton-deluxe-king",
         name: "Deluxe King Room",
+        type: "Deluxe",
+        availability: [
+          { checkIn: "2026-01-01", checkOut: "2026-01-28" },
+        ],
         description:
           "A bright room for couples and business travelers seeking quiet city comfort.",
         bed: "1 king bed",
@@ -171,6 +199,10 @@ const baseHotels: Hotel[] = [
       {
         id: "hilton-executive-suite",
         name: "Executive Suite",
+        type: "Suite",
+        availability: [
+          { checkIn: "2026-02-01", checkOut: "2026-02-28" },
+        ],
         description:
           "A separate living area and lounge access for longer or more productive stays.",
         bed: "1 king bed",
@@ -190,6 +222,10 @@ const baseHotels: Hotel[] = [
       {
         id: "hilton-family-room",
         name: "Family Room",
+        type: "Family",
+        availability: [
+          { checkIn: "2026-03-01", checkOut: "2026-03-28" },
+        ],
         description:
           "Flexible sleeping arrangements and space for a relaxed family trip.",
         bed: "1 king bed and 1 twin bed",
@@ -259,6 +295,10 @@ const baseHotels: Hotel[] = [
       {
         id: "blue-pearl-standard",
         name: "Standard Queen Room",
+        type: "Standard",
+        availability: [
+          { checkIn: "2026-02-01", checkOut: "2026-02-28" },
+        ],
         description: "An efficient and comfortable room for short city stays.",
         bed: "1 queen bed",
         view: "Neighbourhood view",
@@ -278,6 +318,10 @@ const baseHotels: Hotel[] = [
       {
         id: "blue-pearl-deluxe",
         name: "Deluxe King Room",
+        type: "Deluxe",
+        availability: [
+          { checkIn: "2026-03-01", checkOut: "2026-03-28" },
+        ],
         description:
           "Extra floor space and a quiet corner for an unhurried stay.",
         bed: "1 king bed",
@@ -346,6 +390,10 @@ const baseHotels: Hotel[] = [
       {
         id: "krystal-garden-room",
         name: "Garden Room",
+        type: "Standard",
+        availability: [
+          { checkIn: "2026-03-01", checkOut: "2026-03-28" },
+        ],
         description: "A peaceful ground-floor room with a private terrace.",
         bed: "1 queen bed",
         view: "Garden view",
@@ -364,6 +412,10 @@ const baseHotels: Hotel[] = [
       {
         id: "krystal-ocean-suite",
         name: "Ocean Suite",
+        type: "Suite",
+        availability: [
+          { checkIn: "2026-04-01", checkOut: "2026-04-28" },
+        ],
         description: "A spacious suite with a balcony facing the Atlantic.",
         bed: "1 king bed",
         view: "Ocean view",
@@ -429,6 +481,10 @@ const baseHotels: Hotel[] = [
       {
         id: "mountain-cabin",
         name: "Forest Cabin",
+        type: "Cabin",
+        availability: [
+          { checkIn: "2026-04-01", checkOut: "2026-04-28" },
+        ],
         description: "A private cabin with a porch and views into the trees.",
         bed: "1 queen bed",
         view: "Forest view",
@@ -448,6 +504,10 @@ const baseHotels: Hotel[] = [
       {
         id: "mountain-family-cottage",
         name: "Family Cottage",
+        type: "Family",
+        availability: [
+          { checkIn: "2026-05-01", checkOut: "2026-05-28" },
+        ],
         description: "A two-bedroom cottage for families and small groups.",
         bed: "1 king bed and 2 twin beds",
         view: "Mountain view",
@@ -515,6 +575,10 @@ const baseHotels: Hotel[] = [
       {
         id: "savanna-classic",
         name: "Classic Room",
+        type: "Standard",
+        availability: [
+          { checkIn: "2026-05-01", checkOut: "2026-05-28" },
+        ],
         description:
           "A cool, practical room for travelers exploring the north.",
         bed: "1 double bed",
@@ -534,6 +598,10 @@ const baseHotels: Hotel[] = [
       {
         id: "savanna-suite",
         name: "Courtyard Suite",
+        type: "Suite",
+        availability: [
+          { checkIn: "2026-06-01", checkOut: "2026-06-28" },
+        ],
         description:
           "A larger suite with a sitting area and private courtyard access.",
         bed: "1 king bed",
@@ -603,6 +671,10 @@ const baseHotels: Hotel[] = [
       {
         id: "limbe-garden-deluxe",
         name: "Garden Deluxe Room",
+        type: "Deluxe",
+        availability: [
+          { checkIn: "2026-06-01", checkOut: "2026-06-28" },
+        ],
         description:
           "A breezy room with a furnished terrace overlooking the gardens.",
         bed: "1 king bed",
@@ -623,6 +695,10 @@ const baseHotels: Hotel[] = [
       {
         id: "limbe-bay-villa",
         name: "Bay View Villa",
+        type: "Villa",
+        availability: [
+          { checkIn: "2026-01-01", checkOut: "2026-01-28" },
+        ],
         description:
           "A private villa with a living room and wide views across the water.",
         bed: "1 king bed and 1 sofa bed",
@@ -691,6 +767,10 @@ const baseHotels: Hotel[] = [
       {
         id: "mont-febe-studio",
         name: "Hillside Studio",
+        type: "Studio",
+        availability: [
+          { checkIn: "2026-01-01", checkOut: "2026-01-28" },
+        ],
         description:
           "A comfortable studio with a small lounge and a private balcony.",
         bed: "1 queen bed",
@@ -710,6 +790,10 @@ const baseHotels: Hotel[] = [
       {
         id: "mont-febe-presidential-suite",
         name: "Presidential Suite",
+        type: "Suite",
+        availability: [
+          { checkIn: "2026-02-01", checkOut: "2026-02-28" },
+        ],
         description:
           "A generous suite with separate entertaining and sleeping spaces.",
         bed: "1 king bed",
@@ -795,6 +879,13 @@ const additionalHotels: Hotel[] = additionalHotelNames.map(
       {
         id: `${name.toLowerCase().replaceAll(" ", "-")}-classic`,
         name: "Classic Room",
+        type: "Standard",
+        availability: [
+          {
+            checkIn: `2026-${String(((index + 7) % 6) + 1).padStart(2, "0")}-01`,
+            checkOut: `2026-${String(((index + 7) % 6) + 1).padStart(2, "0")}-28`,
+          },
+        ],
         description:
           "A practical room with everything needed for a restful stay.",
         bed: "1 queen bed",
@@ -815,6 +906,13 @@ const additionalHotels: Hotel[] = additionalHotelNames.map(
       {
         id: `${name.toLowerCase().replaceAll(" ", "-")}-suite`,
         name: "Signature Suite",
+        type: "Suite",
+        availability: [
+          {
+            checkIn: `2026-${String(((index + 7 + 1) % 6) + 1).padStart(2, "0")}-01`,
+            checkOut: `2026-${String(((index + 7 + 1) % 6) + 1).padStart(2, "0")}-28`,
+          },
+        ],
         description: "A larger room with a sitting area for longer stays.",
         bed: "1 king bed",
         view: "Panoramic view",
@@ -842,6 +940,123 @@ const additionalHotels: Hotel[] = additionalHotelNames.map(
 );
 
 export const hotels: Hotel[] = [...baseHotels, ...additionalHotels];
+
+const threeImageHotels = new Set([
+  "blue-pearl-douala",
+  "limbe-bay-resort",
+  "mont-febe-residence",
+]);
+
+hotels.forEach((hotel) => {
+  const imageCount = threeImageHotels.has(hotel.id) ? 3 : 4;
+  hotel.images = [...hotel.images, ...hotelImages].slice(0, imageCount);
+});
+
+const roomAdditions = [
+  {
+    name: "Comfort Twin Room",
+    type: "Twin" as const,
+    description:
+      "A flexible room with two separate beds for friends or family.",
+    bed: "2 twin beds",
+    view: "Garden view",
+    capacity: 2,
+    size: 30,
+    priceOffset: 15000,
+  },
+  {
+    name: "Family Residence",
+    type: "Family" as const,
+    description: "A spacious residence with room for relaxed family stays.",
+    bed: "1 king bed and 2 twin beds",
+    view: "Pool or garden view",
+    capacity: 5,
+    size: 58,
+    priceOffset: 65000,
+  },
+  {
+    name: "Premium Penthouse",
+    type: "Penthouse" as const,
+    description:
+      "An elevated suite with generous living space and signature views.",
+    bed: "1 king bed and 1 sofa bed",
+    view: "Panoramic view",
+    capacity: 4,
+    size: 78,
+    priceOffset: 125000,
+  },
+] as const;
+
+const getRoomType = (name: string): RoomCategory => {
+  const normalizedName = name.toLowerCase();
+  const matchingType = roomTypes.find((roomType) =>
+    normalizedName.includes(roomType.toLowerCase()),
+  );
+
+  return matchingType ?? "Standard";
+};
+
+hotels.forEach((hotel, hotelIndex) => {
+  const hotelImagesForRoom =
+    hotel.images.length > 0 ? hotel.images : [hotel.image];
+  hotel.rooms = hotel.rooms.map((room, roomIndex) => ({
+    ...room,
+    type: room.type ?? getRoomType(room.name),
+    images: room.images ?? [
+      room.image,
+      roomImages[(roomIndex + hotelIndex) % roomImages.length],
+      roomImages[(roomIndex + hotelIndex + 1) % roomImages.length],
+      roomImages[(roomIndex + hotelIndex + 2) % roomImages.length],
+    ],
+    availability: room.availability ?? [
+      {
+        checkIn: `2026-${String(((hotelIndex + roomIndex) % 6) + 1).padStart(2, "0")}-01`,
+        checkOut: `2026-${String(((hotelIndex + roomIndex) % 6) + 1).padStart(2, "0")}-28`,
+      },
+    ],
+    premium: room.premium ?? room.price >= hotel.startingPrice * 1.6,
+    popular: room.popular ?? room.featured ?? roomIndex === 0,
+  }));
+
+  while (hotel.rooms.length < 5) {
+    const roomIndex = hotel.rooms.length;
+    const addition = roomAdditions[roomIndex - 2];
+    const image = roomImages[(roomIndex + hotelIndex) % roomImages.length];
+    hotel.rooms.push({
+      id: `${hotel.id}-room-${roomIndex + 1}`,
+      name: addition.name,
+      type: addition.type,
+      description: addition.description,
+      bed: addition.bed,
+      view: addition.view,
+      capacity: addition.capacity,
+      size: addition.size,
+      price: hotel.startingPrice + addition.priceOffset,
+      currency: hotel.currency,
+      image,
+      images: [
+        image,
+        roomImages[(roomIndex + hotelIndex + 1) % roomImages.length],
+        roomImages[(roomIndex + hotelIndex + 2) % roomImages.length],
+        roomImages[(roomIndex + hotelIndex + 3) % roomImages.length],
+      ],
+      availability: [
+        {
+          checkIn: `2026-${String(((hotelIndex + roomIndex) % 6) + 1).padStart(2, "0")}-01`,
+          checkOut: `2026-${String(((hotelIndex + roomIndex) % 6) + 1).padStart(2, "0")}-28`,
+        },
+      ],
+      amenities: [
+        "Air conditioning",
+        "Work desk",
+        "Walk-in shower",
+        "Filtered water",
+      ],
+      premium: addition.name === "Premium Penthouse",
+      popular: roomIndex === 2,
+    });
+  }
+});
 
 hotelCollections.forEach((collection) => {
   collection.hotelIds.push(
@@ -962,12 +1177,32 @@ export const busOperators: BusOperator[] = [
   ...additionalBusOperators,
 ];
 
+const cityRegions: Record<string, BusRegion> = {
+  Douala: "Littoral",
+  Yaounde: "Central",
+  Bafoussam: "North West",
+  Kribi: "South East",
+  Bamenda: "North West",
+  Buea: "South West",
+  Bertoua: "North East",
+  Ebolowa: "South East",
+  Garoua: "North East",
+  Maroua: "North East",
+  Ngaoundere: "North East",
+  Edea: "Littoral",
+  Limbe: "South West",
+  Kumba: "South West",
+  Foumban: "Central",
+  Nkongsamba: "Littoral",
+};
+
 const baseBusRoutes: BusRoute[] = [
   {
     id: "douala-yaounde",
     slug: "douala-yaounde",
     origin: "Douala",
     destination: "Yaounde",
+    region: "Littoral",
     originStation: "Akwa Central Station",
     destinationStation: "Mvan Station",
     duration: "3h 45m",
@@ -1022,6 +1257,7 @@ const baseBusRoutes: BusRoute[] = [
     slug: "yaounde-bafoussam",
     origin: "Yaounde",
     destination: "Bafoussam",
+    region: "Central",
     originStation: "Mvan Station",
     destinationStation: "Bamendzi Station",
     duration: "5h 30m",
@@ -1064,6 +1300,7 @@ const baseBusRoutes: BusRoute[] = [
     slug: "douala-kribi",
     origin: "Douala",
     destination: "Kribi",
+    region: "Littoral",
     originStation: "Bonaberi Station",
     destinationStation: "Kribi Central Station",
     duration: "3h 15m",
@@ -1100,6 +1337,7 @@ const baseBusRoutes: BusRoute[] = [
     slug: "bamenda-buea",
     origin: "Bamenda",
     destination: "Buea",
+    region: "North West",
     originStation: "Commercial Avenue Station",
     destinationStation: "Molyko Station",
     duration: "7h 00m",
@@ -1136,6 +1374,7 @@ const baseBusRoutes: BusRoute[] = [
     slug: "douala-bafoussam",
     origin: "Douala",
     destination: "Bafoussam",
+    region: "Littoral",
     originStation: "Bonaberi Station",
     destinationStation: "Bamendzi Station",
     duration: "6h 00m",
@@ -1178,6 +1417,7 @@ const baseBusRoutes: BusRoute[] = [
     slug: "yaounde-bertoua",
     origin: "Yaounde",
     destination: "Bertoua",
+    region: "Central",
     originStation: "Mvan Station",
     destinationStation: "Central Market Station",
     duration: "5h 00m",
@@ -1242,6 +1482,7 @@ const additionalBusRoutes: BusRoute[] = additionalRouteNames.map(
       slug: routeId,
       origin,
       destination,
+      region: cityRegions[origin] ?? "Central",
       originStation: `${origin} Central Station`,
       destinationStation: `${destination} Main Station`,
       duration: `${durationHours}h ${index % 2 === 0 ? "30" : "00"}m`,
