@@ -4,6 +4,8 @@ import Image from "next/image";
 import React from "react";
 import { Button } from "./button";
 import Link from "next/link";
+import { BusRoute } from "@/lib/types";
+import { formatDuration } from "@/lib/data";
 
 interface BusRouteCard {}
 
@@ -38,46 +40,49 @@ export const BusRouteCard = () => {
   );
 };
 
-export const DetailedBusRouteCard = () => {
+export const DetailedBusRouteCard = ({ busroute }: { busroute: BusRoute }) => {
   return (
     <div className="flex flex-col bg-bg-mute h-120 overflow-hidden rounded-2xl">
       <div className="overflow-hidden flex-1 relative">
-        <span className="p-1 px-2 rounded-full bg-white/70 text-black absolute top-4 left-4 text-xs">
-          From Douala
+        <span className="p-1 px-2 rounded-full bg-white/80 text-primary font-bold absolute top-4 left-4 text-xs">
+          From {busroute.origin}
         </span>
         <Image
           className="w-full h-full object-cover"
           width={200}
           height={200}
-          src={"/default.png"}
+          src={busroute.image}
           alt="Image"
         />
       </div>
       <div className="p-6 flex flex-col">
         <div className="flex justify-between">
           <div>
-            <span className="text-xl font-bold">To Yaounde</span>
+            <span className="text-xl font-bold">To {busroute.destination}</span>
             <span className="text-muted-foreground text-xs flex items-center gap-1">
               {" "}
-              <HugeiconsIcon icon={Clock} size={13} /> 3h 45m Travel
+              <HugeiconsIcon icon={Clock} size={13} />{" "}
+              {formatDuration(busroute.duration)} Travel
             </span>
           </div>
           <div className="flex flex-col">
             <span className="text-xs text-muted-foreground">STARTING FROM</span>
-            <span className="text-xl font-bold text-primary">6,500 XAF</span>
+            <span className="text-xl font-bold text-primary">
+              {busroute.formattedStartingPrice}
+            </span>
           </div>
         </div>
         <div className="flex justify-between bg-background p-4 rounded-md items-center mt-3">
           <span className="text-xs flex items-center gap-2">
             <HugeiconsIcon icon={Redo} size={13} className="text-primary" />
-            Every 30 Mins
+            {busroute.frequency}
           </span>
           <span className="text-[10px] text-primary bg-primary/20 rounded-xs p-1 px-2">
             HIGH FREQUENCY
           </span>
         </div>
         <div className="flex mt-4 items-center gap-4">
-          <Link className="w-full" href={"/buses/route"}>
+          <Link className="w-full" href={`/buses/${busroute.id}`}>
             <Button className={"rounded-md w-full p-5 px-8"}>Book Seat</Button>
           </Link>
         </div>

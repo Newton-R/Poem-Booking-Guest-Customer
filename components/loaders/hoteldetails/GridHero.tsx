@@ -2,9 +2,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import React from "react";
 
-export const LoadingGridHero = () => {
+export const LoadingGridHero = ({ className }: { className?: string }) => {
   return (
-    <div className="hero grid grid-rows-2 gap-2  grid-cols-4 relative">
+    <div className={cn("hero grid grid-rows-2 gap-2  grid-cols-4 relative", className)}>
       {[1, 2, 3, 4].map((_, index) => (
         <div
           key={index}

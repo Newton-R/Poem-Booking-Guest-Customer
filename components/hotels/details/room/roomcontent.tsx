@@ -1,4 +1,6 @@
 "use client";
+import { LoadingGridHero } from "@/components/loaders/hoteldetails/GridHero";
+import { LoadingRoomDetailsContent } from "@/components/loaders/hoteldetails/RoomDetailsContent";
 import { Button } from "@/components/ui/button";
 import { AmenityIcon } from "@/lib/icons";
 import { RoomType } from "@/lib/types";
@@ -9,8 +11,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-export const RoomContent = ({ room }: { room: RoomType }) => {
+export const RoomContent = ({ room, isLoading }: { room: RoomType, isLoading: boolean }) => {
   const pathname = usePathname();
+
+  if (isLoading) {
+    return <LoadingRoomDetailsContent />
+  }
+
   return (
     <section className="container-x grid gap-6 grid-cols-4">
       <div className="col-span-3 flex flex-col gap-6">
@@ -32,22 +39,23 @@ export const RoomContent = ({ room }: { room: RoomType }) => {
           </div>
           <span className="text-3xl font-bold">{room.name}</span>
           <div className="flex gap-6 items-center">
-            {[0, 1, 2].map(() => (
-              <div className="flex gap-2 items-end">
-                <HugeiconsIcon
-                  icon={Ruler}
-                  className="text-primary font-bold"
-                />
-                <div className="flex flex-col text-end">
-                  <span className="text-muted-foreground text-[10px]">
-                    TOTAL AREA
-                  </span>
+            <div className="flex gap-2 items-center">
+
+              <div className="flex flex-col text-end">
+                <span className="text-muted-foreground text-[10px]">
+                  TOTAL AREA
+                </span>
+                <div className="flex items-center gap-2">
+                  <HugeiconsIcon
+                    icon={Ruler} size={14}
+                    className="text-primary font-bold"
+                  />
                   <span className="font-bold text-xl">
-                    120m<sup>2</sup>
+                    {room.size}m<sup>2</sup>
                   </span>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
         </div>
         <div className="flex flex-col gap-2">
@@ -93,13 +101,13 @@ export const RoomContent = ({ room }: { room: RoomType }) => {
               </div>
             </div>
             <div className="w-full justify-between items-center flex pb-3 border-b border-border">
-              <span className="text-muted-foreground">Buests</span>
+              <span className="text-muted-foreground">Guests</span>
               <span className="font-bold">2 Adults</span>
             </div>
             <div className="text-muted-foreground text-[14px]">
               <div className="flex justify-between">
                 <span>Base rate ( 2 nights )</span>
-                <span>1,100,000 XAF</span>
+                <span>{room.formattedPrice}</span>
               </div>
               <div className="flex justify-between pb-4 border-b-2 border-border">
                 <span>Service & Taxes</span>
@@ -128,5 +136,6 @@ export const RoomContent = ({ room }: { room: RoomType }) => {
         </div>
       </div>
     </section>
+
   );
 };

@@ -1,5 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { BusDeparture, BusRoute } from "@/lib/types";
+import { busOperators } from "@/lib/data";
 import {
   ArrowDown,
   ArrowLeft,
@@ -13,13 +15,24 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 interface Voyages {
   index: number;
 }
 
-const VoyagesBlock = ({ index }: Voyages) => {
+const VoyagesBlock = ({
+  departure,
+  busRoute,
+}: {
+  departure: BusDeparture;
+  busRoute: BusRoute;
+}) => {
+  const pathname = usePathname();
+  const operator = busOperators.find(
+    (item) => item.id === departure.operatorId,
+  );
   const ammenities = [
     {
       label: "Wifi",
@@ -39,7 +52,7 @@ const VoyagesBlock = ({ index }: Voyages) => {
       <div className="w-full flex items-center justify-center flex-col gap-4">
         <div className="w-25 h-25 rounded-full overflow-hidden">
           <Image
-            src={"/default.png"}
+            src={operator?.logo ?? "/default.png"}
             className="w-full h-full"
             width={300}
             height={300}
@@ -47,20 +60,27 @@ const VoyagesBlock = ({ index }: Voyages) => {
           />
         </div>
         <div className="flex flex-col gap-1 text-center">
-          <span>Finex Voyages</span>
+          <span>{operator?.name ?? "Bus operator"}</span>
           <span className="text-xs bg-primary/10 text-primary p-1 px-2 rounded-full">
-            PREMUIM OPERATOR
+            {departure.class}
           </span>
         </div>
       </div>
       <div className="flex-1 pl-6 border-l-2 border-border flex col-span-3 flex-col gap-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
           <div className="flex flex-col">
-            <span className="text-xl font-bold">06:30</span>
-            <span className="text-muted-foreground">Douala (Akwa)</span>
+            <span className="text-xl font-bold">{departure.departureTime}</span>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-muted-foreground">{busRoute.origin}</span>
+              <span className="text-muted-foreground text-xs">
+                ({departure.originStation})
+              </span>
+            </div>
           </div>
           <div className="flex flex-col justify-center items-center text-center gap-1 text-xs">
-            <span>3h 45m</span>
+            <span>
+              {departure.duration.hours}h {departure.duration.minutes}m
+            </span>
             <div className="flex h-0.5 relative bg-gray-400 w-40 items-center">
               <div className="size-2 rounded-full border border-gray-400 bg-background absolute -left-1" />
               <div className="size-2 rounded-full border bg-primary border-gray-400 absolute -right-1" />
@@ -68,12 +88,23 @@ const VoyagesBlock = ({ index }: Voyages) => {
             <span className="text-xs text-primary">Non stop</span>
           </div>
           <div className="text-end flex flex-col">
-            <span className="text-xl font-bold">10:15</span>
-            <span className="text-muted-foreground">Yaounde (Ivan)</span>
+            <span className="text-xl font-bold">{departure.arrivalTime}</span>
+            <span className="text-muted-foreground">
+              {busRoute.destination}
+            </span>
+            <span className="text-muted-foreground text-xs">
+              {" "}
+              ({departure.destinationStation})
+            </span>
           </div>
           <div className="text-end flex flex-col">
-            <span className="text-muted-foreground">VIP CLASS</span>
-            <span className="text-xl font-bold">6,500 XAF</span>
+            <span className="text-muted-foreground">{departure.class}</span>
+            {/* <span className="text-muted-foreground text-xs">
+              {departure.departureDate}
+            </span> */}
+            <span className="text-xl font-bold">
+              {departure.formattedPrice}
+            </span>
           </div>
         </div>
         <div className="w-full flex justify-between mt-auto items-center flex-col md:flex-row gap-4">
@@ -93,7 +124,7 @@ const VoyagesBlock = ({ index }: Voyages) => {
               </span>
             ))}
           </div>
-          <Link className="w-fit" href={`/buses/route/${index}`}>
+          <Link className="w-fit" href={`${pathname}/${departure.id}`}>
             <Button className={"p-6 w-40 text-[16px]"}>Select Seats</Button>
           </Link>
         </div>
@@ -114,7 +145,7 @@ type FilterGroup = {
   options: FilterOption[];
 };
 
-export const RouteBlock = () => {
+export const RouteBlock = ({ busRoute }: { busRoute: BusRoute }) => {
   const filters: FilterGroup[] = [
     {
       id: "departureTime",
@@ -144,9 +175,9 @@ export const RouteBlock = () => {
       <div className="bg-secondary-foreground flex justify-between items-center p-6 rounded-2xl">
         <div className="flex flex-col gap-2">
           <span className="flex text-white text-2xl items-center gap-3">
-            <span className="font-bold">Douala</span>
+            <span className="font-bold">{busRoute.origin}</span>
             <HugeiconsIcon icon={ArrowRight} className="text-primary" />
-            <span className="font-bold">Yaounde</span>
+            <span className="font-bold">{busRoute.destination}</span>
           </span>
           <p className="text-muted-foreground">
             Wednesday, 24 May 2024 • 1 Adult • Business Class
@@ -210,11 +241,15 @@ export const RouteBlock = () => {
             </span>
           </div>
           {/* Array of mapped departure cards */}
-          {Array.from({ length: 3 }).map((_, i) => (
-            <VoyagesBlock key={i} index={i} />
+          {busRoute.departures.map((departure) => (
+            <VoyagesBlock
+              key={departure.id}
+              departure={departure}
+              busRoute={busRoute}
+            />
           ))}
           {/* load departures button */}
-          <div className="w-full justify-center flex items-center">
+          {/* <div className="w-full justify-center flex items-center">
             <Button
               className={"rounded-full text-[16px] p-6 "}
               variant={"outline"}
@@ -222,7 +257,7 @@ export const RouteBlock = () => {
               Load More Departures
               <HugeiconsIcon icon={ArrowDown} size={18} />
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>
