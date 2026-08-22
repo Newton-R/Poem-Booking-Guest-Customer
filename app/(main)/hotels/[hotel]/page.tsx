@@ -1,5 +1,6 @@
 import { DetailsContent } from "@/components/hotels/details/DetailsContent";
 import { DetailsHero } from "@/components/hotels/details/DetailsHero";
+import { HotelsDetailsBlock } from "@/components/hotels/details/HotelsDetailsBlock";
 import {
   Empty,
   EmptyDescription,
@@ -22,7 +23,7 @@ export default async function HotelsDetails({
 
   if (!Hotel) {
     return (
-      <div>
+      <div className="mt-[calc(var(--nav-height)+20px)]">
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -40,9 +41,6 @@ export default async function HotelsDetails({
   }
 
   return (
-    <div className="flex flex-col gap-20">
-      <DetailsHero hotel={Hotel} />
-      <DetailsContent hotel={Hotel} />
-    </div>
+    <HotelsDetailsBlock Hotel={Hotel} />
   );
 }

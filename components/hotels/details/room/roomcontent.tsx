@@ -1,39 +1,16 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Bell, Ruler, Star } from "@hugeicons/core-free-icons";
+import { AmenityIcon } from "@/lib/icons";
+import { RoomType } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { Bell, Check, CircleCheck, Ruler, Star } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-export const RoomContent = () => {
+export const RoomContent = ({ room }: { room: RoomType }) => {
   const pathname = usePathname();
-  const Amenities = [
-    {
-      label: "Private Butler",
-      icon: Bell,
-    },
-    {
-      label: "Private Butler",
-      icon: Bell,
-    },
-    {
-      label: "Private Butler",
-      icon: Bell,
-    },
-    {
-      label: "Private Butler",
-      icon: Bell,
-    },
-    {
-      label: "Private Butler",
-      icon: Bell,
-    },
-    {
-      label: "Private Butler",
-      icon: Bell,
-    },
-  ];
   return (
     <section className="container-x grid gap-6 grid-cols-4">
       <div className="col-span-3 flex flex-col gap-6">
@@ -47,13 +24,13 @@ export const RoomContent = () => {
                 <HugeiconsIcon
                   icon={Star}
                   size={16}
-                  className="fill-yellow-500 text-yellow-500"
+                  className={cn("fill-yellow-500 text-yellow-500")}
                   key={i}
                 />
               ))}
             </div>
           </div>
-          <span className="text-3xl font-bold">Presidential Suite</span>
+          <span className="text-3xl font-bold">{room.name}</span>
           <div className="flex gap-6 items-center">
             {[0, 1, 2].map(() => (
               <div className="flex gap-2 items-end">
@@ -66,7 +43,7 @@ export const RoomContent = () => {
                     TOTAL AREA
                   </span>
                   <span className="font-bold text-xl">
-                    120m<sub>2</sub>
+                    120m<sup>2</sup>
                   </span>
                 </div>
               </div>
@@ -77,33 +54,21 @@ export const RoomContent = () => {
           <span className="font-bold text-2xl">Room Overview</span>
           <div className="flex flex-col text-[14px] text-muted-foreground gap-4">
             <p>
-              Experience the pinnacle of hospitality at the Hilton Yaoundé's
-              Presidential Suite. Designed as a sanctuary for world leaders and
-              discerning travelers, this expansive suite blends contemporary
-              minimalist aesthetics with subtle Saharan influences. The palette
-              of warm oatmeal, deep navy, and vibrant orange creates an
-              atmosphere of sophisticated comfort.
+              {room.description}
             </p>
-            <p>
-              The suite features a grand circular living room with panoramic
-              views of the Cameroonian capital, an elegant dining area for six
-              guests, and a private office for focused work. The master bedroom
-              offers a tranquil escape with premium soundproofing and a
-              spa-inspired marble bathroom featuring a deep soaking tub and rain
-              shower.
-            </p>
+
           </div>
         </div>
         <div className="p-6 bg-bg-mute/50 rounded-2xl flex flex-col">
           <span className="text-2xl font-bold">Exclusive Amenities</span>
           <div className="w-full grid gap-4 grid-cols-2 mt-2 md:grid-cols-3">
-            {Amenities.map((amenity, i) => (
+            {room.amenities.map((amenity, i) => (
               <div className="flex items-center gap-2" key={i}>
                 <div className="size-10 bg-bg-mute rounded-full flex items-center justify-center">
-                  <HugeiconsIcon icon={amenity.icon} className="text-primary" />
+                  <HugeiconsIcon icon={CircleCheck} className="text-primary" />
                 </div>
                 <span className="text-xs text-muted-foreground">
-                  {amenity.label}
+                  {amenity}
                 </span>
               </div>
             ))}
@@ -116,7 +81,7 @@ export const RoomContent = () => {
           <div className="mt-3 flex flex-col gap-4 text-[14px]">
             <div className="w-full justify-between items-center flex pb-3 border-b border-border">
               <span className="text-muted-foreground">Selected Room</span>
-              <span className="font-bold">Presidential Suite</span>
+              <span className="font-bold">{room.name}</span>
             </div>
             <div className="w-full justify-between items-center flex pb-3 border-b border-border">
               <span className="text-muted-foreground">Stay Dates</span>

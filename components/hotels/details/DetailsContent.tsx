@@ -1,7 +1,20 @@
 "use client";
+import { LoadingHotelDetailsContent } from "@/components/loaders/hoteldetails/Content";
+import { LoadingRoomAccommodationCard } from "@/components/loaders/hoteldetails/LoadingRoomCard";
 import { Button } from "@/components/ui/button";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
+import { DatePickerDemo } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
-import { Hotel, RoomType } from "@/lib/types";
+import { roomTypes } from "@/lib/data";
+import { Hotel, RoomCategory, RoomType } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import {
   ArrowRight,
   BedBunkFreeIcons,
@@ -11,6 +24,7 @@ import {
   CustomerService01FreeIcons,
   Dumbbell,
   Leaf,
+  Loader,
   Search,
   Star,
   UtensilsCrossed,
@@ -22,7 +36,10 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useRef, useState } from "react";
+import { format } from "date-fns";
+import { toast } from "sonner";
+import { EmptyHotelsRooms } from "@/components/emptystuff";
 
 const amenityIcons: Record<string, IconSvgObject> = {
   wifi: Wifi01FreeIcons,
@@ -37,8 +54,13 @@ const amenityIcons: Record<string, IconSvgObject> = {
 const RoomAccommodationCard = ({ room }: { room: RoomType }) => {
   const pathname = usePathname();
   return (
-    <section className="flex overflow-hidden w-full flex-col max-h-80 md:max-h-60  md:flex-row gap-4 border border-border rounded-xl">
-      <div className="w-full md:w-60 lg:w-80 h-full overflow-hidden">
+    <div
+      className={cn(
+        "flex overflow-hidden w-full flex-col max-h-80 md:max-h-60  md:flex-row gap-4 border border-border rounded-xl",
+        room.premium && "border-primary",
+      )}
+    >
+      <div className="w-full md:w-60 lg:w-80 h-full relative overflow-hidden">
         <Image
           src={room.image}
           alt={room.name}
@@ -46,6 +68,11 @@ const RoomAccommodationCard = ({ room }: { room: RoomType }) => {
           width={320}
           height={240}
         />
+        {room.premium && (
+          <span className="text-xs p-1 px-2 rounded-md bg-primary absolute h-fit w-fit top-4 left-4">
+            PREMIUM SELECTION
+          </span>
+        )}
       </div>
       <div className="flex flex-col gap-2 flex-1 p-4 px-2 ">
         <div className="flex justify-between items-end">
@@ -56,14 +83,16 @@ const RoomAccommodationCard = ({ room }: { room: RoomType }) => {
               {room.view}
             </span>
           </div>
-          <span className="text-xs font-bold p-2 px-4 bg-secondary  rounded-full">
-            POPULAR
-          </span>
+          {room.popular && (
+            <span className="text-xs font-bold p-2 px-4 bg-secondary  rounded-full">
+              POPULAR
+            </span>
+          )}
         </div>
         <p className="text-sm text-muted-foreground pb-3 border-b mt-4 border-border">
           {room.description}
         </p>
-        <div className="flex justify-between items-center mt-3">
+        <div className="flex mt-auto justify-between items-center mt-3">
           <div className="flex gap-2 w-full justify-between items-end">
             <div className="flex flex-col gap-1 text-sm">
               <span className="text-xs text-muted-foreground">Starts at</span>
@@ -77,7 +106,7 @@ const RoomAccommodationCard = ({ room }: { room: RoomType }) => {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 
@@ -122,12 +151,78 @@ const ReviewsCard = ({
   );
 };
 
-export const DetailsContent = ({ hotel }: { hotel: Hotel }) => {
+
+
+// Main details content
+
+
+interface RoomsFilter {
+  guests: string,
+  checkIn: string,
+  checkout: string,
+  roomtype: RoomCategory | ""
+}
+
+
+
+export const DetailsContent = ({ hotel, isLoading }: { hotel: Hotel, isLoading: boolean }) => {
   const policies = [
     "Cancellation: Free up to 24h before arrival for most bookings.",
     "Children: Free stay for children under 12 using existing bedding.",
     "Pets: Service animals only.",
   ];
+  const [rooms, setRooms] = useState<RoomType[]>(hotel.rooms)
+  const [myroomtype, setType] = useState("")
+  const [roomFilters, setRoomFilters] = useState<RoomsFilter>({
+    guests: "",
+    checkIn: "",
+    checkout: "",
+    roomtype: ""
+  })
+  const [checking, setChecking] = useState<boolean>(false)
+  const RoomsBlock = useRef<HTMLDivElement>(null)
+
+  if (isLoading) {
+    return <LoadingHotelDetailsContent />
+  }
+
+  const updateFilter = (key: keyof RoomsFilter, value: string) => {
+    setRoomFilters((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const checkAvailability = () => {
+    const available = hotel.rooms.filter(
+      (r) =>
+        (!roomFilters.roomtype || r.type === roomFilters.roomtype) &&
+        (!roomFilters.guests || r.capacity >= Number(roomFilters.guests)) &&
+        (!roomFilters.checkIn ||
+          !roomFilters.checkout ||
+          r.availability.some(
+            (slot) =>
+              slot.checkIn === roomFilters.checkIn &&
+              slot.checkOut === roomFilters.checkout,
+          )),
+    );
+
+    if (available.length > 0) {
+      toast.success(`${available.length} Rooms are available for the selected filters`);
+      setRooms(available)
+      RoomsBlock.current?.scrollIntoView({ behavior: "smooth" })
+    } else {
+      toast.error("No rooms are available for the selected filters");
+      setRooms([])
+    }
+  };
+
+
+  const InitiateCheck = () => {
+    setChecking(true)
+    setTimeout(() => {
+      checkAvailability()
+      setChecking(false)
+    }, 2000)
+  }
+
   return (
     <div className="container-x mb-20 flex gap-8">
       <div className="flex flex-col gap-20 flex-1">
@@ -136,13 +231,6 @@ export const DetailsContent = ({ hotel }: { hotel: Hotel }) => {
             Hotel Details
           </h3>
           <p>{hotel.description}</p>
-          {/* <p>
-            The hotel seamlessly blends corporate efficiency with 'Curated
-            Comfort,' offering panoramic views of the city's lush hills. Its
-            architectural grandeur and meticulously designed interiors reflect a
-            commitment to luxury that has defined the Yaoundé skyline for
-            decades.
-          </p> */}
         </div>
 
         {/* Amenities section */}
@@ -169,12 +257,12 @@ export const DetailsContent = ({ hotel }: { hotel: Hotel }) => {
         </div>
 
         {/* Accomodation section */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4" ref={RoomsBlock}>
           <h3 className="text-2xl font-bold pb-2">Accommodation</h3>
           <div className="flex flex-col gap-4">
-            {hotel.rooms.map((room, i) => (
+            {rooms.length > 0 ? rooms.map((room, i) => (
               <RoomAccommodationCard room={room} key={i} />
-            ))}
+            )) : <EmptyHotelsRooms />}
           </div>
         </div>
 
@@ -266,27 +354,57 @@ export const DetailsContent = ({ hotel }: { hotel: Hotel }) => {
               BEST PRICE
             </span>
           </div>
-          <form className="flex flex-col gap-4 p-6">
+
+          {/* filter forms */}
+
+          <form className="flex flex-col gap-4 p-6" onSubmit={(e) => {
+            e.preventDefault()
+            InitiateCheck()
+          }}>
             <div className="flex justify-between items-center gap-6">
               <div className="flex flex-1 flex-col gap-1">
-                <label className="text-[10px]">CHECK-IN</label>
-                <Input
-                  placeholder=""
-                  type="date"
-                  className="p-2 bg-white h-10"
-                />
+                <label className="text-[10px]">CHECK-IN </label>
+                <DatePickerDemo className="bg-white" onChange={(e) => updateFilter("checkIn", e ? format(e, "yyyy-MM-dd") : "")} />
               </div>
               <div className="flex flex-1 flex-col gap-1">
                 <label className="text-[10px]">CHECK-OUT</label>
-                <Input
-                  placeholder=""
-                  type="date"
-                  className="p-2 bg-white h-10"
-                />
+                <DatePickerDemo className="bg-white" onChange={(e) => updateFilter("checkout", e ? format(e, "yyyy-MM-dd") : "")} />
               </div>
             </div>
-            <Button className={"p-6"}>
-              Check Availability <HugeiconsIcon icon={ArrowRight} />
+            <div className="flex flex-1 flex-col gap-1">
+              <label className="text-[10px]">GUESTS</label>
+              <Input
+                placeholder=""
+                type="number"
+                value={roomFilters.guests}
+                onChange={(e) => updateFilter("guests", e.target.value)}
+                className="p-2 bg-white h-10"
+              />
+            </div>
+            <div className="flex flex-1 flex-col gap-1">
+              <label className="text-[10px]">Room Type</label>
+              <Combobox value={myroomtype} onInputValueChange={(e) => {
+                setType(e)
+                updateFilter("roomtype", e)
+              }} items={roomTypes}>
+                <ComboboxInput
+                  className="h-10"
+                  placeholder="Select a room type"
+                />
+                <ComboboxContent>
+                  <ComboboxEmpty>No items found.</ComboboxEmpty>
+                  <ComboboxList>
+                    {(item) => (
+                      <ComboboxItem key={item} value={item}>
+                        {item}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+            </div>
+            <Button type="button" onClick={InitiateCheck} className={"p-6"} disabled={checking}>
+              {checking ? <HugeiconsIcon icon={Loader} size={16} className="animate-spin" /> : <>Check Availability <HugeiconsIcon icon={ArrowRight} /></>}
             </Button>
           </form>
         </div>
