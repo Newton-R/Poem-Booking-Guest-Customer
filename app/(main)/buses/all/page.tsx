@@ -1,16 +1,8 @@
-import { AllBusHero } from "@/components/buses/all/AllBusHero";
-import { Experience } from "@/components/buses/all/experience";
-import { Hubs } from "@/components/buses/all/Hubs";
+import AllBusesRouteBLock from "@/components/buses/all/AllBusRoutesBlock";
 import React from "react";
 
-const AllBusesPage = () => {
-  return (
-    <main className="flex flex-col gap-20">
-      <AllBusHero />
-      <Hubs />
-      <Experience />
-    </main>
-  );
+const BusRoutes = () => {
+  return <AllBusesRouteBLock />;
 };
 
-export default AllBusesPage;
+export default BusRoutes;

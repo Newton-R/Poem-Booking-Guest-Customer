@@ -104,9 +104,12 @@ export type BusOperator = {
 export type BusDeparture = {
   id: string;
   operatorId: string;
+  originStation?: string;
+  destinationStation?: string;
   departureTime: string;
   arrivalTime: string;
-  duration: string;
+  departureDate?: string;
+  duration: TravelDuration;
   class: "VIP" | "Classic";
   price: number;
   availableSeats: number;
@@ -122,6 +125,11 @@ export type BusRegion =
   | "North East"
   | "South East";
 
+export type TravelDuration = {
+  hours: number;
+  minutes: number;
+};
+
 export type BusRoute = {
   id: string;
   slug: string;
@@ -130,11 +138,14 @@ export type BusRoute = {
   region: BusRegion;
   originStation: string;
   destinationStation: string;
-  duration: string;
+  duration: TravelDuration;
+  formattedDuration?: string;
   distanceKm: number;
   frequency: string;
   image: string;
   departures: BusDeparture[];
+  startingPrice?: number;
+  formattedStartingPrice?: string;
   featured?: boolean;
 };
 

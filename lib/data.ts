@@ -24,6 +24,14 @@ export const regions = [
 export const formatPrice = (price: number, currency = "XAF") =>
   `${new Intl.NumberFormat("en-US").format(price)} ${currency}`;
 
+export const formatDuration = ({
+  hours,
+  minutes,
+}: {
+  hours: number;
+  minutes: number;
+}) => `${hours}h ${String(minutes).padStart(2, "0")}m`;
+
 const roomImages = [
   "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=1200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aG90ZWwlMjByb29tfGVufDB8fDB8fHww",
   "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=1200&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8aG90ZWwlMjByb29tfGVufDB8fDB8fHww",
@@ -176,9 +184,7 @@ const baseHotels: Hotel[] = [
         id: "hilton-deluxe-king",
         name: "Deluxe King Room",
         type: "Deluxe",
-        availability: [
-          { checkIn: "2026-01-01", checkOut: "2026-01-28" },
-        ],
+        availability: [{ checkIn: "2026-01-01", checkOut: "2026-01-28" }],
         description:
           "A bright room for couples and business travelers seeking quiet city comfort.",
         bed: "1 king bed",
@@ -200,9 +206,7 @@ const baseHotels: Hotel[] = [
         id: "hilton-executive-suite",
         name: "Executive Suite",
         type: "Suite",
-        availability: [
-          { checkIn: "2026-02-01", checkOut: "2026-02-28" },
-        ],
+        availability: [{ checkIn: "2026-02-01", checkOut: "2026-02-28" }],
         description:
           "A separate living area and lounge access for longer or more productive stays.",
         bed: "1 king bed",
@@ -223,9 +227,7 @@ const baseHotels: Hotel[] = [
         id: "hilton-family-room",
         name: "Family Room",
         type: "Family",
-        availability: [
-          { checkIn: "2026-03-01", checkOut: "2026-03-28" },
-        ],
+        availability: [{ checkIn: "2026-03-01", checkOut: "2026-03-28" }],
         description:
           "Flexible sleeping arrangements and space for a relaxed family trip.",
         bed: "1 king bed and 1 twin bed",
@@ -296,9 +298,7 @@ const baseHotels: Hotel[] = [
         id: "blue-pearl-standard",
         name: "Standard Queen Room",
         type: "Standard",
-        availability: [
-          { checkIn: "2026-02-01", checkOut: "2026-02-28" },
-        ],
+        availability: [{ checkIn: "2026-02-01", checkOut: "2026-02-28" }],
         description: "An efficient and comfortable room for short city stays.",
         bed: "1 queen bed",
         view: "Neighbourhood view",
@@ -319,9 +319,7 @@ const baseHotels: Hotel[] = [
         id: "blue-pearl-deluxe",
         name: "Deluxe King Room",
         type: "Deluxe",
-        availability: [
-          { checkIn: "2026-03-01", checkOut: "2026-03-28" },
-        ],
+        availability: [{ checkIn: "2026-03-01", checkOut: "2026-03-28" }],
         description:
           "Extra floor space and a quiet corner for an unhurried stay.",
         bed: "1 king bed",
@@ -391,9 +389,7 @@ const baseHotels: Hotel[] = [
         id: "krystal-garden-room",
         name: "Garden Room",
         type: "Standard",
-        availability: [
-          { checkIn: "2026-03-01", checkOut: "2026-03-28" },
-        ],
+        availability: [{ checkIn: "2026-03-01", checkOut: "2026-03-28" }],
         description: "A peaceful ground-floor room with a private terrace.",
         bed: "1 queen bed",
         view: "Garden view",
@@ -413,9 +409,7 @@ const baseHotels: Hotel[] = [
         id: "krystal-ocean-suite",
         name: "Ocean Suite",
         type: "Suite",
-        availability: [
-          { checkIn: "2026-04-01", checkOut: "2026-04-28" },
-        ],
+        availability: [{ checkIn: "2026-04-01", checkOut: "2026-04-28" }],
         description: "A spacious suite with a balcony facing the Atlantic.",
         bed: "1 king bed",
         view: "Ocean view",
@@ -482,9 +476,7 @@ const baseHotels: Hotel[] = [
         id: "mountain-cabin",
         name: "Forest Cabin",
         type: "Cabin",
-        availability: [
-          { checkIn: "2026-04-01", checkOut: "2026-04-28" },
-        ],
+        availability: [{ checkIn: "2026-04-01", checkOut: "2026-04-28" }],
         description: "A private cabin with a porch and views into the trees.",
         bed: "1 queen bed",
         view: "Forest view",
@@ -505,9 +497,7 @@ const baseHotels: Hotel[] = [
         id: "mountain-family-cottage",
         name: "Family Cottage",
         type: "Family",
-        availability: [
-          { checkIn: "2026-05-01", checkOut: "2026-05-28" },
-        ],
+        availability: [{ checkIn: "2026-05-01", checkOut: "2026-05-28" }],
         description: "A two-bedroom cottage for families and small groups.",
         bed: "1 king bed and 2 twin beds",
         view: "Mountain view",
@@ -576,9 +566,7 @@ const baseHotels: Hotel[] = [
         id: "savanna-classic",
         name: "Classic Room",
         type: "Standard",
-        availability: [
-          { checkIn: "2026-05-01", checkOut: "2026-05-28" },
-        ],
+        availability: [{ checkIn: "2026-05-01", checkOut: "2026-05-28" }],
         description:
           "A cool, practical room for travelers exploring the north.",
         bed: "1 double bed",
@@ -599,9 +587,7 @@ const baseHotels: Hotel[] = [
         id: "savanna-suite",
         name: "Courtyard Suite",
         type: "Suite",
-        availability: [
-          { checkIn: "2026-06-01", checkOut: "2026-06-28" },
-        ],
+        availability: [{ checkIn: "2026-06-01", checkOut: "2026-06-28" }],
         description:
           "A larger suite with a sitting area and private courtyard access.",
         bed: "1 king bed",
@@ -672,9 +658,7 @@ const baseHotels: Hotel[] = [
         id: "limbe-garden-deluxe",
         name: "Garden Deluxe Room",
         type: "Deluxe",
-        availability: [
-          { checkIn: "2026-06-01", checkOut: "2026-06-28" },
-        ],
+        availability: [{ checkIn: "2026-06-01", checkOut: "2026-06-28" }],
         description:
           "A breezy room with a furnished terrace overlooking the gardens.",
         bed: "1 king bed",
@@ -696,9 +680,7 @@ const baseHotels: Hotel[] = [
         id: "limbe-bay-villa",
         name: "Bay View Villa",
         type: "Villa",
-        availability: [
-          { checkIn: "2026-01-01", checkOut: "2026-01-28" },
-        ],
+        availability: [{ checkIn: "2026-01-01", checkOut: "2026-01-28" }],
         description:
           "A private villa with a living room and wide views across the water.",
         bed: "1 king bed and 1 sofa bed",
@@ -768,9 +750,7 @@ const baseHotels: Hotel[] = [
         id: "mont-febe-studio",
         name: "Hillside Studio",
         type: "Studio",
-        availability: [
-          { checkIn: "2026-01-01", checkOut: "2026-01-28" },
-        ],
+        availability: [{ checkIn: "2026-01-01", checkOut: "2026-01-28" }],
         description:
           "A comfortable studio with a small lounge and a private balcony.",
         bed: "1 queen bed",
@@ -791,9 +771,7 @@ const baseHotels: Hotel[] = [
         id: "mont-febe-presidential-suite",
         name: "Presidential Suite",
         type: "Suite",
-        availability: [
-          { checkIn: "2026-02-01", checkOut: "2026-02-28" },
-        ],
+        availability: [{ checkIn: "2026-02-01", checkOut: "2026-02-28" }],
         description:
           "A generous suite with separate entertaining and sleeping spaces.",
         bed: "1 king bed",
@@ -1205,7 +1183,7 @@ const baseBusRoutes: BusRoute[] = [
     region: "Littoral",
     originStation: "Akwa Central Station",
     destinationStation: "Mvan Station",
-    duration: "3h 45m",
+    duration: { hours: 3, minutes: 45 },
     distanceKm: 243,
     frequency: "Every 30 minutes",
     image: busStations[0],
@@ -1215,7 +1193,7 @@ const baseBusRoutes: BusRoute[] = [
         operatorId: "finexs-voyages",
         departureTime: "06:30",
         arrivalTime: "10:15",
-        duration: "3h 45m",
+        duration: { hours: 3, minutes: 45 },
         class: "VIP",
         price: 6500,
         availableSeats: 18,
@@ -1232,7 +1210,7 @@ const baseBusRoutes: BusRoute[] = [
         operatorId: "general-express",
         departureTime: "08:30",
         arrivalTime: "12:45",
-        duration: "4h 15m",
+        duration: { hours: 4, minutes: 15 },
         class: "Classic",
         price: 5000,
         availableSeats: 32,
@@ -1243,7 +1221,7 @@ const baseBusRoutes: BusRoute[] = [
         operatorId: "buca-voyages",
         departureTime: "11:00",
         arrivalTime: "15:30",
-        duration: "4h 30m",
+        duration: { hours: 4, minutes: 30 },
         class: "Classic",
         price: 4500,
         availableSeats: 26,
@@ -1260,7 +1238,7 @@ const baseBusRoutes: BusRoute[] = [
     region: "Central",
     originStation: "Mvan Station",
     destinationStation: "Bamendzi Station",
-    duration: "5h 30m",
+    duration: { hours: 5, minutes: 30 },
     distanceKm: 292,
     frequency: "Every 60 minutes",
     image: busStations[1],
@@ -1270,7 +1248,7 @@ const baseBusRoutes: BusRoute[] = [
         operatorId: "finexs-voyages",
         departureTime: "07:00",
         arrivalTime: "12:30",
-        duration: "5h 30m",
+        duration: { hours: 5, minutes: 30 },
         class: "VIP",
         price: 9000,
         availableSeats: 14,
@@ -1286,7 +1264,7 @@ const baseBusRoutes: BusRoute[] = [
         operatorId: "general-express",
         departureTime: "09:30",
         arrivalTime: "15:15",
-        duration: "5h 45m",
+        duration: { hours: 5, minutes: 45 },
         class: "Classic",
         price: 7000,
         availableSeats: 41,
@@ -1303,7 +1281,7 @@ const baseBusRoutes: BusRoute[] = [
     region: "Littoral",
     originStation: "Bonaberi Station",
     destinationStation: "Kribi Central Station",
-    duration: "3h 15m",
+    duration: { hours: 3, minutes: 15 },
     distanceKm: 173,
     frequency: "Every 90 minutes",
     image: busStations[2],
@@ -1313,7 +1291,7 @@ const baseBusRoutes: BusRoute[] = [
         operatorId: "buca-voyages",
         departureTime: "07:30",
         arrivalTime: "10:45",
-        duration: "3h 15m",
+        duration: { hours: 3, minutes: 15 },
         class: "Classic",
         price: 5500,
         availableSeats: 28,
@@ -1324,7 +1302,7 @@ const baseBusRoutes: BusRoute[] = [
         operatorId: "general-express",
         departureTime: "12:30",
         arrivalTime: "15:45",
-        duration: "3h 15m",
+        duration: { hours: 3, minutes: 15 },
         class: "Classic",
         price: 5500,
         availableSeats: 35,
@@ -1340,7 +1318,7 @@ const baseBusRoutes: BusRoute[] = [
     region: "North West",
     originStation: "Commercial Avenue Station",
     destinationStation: "Molyko Station",
-    duration: "7h 00m",
+    duration: { hours: 7, minutes: 0 },
     distanceKm: 403,
     frequency: "Every 2 hours",
     image: busStations[3],
@@ -1350,7 +1328,7 @@ const baseBusRoutes: BusRoute[] = [
         operatorId: "general-express",
         departureTime: "06:00",
         arrivalTime: "13:00",
-        duration: "7h 00m",
+        duration: { hours: 7, minutes: 0 },
         class: "VIP",
         price: 12000,
         availableSeats: 11,
@@ -1361,7 +1339,7 @@ const baseBusRoutes: BusRoute[] = [
         operatorId: "buca-voyages",
         departureTime: "08:00",
         arrivalTime: "15:30",
-        duration: "7h 30m",
+        duration: { hours: 7, minutes: 30 },
         class: "Classic",
         price: 9500,
         availableSeats: 30,
@@ -1377,7 +1355,7 @@ const baseBusRoutes: BusRoute[] = [
     region: "Littoral",
     originStation: "Bonaberi Station",
     destinationStation: "Bamendzi Station",
-    duration: "6h 00m",
+    duration: { hours: 6, minutes: 0 },
     distanceKm: 328,
     frequency: "Every 90 minutes",
     image: busStations[0],
@@ -1387,7 +1365,7 @@ const baseBusRoutes: BusRoute[] = [
         operatorId: "finexs-voyages",
         departureTime: "06:00",
         arrivalTime: "12:00",
-        duration: "6h 00m",
+        duration: { hours: 6, minutes: 0 },
         class: "VIP",
         price: 10500,
         availableSeats: 16,
@@ -1404,7 +1382,7 @@ const baseBusRoutes: BusRoute[] = [
         operatorId: "general-express",
         departureTime: "09:00",
         arrivalTime: "15:15",
-        duration: "6h 15m",
+        duration: { hours: 6, minutes: 15 },
         class: "Classic",
         price: 8000,
         availableSeats: 37,
@@ -1420,7 +1398,7 @@ const baseBusRoutes: BusRoute[] = [
     region: "Central",
     originStation: "Mvan Station",
     destinationStation: "Central Market Station",
-    duration: "5h 00m",
+    duration: { hours: 5, minutes: 0 },
     distanceKm: 350,
     frequency: "Every 2 hours",
     image: busStations[1],
@@ -1430,7 +1408,7 @@ const baseBusRoutes: BusRoute[] = [
         operatorId: "general-express",
         departureTime: "07:00",
         arrivalTime: "12:00",
-        duration: "5h 00m",
+        duration: { hours: 5, minutes: 0 },
         class: "VIP",
         price: 9500,
         availableSeats: 12,
@@ -1441,7 +1419,7 @@ const baseBusRoutes: BusRoute[] = [
         operatorId: "buca-voyages",
         departureTime: "10:00",
         arrivalTime: "15:30",
-        duration: "5h 30m",
+        duration: { hours: 5, minutes: 30 },
         class: "Classic",
         price: 7500,
         availableSeats: 29,
@@ -1471,6 +1449,7 @@ const additionalRouteNames = [
 const additionalBusRoutes: BusRoute[] = additionalRouteNames.map(
   ([origin, destination], index) => {
     const durationHours = 2 + (index % 5);
+    const durationMinutes = index % 2 === 0 ? 30 : 0;
     const operatorId = busOperators[(index + 1) % busOperators.length].id;
     const routeId = `${origin}-${destination}`
       .toLowerCase()
@@ -1485,7 +1464,7 @@ const additionalBusRoutes: BusRoute[] = additionalRouteNames.map(
       region: cityRegions[origin] ?? "Central",
       originStation: `${origin} Central Station`,
       destinationStation: `${destination} Main Station`,
-      duration: `${durationHours}h ${index % 2 === 0 ? "30" : "00"}m`,
+      duration: { hours: durationHours, minutes: durationMinutes },
       distanceKm: 140 + index * 31,
       frequency: index % 2 === 0 ? "Every 60 minutes" : "Every 90 minutes",
       image: busStations[index % busStations.length],
@@ -1495,7 +1474,7 @@ const additionalBusRoutes: BusRoute[] = additionalRouteNames.map(
           operatorId,
           departureTime: "06:30",
           arrivalTime: `${String(6 + durationHours).padStart(2, "0")}:${index % 2 === 0 ? "00" : "30"}`,
-          duration: `${durationHours}h ${index % 2 === 0 ? "30" : "00"}m`,
+          duration: { hours: durationHours, minutes: durationMinutes },
           class: index % 3 === 0 ? "VIP" : "Classic",
           price,
           availableSeats: 12 + index,
@@ -1506,7 +1485,7 @@ const additionalBusRoutes: BusRoute[] = additionalRouteNames.map(
           operatorId: busOperators[(index + 2) % busOperators.length].id,
           departureTime: "10:00",
           arrivalTime: `${String(10 + durationHours).padStart(2, "0")}:30`,
-          duration: `${durationHours}h ${index % 2 === 0 ? "30" : "00"}m`,
+          duration: { hours: durationHours, minutes: durationMinutes },
           class: "Classic",
           price: price - 1000,
           availableSeats: 25 + index,
@@ -1519,6 +1498,25 @@ const additionalBusRoutes: BusRoute[] = additionalRouteNames.map(
 );
 
 export const busRoutes: BusRoute[] = [...baseBusRoutes, ...additionalBusRoutes];
+
+export const cities = Array.from(
+  new Set(busRoutes.flatMap((route) => [route.origin, route.destination])),
+).sort();
+
+busRoutes.forEach((route) => {
+  route.departures.forEach((departure, departureIndex) => {
+    const operator = busOperators.find(
+      (item) => item.id === departure.operatorId,
+    );
+    departure.originStation ??= `${route.origin} ${operator?.name ?? "Central"} Terminal`;
+    departure.destinationStation ??= `${route.destination} ${operator?.name ?? "Main"} Terminal`;
+    departure.departureDate ??= `2026-08-${String(departureIndex + 1).padStart(2, "0")}`;
+  });
+  route.startingPrice = Math.min(
+    ...route.departures.map((departure) => departure.price),
+  );
+  route.formattedStartingPrice = formatPrice(route.startingPrice);
+});
 
 export const routes = busRoutes;
 export const buses = busOperators;
@@ -2131,3 +2129,38 @@ export const restaurantCategories = Array.from(
 );
 
 export const dishes = restaurants.flatMap((restaurant) => restaurant.dishes);
+
+export const cameroonCities = [
+  "Yaoundé",
+  "Douala",
+  "Bamenda",
+  "Bafoussam",
+  "Garoua",
+  "Maroua",
+  "Ngaoundéré",
+  "Bertoua",
+  "Ebolowa",
+  "Buea",
+  "Limbe",
+  "Kumba",
+  "Kribi",
+  "Edéa",
+  "Nkongsamba",
+  "Mbalmayo",
+  "Dschang",
+  "Foumban",
+  "Mbouda",
+  "Kumbo",
+  "Wum",
+  "Fundong",
+  "Tiko",
+  "Mamfe",
+  "Guider",
+  "Kousséri",
+  "Mokolo",
+  "Meiganga",
+  "Abong-Mbang",
+  "Sangmélima",
+  "Obala",
+  "Akonolinga",
+];

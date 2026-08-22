@@ -30,12 +30,12 @@ export const CollectionsSection = () => {
           <CollectionCard collection={collection} key={i} />
         ))}
       </div>
-      <Button
+      {/* <Button
         className={"p-6 px-8 rounded-full w-fit mx-auto text-[14px]"}
         variant={"outline"}
       >
         Show More <HugeiconsIcon icon={ArrowDown} />
-      </Button>
+      </Button> */}
     </section>
   );
 };
