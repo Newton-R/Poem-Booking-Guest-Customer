@@ -6,7 +6,9 @@ import { DatePickerDemo } from "@/components/ui/date-picker";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { RegistrationReminderBlock } from "@/components/ui/registrationReminderblock";
+import { formatPrice } from "@/lib/data";
 import { Apartment, ApartmentReview } from "@/lib/types";
+import { ApartmentDetail } from "@/lib/types/apartment";
 import { Location, Star, Tv, Wifi } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
@@ -40,7 +42,7 @@ export const AppartmentDetailsContent = ({
   apartment,
 }: {
   loading: Boolean;
-  apartment: Apartment;
+  apartment: ApartmentDetail;
 }) => {
   const places = [
     { id: "1", name: "Bamenda", lat: 5.9631, lng: 10.1591 },
@@ -78,13 +80,13 @@ export const AppartmentDetailsContent = ({
             </span>
             <span className="text-primary flex gap-0.5 items-center">
               <HugeiconsIcon size={14} icon={Star} className="fill-primary" />
-              {apartment.rating}
+              {apartment.avg_rating}
             </span>
           </div>
-          <h1 className="text-3xl font-bold">{apartment.name}</h1>
+          <h1 className="text-3xl font-bold">{apartment.title}</h1>
           <span className="text-xs text-muted-foreground flex gap-0.5">
             <HugeiconsIcon icon={Location} size={16} />
-            {apartment.city}, {apartment.region}
+            {apartment.address}
           </span>
         </div>
         <div className="flex flex-col gap-4">
@@ -106,11 +108,11 @@ export const AppartmentDetailsContent = ({
         </div>
         <div className="flex flex-col gap-4 pb-6 border-b border-border">
           <span className="text-2xl font-bold">Guest Experience</span>
-          <div className="flex flex-col gap-2">
+          {/* <div className="flex flex-col gap-2">
             {apartment.reviews.map((review, i) => (
               <AppartmentReviewsCard review={review} key={i} />
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
       <div className="flex flex-col p-4 order-1 md:order-2 gap-4 rounded-2xl h-fit bg-bg-mute">
@@ -118,13 +120,13 @@ export const AppartmentDetailsContent = ({
           <div className="flex justify-between items-end">
             <div className="flex gap-0.5 items-center">
               <span className="font-bold text-xl">
-                {apartment.formattedPrice}
+                {formatPrice(apartment.base_price_per_night)}
               </span>
               <span className="text-xs text-muted-foreground">/ night</span>
             </div>
             <span className="text-xs text-primary flex gap-1 font-bold">
               <HugeiconsIcon icon={Star} size={12} className="fill-primary" />
-              {apartment.rating}
+              {apartment.avg_rating}
             </span>
           </div>
           <div className=" border border-border bg-white rounded-2xl grid grid-cols-2">
@@ -150,9 +152,7 @@ export const AppartmentDetailsContent = ({
         <div className="h-40 text-xs relative rounded-2xl overflow-hidden">
           <div className="absolute inset-0 p-4 bg-black/20 flex items-end">
             <div className="w-full bg-white/80 rounded-md p-2 flex justify-between items-center">
-              <span>
-                {apartment.city}, {apartment.region}
-              </span>
+              <span>{apartment.address}</span>
               <Dialog>
                 <DialogTrigger
                   render={
@@ -170,15 +170,9 @@ export const AppartmentDetailsContent = ({
                 >
                   <div className="relative w-fit ">
                     <MapView
-                      lat={
-                        3.848
-                        // apartment.location.latitude
-                      }
-                      lng={
-                        11.5021
-                        // apartment.location.latitude
-                      }
-                      label={apartment.name}
+                      lat={Number(apartment.latitude)}
+                      lng={Number(apartment.longitude)}
+                      label={apartment.title}
                     />
                   </div>
                 </DialogContent>

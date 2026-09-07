@@ -29,6 +29,12 @@ export const DetailsHero = ({
     return <></>;
   }
 
+  const images = hotel.images.map(
+    (img) => `${process.env.NEXT_PUBLIC_IMAGE_URL}${img.imageUrl}`,
+  );
+
+  console.log({ data: hotel });
+
   return (
     <div className="hero grid grid-cols-1 md:grid-rows-2 gap-2 bg-secondary-foreground lg:grid-cols-4 relative">
       <div className="absolute top-0 left-0 w-full h-full  flex items-end p-4 md:p-6 bg-black/60 z-10">
@@ -66,7 +72,7 @@ export const DetailsHero = ({
           </div>
         </div>
       </div>
-      {hotel.images.map((image, index) => (
+      {images.map((image, index) => (
         <div
           key={index}
           className={cn(
@@ -83,7 +89,7 @@ export const DetailsHero = ({
           )}
         >
           <img
-            src={image.imageUrl}
+            src={image}
             alt={`Hotel ${index + 1}`}
             className="w-full h-full object-cover"
           />

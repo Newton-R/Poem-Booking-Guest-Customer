@@ -8,6 +8,7 @@ import { data } from "motion/react-client";
 
 export const HotelsDetailsBlock = ({ id }: { id: string }) => {
   const { data: Hotel, isLoading } = useGetHotelsDetail(id);
+  // console.log({ hotel: Hotel });
 
   // useEffect(() => {
   //   setTimeout(() => {

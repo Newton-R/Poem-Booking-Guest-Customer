@@ -63,7 +63,7 @@ export const HomeNavbar = () => {
 
   const { items } = useCartStore();
   return (
-    <div className="w-full hidden z-10 md:flex fixed top-0 border-b bg-background border-border">
+    <div className="w-full hidden z-20 md:flex fixed top-0 border-b bg-background border-border">
       <div className="container-x h-(--nav-height) flex justify-between gap-2">
         <div className="flex gap-8 items-center">
           <div className="flex gap-2 items-center">

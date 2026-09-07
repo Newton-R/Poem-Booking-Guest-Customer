@@ -4,6 +4,8 @@ import { AllAppartmentHero } from "./AllHero";
 import { AllAppartmentContent } from "./AllContent";
 import { apartments } from "@/lib/data";
 import { useSearchParams } from "next/navigation";
+import { useGetApartments } from "@/lib/public/useGetApartments";
+import { Apartment } from "@/lib/types/apartment";
 
 export interface ApartmentFilter {
   city: string;
@@ -60,6 +62,8 @@ export const AllAppartmentBlock = () => {
     }, 2000);
   }, []);
 
+  const { data } = useGetApartments();
+
   return (
     <div className="flex flex-col gap-10 md:gap-20 container-x">
       <AllAppartmentHero
@@ -67,7 +71,10 @@ export const AllAppartmentBlock = () => {
         clearFilter={() => ClearFilter()}
         updateFilter={(key, val) => UpdateFilter(key, val)}
       />
-      <AllAppartmentContent Apartments={apartmentsFormated} loading={loading} />
+      <AllAppartmentContent
+        Apartments={data?.data.data ?? ([] as Apartment[])}
+        loading={loading}
+      />
     </div>
   );
 };

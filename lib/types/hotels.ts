@@ -26,10 +26,17 @@ export interface RoomTypes {
   id: string;
   maxAdults: number;
   maxChildren: number;
+  imageUrl: string;
   name: string;
   status: string;
   totalRooms: number;
   updatedAt: string;
+}
+
+export interface HotelAmenity {
+  id: string;
+  name: string;
+  icon: string;
 }
 
 export interface HotelDetail {
@@ -44,6 +51,8 @@ export interface HotelDetail {
   description: string;
   id: string;
   images: HotelImage[];
+  amenities: HotelAmenity[];
+  minPrice: number;
   latitude: number;
   longitude: number;
   name: string;

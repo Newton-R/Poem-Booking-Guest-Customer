@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import React from "react";
 import { Button } from "../ui/button";
@@ -6,6 +7,7 @@ import { ArrowLeft, ArrowRight } from "@hugeicons/core-free-icons";
 import Image from "next/image";
 import { apartments } from "@/lib/data";
 import { Apartment } from "@/lib/types";
+import { useGetApartments } from "@/lib/public/useGetApartments";
 
 const FeaturedAppartmentCard = ({ apartment }: { apartment: Apartment }) => {
   return (
@@ -42,6 +44,8 @@ export const FeaturedAppartments = () => {
   const featuredApartments = apartments.filter(
     (apartment) => apartment.featured,
   );
+  const { data } = useGetApartments();
+  console.log({ aparemnts: data });
   return (
     <section className="container-x flex flex-col gap-6">
       <div className="flex flex-col gap-1.5">

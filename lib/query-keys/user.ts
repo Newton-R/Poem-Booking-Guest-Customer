@@ -18,3 +18,12 @@ export const hotelKeys = {
   detail: (id: string) => [...hotelKeys.details(), id] as const,
   reviews: (id: string) => [...hotelKeys.detail(id), "reviews"] as const,
 };
+
+export const apartmentKeys = {
+  all: ["apartments"] as const,
+  lists: () => [...apartmentKeys.all, "list"] as const,
+  list: (filters: HotelFilters) => [...apartmentKeys.lists(), filters] as const,
+  details: () => [...apartmentKeys.all, "detail"] as const,
+  detail: (id: string) => [...apartmentKeys.details(), id] as const,
+  reviews: (id: string) => [...apartmentKeys.detail(id), "reviews"] as const,
+};
