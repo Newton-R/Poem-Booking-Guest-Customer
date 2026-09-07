@@ -1,5 +1,7 @@
 import {
+  Car01FreeIcons,
   Gym,
+  MilkBottleFreeIcons,
   Snowflake,
   SwimmingCapFreeIcons,
   Wifi,
@@ -21,7 +23,9 @@ export const AmenityIcon = (
     | "guests"
     | "coffee"
     | "expresso"
-    | "butler",
+    | "butler"
+    | "bar"
+    | "parking",
 ) => {
   switch (icon) {
     case "ac":
@@ -34,5 +38,9 @@ export const AmenityIcon = (
       return Zap;
     case "swim":
       return SwimmingCapFreeIcons;
+    case "bar":
+      return MilkBottleFreeIcons;
+    case "parking":
+      return Car01FreeIcons;
   }
 };

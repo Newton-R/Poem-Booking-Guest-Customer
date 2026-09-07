@@ -2,8 +2,9 @@
 import { EmptyApartments } from "@/components/emptystuff";
 import { ApartmentLoading } from "@/components/loaders/appartment/ApartmentLoading";
 import { Button } from "@/components/ui/button";
-import { apartments } from "@/lib/data";
-import { Apartment } from "@/lib/types";
+import { formatPrice } from "@/lib/data";
+
+import { Apartment, ApartmentResponse } from "@/lib/types/apartment";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -11,11 +12,13 @@ import React from "react";
 
 const AppartmentCard = ({ apartment }: { apartment: Apartment }) => {
   const pathname = usePathname();
+  const image = apartment.images.find((img) => img.is_primary);
+  const imageUrl = String(process.env.NEXT_PUBLIC_IMAGE_URL) + image?.image_url;
   return (
     <div className="h-100 md:h-90 flex flex-col border border-border rounded-2xl overflow-hidden">
       <div className="flex-1 overflow-hidden">
         <Image
-          src={apartment.image}
+          src={imageUrl}
           width={400}
           height={400}
           alt=""
@@ -24,18 +27,16 @@ const AppartmentCard = ({ apartment }: { apartment: Apartment }) => {
       </div>
       <div className="p-4 flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs text-primary">
-            {apartment.region} - {apartment.city}
-          </span>
+          <span className="text-xs text-primary">{apartment.address}</span>
           <div className="flex flex-col">
-            <span className="text-xl font-bold">{apartment.name}</span>
+            <span className="text-xl font-bold">{apartment.title}</span>
             <span className="text-xl font-bold text-primary">
-              {apartment.type}
+              {/* {apartment.} */}
             </span>
           </div>
           <div className="flex items-center gap-0.5">
             <span className="font-bold text-[16px]">
-              {apartment.formattedPrice}{" "}
+              {formatPrice(apartment.base_price_per_night)}{" "}
             </span>
             <span className="text-xs text-muted-foreground"> / night</span>
           </div>

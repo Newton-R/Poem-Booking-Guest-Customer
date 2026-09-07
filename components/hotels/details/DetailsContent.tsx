@@ -12,20 +12,24 @@ import {
 } from "@/components/ui/combobox";
 import { DatePickerDemo } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
-import { roomTypes } from "@/lib/data";
-import { Hotel, RoomCategory, RoomType } from "@/lib/types";
+import { Hotel, RoomCategory } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
   ArrowRight,
   BedBunkFreeIcons,
   Briefcase,
+  CarParking01FreeIcons,
   CircleCheck,
   Clock,
   CustomerService01FreeIcons,
   Dumbbell,
+  EngineFreeIcons,
+  Laundry,
   Leaf,
   Loader,
+  MilkBottleFreeIcons,
   Search,
+  Snowflake,
   Star,
   UtensilsCrossed,
   Waves,
@@ -40,7 +44,8 @@ import React, { useRef, useState } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { EmptyHotelsRooms } from "@/components/emptystuff";
-import { HotelDetail } from "@/lib/types/hotels";
+import { HotelDetail, RoomTypes } from "@/lib/types/hotels";
+import { formatPrice } from "@/lib/data";
 
 const amenityIcons: Record<string, IconSvgObject> = {
   wifi: Wifi01FreeIcons,
@@ -50,45 +55,53 @@ const amenityIcons: Record<string, IconSvgObject> = {
   dining: UtensilsCrossed,
   spa: Leaf,
   business: Briefcase,
+  bar: MilkBottleFreeIcons,
+  parking: CarParking01FreeIcons,
+  laundry: Laundry,
+  ac: Snowflake,
+  generator: EngineFreeIcons,
 };
 
-const RoomAccommodationCard = ({ room }: { room: RoomType }) => {
+const RoomAccommodationCard = ({ room }: { room: RoomTypes }) => {
   const pathname = usePathname();
+  const imagePaths = process.env.NEXT_PUBLIC_IMAGE_URL + room.imageUrl;
   return (
     <div
       className={cn(
         "flex overflow-hidden w-full flex-col max-h-100 md:max-h-60 md:flex-row md:gap-4 border border-border rounded-xl",
-        room.premium && "border-primary",
+        room.status === "active" && "border-primary",
       )}
     >
       <div className="w-full md:w-60 lg:w-80 h-full relative overflow-hidden">
         <Image
-          src={room.image}
+          src={imagePaths}
           alt={room.name}
           className="w-full h-full object-cover"
           width={320}
           height={240}
         />
-        {room.premium && (
+        {/* {room.premium && (
           <span className="text-xs p-1 px-2 rounded-md bg-primary absolute h-fit w-fit top-4 left-4">
             PREMIUM SELECTION
           </span>
-        )}
+        )} */}
       </div>
       <div className="flex flex-col gap-2 flex-1 p-4 md:px-2 ">
         <div className="flex justify-between items-end">
           <div className="flex flex-col gap-px">
             <span className="font-bold">{room.name}</span>
+
             <span className="text-sm text-muted-foreground flex items-center gap-1">
-              <HugeiconsIcon icon={BedBunkFreeIcons} size={16} /> {room.bed} ,
-              {room.view}
+              <HugeiconsIcon icon={BedBunkFreeIcons} size={16} />{" "}
+              {room.maxAdults} Adults , {room.maxChildren}{" "}
+              {room.maxChildren > 1 ? "Children" : "Child"}
             </span>
           </div>
-          {room.popular && (
+          {/* {room.popular && (
             <span className="text-xs font-bold p-2 px-4 bg-secondary  rounded-full">
               POPULAR
             </span>
-          )}
+          )} */}
         </div>
         <p className="text-sm text-muted-foreground pb-3 border-b mt-4 border-border">
           {room.description}
@@ -97,7 +110,9 @@ const RoomAccommodationCard = ({ room }: { room: RoomType }) => {
           <div className="flex gap-2 w-full justify-between items-end">
             <div className="flex flex-col gap-1 text-sm">
               <span className="text-xs text-muted-foreground">Starts at</span>
-              <span className="font-bold text-lg">{room.formattedPrice}</span>
+              <span className="font-bold text-lg">
+                {formatPrice(room.basePrice)}
+              </span>
             </div>
             <Link href={`${pathname}/${room.id}`}>
               <Button className="bg-primary text-white p-4 hover:bg-primary/90">
@@ -189,6 +204,11 @@ export const DetailsContent = ({
     return <LoadingHotelDetailsContent />;
   }
 
+  const roomtypes = hotel?.roomTypes.map((room) => ({
+    label: room.name,
+    value: room.id,
+  }));
+
   const updateFilter = (key: keyof RoomsFilter, value: string) => {
     setRoomFilters((prev) => ({ ...prev, [key]: value }));
   };
@@ -240,43 +260,43 @@ export const DetailsContent = ({
         {/* Amenities section */}
         <div className="flex flex-col gap-4">
           <h3 className="text-2xl font-bold pb-2">Amenities </h3>
-          {/* <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {hotel.amenities.map((amenity) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {hotel?.amenities.map((amenity) => (
               <div
                 key={amenity.id}
                 className="flex flex-col bg-primary/5 items-center text-center p-4 border border-border rounded-lg hover:shadow-md transition-shadow"
               >
                 <HugeiconsIcon
-                  icon={amenityIcons[amenity.id] ?? CircleCheck}
+                  icon={amenityIcons[amenity.icon] ?? CircleCheck}
                   size={28}
                   className="mb-4 text-primary"
                 />
                 <h4 className="font-semibold">{amenity.name}</h4>
-                <p className="text-sm text-muted-foreground">
+                {/* <p className="text-sm text-muted-foreground">
                   {amenity.description}
-                </p>
+                </p> */}
               </div>
             ))}
-          </div> */}
+          </div>
         </div>
 
         {/* Accomodation section */}
         <div className="flex flex-col gap-4" ref={RoomsBlock}>
           <h3 className="text-2xl font-bold pb-2">Accommodation</h3>
-          {/* <div className="flex flex-col gap-4">
-            {rooms.length > 0 ? (
-              rooms.map((room, i) => (
+          <div className="flex flex-col gap-4">
+            {hotel && hotel?.roomTypes.length > 0 ? (
+              hotel.roomTypes.map((room, i) => (
                 <RoomAccommodationCard room={room} key={i} />
               ))
             ) : (
               <EmptyHotelsRooms />
             )}
-          </div> */}
+          </div>
         </div>
 
         {/* Guest Experience */}
         <div className="flex flex-col gap-4">
-          <div className="flex justify-between pb-3 flex-col gap-2 border-b border-border md:items-end">
+          <div className="flex justify-between pb-3 flex-col md:flex-row gap-2 border-b border-border md:items-end">
             <h2 className="text-2xl font-bold pb-2">Guest Experiences</h2>
             <div className="flex gap-2 flex-row-reverse items-center w-fit md:flex-row md:items-end">
               <div className="flex flex-col gap-0.5">
@@ -334,16 +354,23 @@ export const DetailsContent = ({
                 />
                 Property Policies
               </span>
-              {policies.map((policy, i) => (
-                <div className="flex gap-2 items-start text-[14px]" key={i}>
-                  <HugeiconsIcon
-                    icon={CircleCheck}
-                    className="mt-0.5"
-                    size={18}
-                  />
-                  <p>{policy}</p>
-                </div>
-              ))}
+              {/* policy block */}
+              <div className="flex gap-2 items-center text-[14px]">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <p>{hotel?.policy.cancellationPolicy}</p>
+              </div>
+              <div className="flex gap-2 items-center text-[14px]">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <p>{hotel?.policy.childPolicy}</p>
+              </div>
+              <div className="flex gap-2 items-center text-[14px]">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <p>{hotel?.policy.checkInPolicy}</p>
+              </div>
+              <div className="flex gap-2 items-center text-[14px]">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <p>{hotel?.policy.petPolicy}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -355,7 +382,7 @@ export const DetailsContent = ({
               <span className="text-xs">STARTING FROM</span>
               <span>
                 <span className="text-2xl font-bold">
-                  {/* {hotel.formattedStartingPrice} */}
+                  {formatPrice(hotel?.minPrice ?? 0)}
                 </span>
                 <span className="text-xs"> /night</span>
               </span>
@@ -412,7 +439,7 @@ export const DetailsContent = ({
                   setType(e);
                   updateFilter("roomtype", e);
                 }}
-                items={roomTypes}
+                items={roomtypes}
               >
                 <ComboboxInput
                   className="h-10"
@@ -422,8 +449,8 @@ export const DetailsContent = ({
                   <ComboboxEmpty>No items found.</ComboboxEmpty>
                   <ComboboxList>
                     {(item) => (
-                      <ComboboxItem key={item} value={item}>
-                        {item}
+                      <ComboboxItem key={item.value} value={item}>
+                        {item.label}
                       </ComboboxItem>
                     )}
                   </ComboboxList>
