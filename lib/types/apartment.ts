@@ -6,6 +6,14 @@ interface ApartmentImage {
   is_primary: boolean;
 }
 
+export interface ApartmentReview {
+  comment: string;
+  created_at: string;
+  customerName: string;
+  id: string;
+  rating: number;
+}
+
 interface AppartmentPolicy {
   apartment_id: string;
   cancellation_policy: string;
@@ -14,6 +22,12 @@ interface AppartmentPolicy {
   house_rules: string;
   security_deposit_amount: string;
   updated_at: string;
+}
+
+interface ApartmentAmenity {
+  id: string;
+  name: string;
+  icon: string;
 }
 
 export interface Apartment {
@@ -33,8 +47,10 @@ export interface Apartment {
   images: ApartmentImage[];
   latitude: string;
   longitude: string;
+  is_featured: boolean;
   max_guests: number;
   provider_id: string;
+  amenities: ApartmentAmenity[];
   review_count: number;
   status: string;
   title: string;
@@ -63,6 +79,8 @@ export interface ApartmentDetail {
   currency: string;
   deleted_at: string;
   description: string;
+  amenities: ApartmentAmenity[];
+  reviews: ApartmentReview[];
   id: string;
   images: ApartmentImage[];
   latitude: string;

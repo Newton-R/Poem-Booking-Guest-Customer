@@ -1,46 +1,31 @@
 import {
-  Car01FreeIcons,
-  Gym,
+  Briefcase,
+  CarParking01FreeIcons,
+  Dumbbell,
+  EngineFreeIcons,
+  Laundry,
+  Leaf,
   MilkBottleFreeIcons,
   Snowflake,
-  SwimmingCapFreeIcons,
-  Wifi,
-  Zap,
+  Tv,
+  UtensilsCrossed,
+  Waves,
+  Wifi01FreeIcons,
 } from "@hugeicons/core-free-icons";
+import { IconSvgObject } from "@hugeicons/core-free-icons/types";
 
-export const AmenityIcon = (
-  icon:
-    | "snakes"
-    | "wifi"
-    | "charge"
-    | "ac"
-    | "legroom"
-    | "gym"
-    | "swim"
-    | "spa"
-    | "rightangledruler"
-    | "bed"
-    | "guests"
-    | "coffee"
-    | "expresso"
-    | "butler"
-    | "bar"
-    | "parking",
-) => {
-  switch (icon) {
-    case "ac":
-      return Snowflake;
-    case "wifi":
-      return Wifi;
-    case "gym":
-      return Gym;
-    case "charge":
-      return Zap;
-    case "swim":
-      return SwimmingCapFreeIcons;
-    case "bar":
-      return MilkBottleFreeIcons;
-    case "parking":
-      return Car01FreeIcons;
-  }
+export const amenityIcons: Record<string, IconSvgObject> = {
+  wifi: Wifi01FreeIcons,
+  pool: Waves,
+  gym: Dumbbell,
+  restaurant: UtensilsCrossed,
+  dining: UtensilsCrossed,
+  spa: Leaf,
+  business: Briefcase,
+  bar: MilkBottleFreeIcons,
+  parking: CarParking01FreeIcons,
+  laundry: Laundry,
+  ac: Snowflake,
+  generator: EngineFreeIcons,
+  tv: Tv,
 };

@@ -13,7 +13,7 @@ import { LoadingHotelCard } from "../loaders/LoadingHotelCard";
 export const TopRated = () => {
   const { data, isLoading } = useGetHotels();
 
-  const TopRated = data?.data.data.filter((hotel) => hotel.starRating >= 4);
+  const TopRated = data?.data.data.filter((hotel) => hotel.isFeatured);
   const routes = [
     {
       route: "Douala to Yaounde",
@@ -31,7 +31,6 @@ export const TopRated = () => {
       price: "6000",
     },
   ];
-  const featuredHotels = hotels.filter((h) => h.featured);
 
   if (isLoading) {
     return (

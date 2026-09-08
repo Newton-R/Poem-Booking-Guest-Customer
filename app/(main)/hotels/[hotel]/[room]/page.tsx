@@ -10,29 +10,42 @@ import {
 import { AlertTriangle } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import React from "react";
+import { useGetRoomDetails } from "@/lib/public/useGetHotels";
+import { RoomType } from "@/lib/types";
 
+export default async function RoomDetailsPage({
+  params,
+}: {
+  params: Promise<{ room: string; hotel: string }>;
+}) {
+  const { room, hotel } = await params;
+  const currentHotel = hotels.find((h) => h.id === hotel);
+  const currentRoom = currentHotel?.rooms.find((r) => r.id === room);
 
-export default async function RoomDetailsPage({ params }: { params: Promise<{ room: string, hotel: string }> }) {
-  const { room, hotel } = await params
-  const currentHotel = hotels.find((h) => h.id === hotel)
-  const currentRoom = currentHotel?.rooms.find((r) => r.id === room)
+  // if (!currentRoom) {
+  //   return (
+  //     <div className="mt-[calc(var(--nav-height)+20px)]">
+  //       <Empty>
+  //         <EmptyHeader>
+  //           <EmptyMedia variant="icon">
+  //             <HugeiconsIcon icon={AlertTriangle} size={40} />
+  //           </EmptyMedia>
+  //           <EmptyTitle>Hotel not found</EmptyTitle>
+  //           <EmptyDescription>
+  //             This hotel doesn't seem to exist please try refreshing the page or
+  //             going back
+  //           </EmptyDescription>
+  //         </EmptyHeader>
+  //       </Empty>
+  //     </div>
+  //   );
+  // }
 
-  if (!currentRoom) {
-    return <div className="mt-[calc(var(--nav-height)+20px)]">
-      <Empty>
-        <EmptyHeader>
-          <EmptyMedia variant="icon">
-            <HugeiconsIcon icon={AlertTriangle} size={40} />
-          </EmptyMedia>
-          <EmptyTitle>Hotel not found</EmptyTitle>
-          <EmptyDescription>
-            This hotel doesn't seem to exist please try refreshing the page or
-            going back
-          </EmptyDescription>
-        </EmptyHeader>
-      </Empty>
-    </div>
-  }
-
-  return <HotelRoomDetails room={currentRoom} />
+  return (
+    <HotelRoomDetails
+      hotel={hotel}
+      roomId={room}
+      room={currentRoom ?? ({} as RoomType)}
+    />
+  );
 }

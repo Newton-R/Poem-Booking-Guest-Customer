@@ -3,6 +3,7 @@ import { AllBusHero } from "@/components/buses/all/AllBusHero";
 import { Experience } from "@/components/buses/all/experience";
 import { Hubs } from "@/components/buses/all/Hubs";
 import { busRoutes } from "@/lib/data";
+import { useGetTransport } from "@/lib/public/useGetBus";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 
@@ -42,6 +43,9 @@ export const AllBusesRouteBLock = () => {
       setLoading(false);
     }, 3000);
   }, []);
+
+  const { data, isLoading } = useGetTransport();
+  console.log({ transport: data });
 
   return (
     <main className="flex flex-col gap-20">
