@@ -2,6 +2,7 @@ import { LoadingGridHero } from "@/components/loaders/hoteldetails/GridHero";
 import { Apartment } from "@/lib/types";
 import { ApartmentDetail } from "@/lib/types/apartment";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 import React from "react";
 
 export const AppartmentDetailsHero = ({
@@ -42,7 +43,9 @@ export const AppartmentDetailsHero = ({
                     : "",
           )}
         >
-          <img
+          <Image
+            width={200}
+            height={200}
             src={image}
             alt={`room image ${index + 1}`}
             className="w-full h-full object-cover"

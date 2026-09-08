@@ -3,7 +3,6 @@ import { LoadingGridHero } from "@/components/loaders/hoteldetails/GridHero";
 import { LoadingRoomDetailsContent } from "@/components/loaders/hoteldetails/RoomDetailsContent";
 import { Button } from "@/components/ui/button";
 import { RegistrationReminderBlock } from "@/components/ui/registrationReminderblock";
-import { AmenityIcon } from "@/lib/icons";
 import { RoomType } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import {
