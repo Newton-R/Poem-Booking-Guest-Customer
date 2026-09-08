@@ -63,7 +63,7 @@ export const AllAppartmentBlock = () => {
   }, []);
 
   const { data } = useGetApartments();
-
+  console.log({ data: data });
   return (
     <div className="flex flex-col gap-10 md:gap-20 container-x">
       <AllAppartmentHero

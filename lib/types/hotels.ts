@@ -6,6 +6,21 @@ export interface HotelImage {
   isPrimary: boolean;
 }
 
+export interface RoomsAvailabilityParams {
+  adults: string;
+  checkIn: string;
+  checkOut: string;
+  // roomtype: RoomCategory | "";
+}
+
+export interface HotelReviews {
+  comment: string;
+  created_at: string;
+  customerName: string;
+  id: string;
+  rating: number;
+}
+
 export interface HotelPolicy {
   cancellationPolicy: string;
   checkInPolicy: string;
@@ -54,6 +69,7 @@ export interface HotelDetail {
   amenities: HotelAmenity[];
   minPrice: number;
   latitude: number;
+  reviews: HotelReviews[];
   longitude: number;
   name: string;
   policy: HotelPolicy;
@@ -89,6 +105,7 @@ export interface Hotel {
   name: string;
   providerId: string;
   reviewCount: number;
+  isFeatured: boolean;
   starRating: number;
   minPrice: number;
   status: string;

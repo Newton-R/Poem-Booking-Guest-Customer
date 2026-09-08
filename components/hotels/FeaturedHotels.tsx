@@ -10,7 +10,7 @@ import { useGetHotels, useGetHotelsDetail } from "@/lib/public/useGetHotels";
 export const FeaturedHotels = () => {
   const { data } = useGetHotels();
 
-  const topRated = data?.data.data.filter((hotel) => hotel.starRating >= 4);
+  const topRated = data?.data.data.filter((hotel) => hotel.isFeatured);
   return (
     <section className="flex flex-col gap-6 container-x">
       <div className="w-full flex flex-col md:flex-row gap-1 items-end justify-between">

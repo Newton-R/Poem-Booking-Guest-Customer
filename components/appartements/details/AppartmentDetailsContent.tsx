@@ -7,9 +7,15 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { RegistrationReminderBlock } from "@/components/ui/registrationReminderblock";
 import { formatPrice } from "@/lib/data";
-import { Apartment, ApartmentReview } from "@/lib/types";
-import { ApartmentDetail } from "@/lib/types/apartment";
-import { Location, Star, Tv, Wifi } from "@hugeicons/core-free-icons";
+import { amenityIcons } from "@/lib/icons";
+import { ApartmentDetail, ApartmentReview } from "@/lib/types/apartment";
+import {
+  CircleCheck,
+  Location,
+  Star,
+  Tv,
+  Wifi,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import React from "react";
@@ -20,18 +26,20 @@ const AppartmentReviewsCard = ({ review }: { review: ApartmentReview }) => {
       <div className="flex gap-2 w-full justify-between items-end">
         <div className="flex gap-2.5">
           <div className="flex size-12 items-center justify-center rounded-full bg-secondary-foreground font-bold text-white">
-            {review.guestInitials}
+            {review.customerName.split(" ").map((i) => (
+              <span key={i}>{i[0]}</span>
+            ))}
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="text-[16px] font-bold">{review.guestName}</span>
+            <span className="text-[16px] font-bold">{review.customerName}</span>
             <span className="text-muted-foreground text-[14px]">
-              {review.stayDate}
+              {review.created_at.split("T")[0]}
             </span>
           </div>
         </div>
       </div>
       <p className="italic text-[14px] text-muted-foreground">
-        {review.message}
+        {review.comment}
       </p>
     </div>
   );
@@ -48,24 +56,7 @@ export const AppartmentDetailsContent = ({
     { id: "1", name: "Bamenda", lat: 5.9631, lng: 10.1591 },
     { id: "2", name: "Yaoundé", lat: 3.848, lng: 11.5021 },
   ];
-  const amenities = [
-    {
-      icon: Wifi,
-      label: "High Speed Wifi",
-    },
-    {
-      icon: Tv,
-      label: "Smart TV",
-    },
-    {
-      icon: Tv,
-      label: "Smart TV",
-    },
-    {
-      icon: Tv,
-      label: "Smart TV",
-    },
-  ];
+
   if (loading) {
     return <LoadingRoomDetailsContent />;
   }
@@ -98,21 +89,24 @@ export const AppartmentDetailsContent = ({
         <div className="flex flex-col gap-4 pb-6 border-b border-border">
           <span className="text-2xl font-bold">What this place offers</span>
           <div className="text-muted-foreground text-[14px] grid grid-cols-2 gap-4 md:grid-cols-3 ">
-            {amenities.map((amenity, i) => (
+            {apartment.amenities.map((amenity, i) => (
               <div key={i} className="flex gap-2 text-primary items-center">
-                <HugeiconsIcon icon={amenity.icon} size={16} />
-                <span className="text-muted-foreground">{amenity.label}</span>
+                <HugeiconsIcon
+                  icon={amenityIcons[amenity.icon] ?? CircleCheck}
+                  size={16}
+                />
+                <span className="text-muted-foreground">{amenity.name}</span>
               </div>
             ))}
           </div>
         </div>
         <div className="flex flex-col gap-4 pb-6 border-b border-border">
           <span className="text-2xl font-bold">Guest Experience</span>
-          {/* <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2">
             {apartment.reviews.map((review, i) => (
               <AppartmentReviewsCard review={review} key={i} />
             ))}
-          </div> */}
+          </div>
         </div>
       </div>
       <div className="flex flex-col p-4 order-1 md:order-2 gap-4 rounded-2xl h-fit bg-bg-mute">

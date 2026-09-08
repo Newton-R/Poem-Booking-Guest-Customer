@@ -38,7 +38,7 @@ export const HotelCard = ({ hotel }: { hotel: Hotel }) => {
                 size={10}
                 className="fill-primary text-primary"
               />
-              {Math.floor(Number(hotel.starRating))}
+              {Number(hotel.starRating).toFixed(1)}
             </span>
           </span>
           <p className="text-[14px] line-clamp-1">{hotel.description}</p>
@@ -77,7 +77,7 @@ export const HotelInfoPlus = ({ hotel }: { hotel: Hotel }) => {
             size={10}
             className="fill-primary text-primary"
           />
-          {hotel.starRating}
+          {hotel.starRating.toFixed(1)}
         </span>
       </div>
       <div className="p-4 flex flex-col gap-4 ">

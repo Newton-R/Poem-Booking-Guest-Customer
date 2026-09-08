@@ -1,6 +1,6 @@
 import { data } from "motion/react-client";
 import { isAxiosError } from "axios";
-import { publicClient } from "../api";
+import { apiClient, publicClient } from "../api";
 import { ErrorType } from "../defined_types";
 import { useQuery } from "@tanstack/react-query";
 import { apartmentKeys } from "../query-keys/user";

@@ -19,6 +19,12 @@ export const hotelKeys = {
   reviews: (id: string) => [...hotelKeys.detail(id), "reviews"] as const,
 };
 
+export const roomKey = {
+  all: ["hotels"] as const,
+  details: () => [...roomKey.all, "detail"] as const,
+  detail: (id: string) => [...roomKey.details(), id] as const,
+};
+
 export const apartmentKeys = {
   all: ["apartments"] as const,
   lists: () => [...apartmentKeys.all, "list"] as const,
@@ -26,4 +32,13 @@ export const apartmentKeys = {
   details: () => [...apartmentKeys.all, "detail"] as const,
   detail: (id: string) => [...apartmentKeys.details(), id] as const,
   reviews: (id: string) => [...apartmentKeys.detail(id), "reviews"] as const,
+};
+
+export const transportKeys = {
+  all: ["transport"] as const,
+  lists: () => [...transportKeys.all, "list"] as const,
+  list: (filters: HotelFilters) => [...transportKeys.lists(), filters] as const,
+  details: () => [...transportKeys.all, "detail"] as const,
+  detail: (id: string) => [...transportKeys.details(), id] as const,
+  reviews: (id: string) => [...transportKeys.detail(id), "reviews"] as const,
 };

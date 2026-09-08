@@ -33,7 +33,7 @@ export const HotelsGrid = ({
   if (!hotels) {
     return;
   }
-
+  console.log({ all: hotels });
   return (
     <div className="flex flex-col gap-6 items-center justify-center">
       {isLoading ? (

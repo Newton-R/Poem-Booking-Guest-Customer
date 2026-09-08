@@ -44,23 +44,18 @@ import React, { useRef, useState } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { EmptyHotelsRooms } from "@/components/emptystuff";
-import { HotelDetail, RoomTypes } from "@/lib/types/hotels";
+import {
+  HotelDetail,
+  HotelReviews,
+  RoomsAvailabilityParams,
+  RoomTypes,
+} from "@/lib/types/hotels";
 import { formatPrice } from "@/lib/data";
-
-const amenityIcons: Record<string, IconSvgObject> = {
-  wifi: Wifi01FreeIcons,
-  pool: Waves,
-  gym: Dumbbell,
-  restaurant: UtensilsCrossed,
-  dining: UtensilsCrossed,
-  spa: Leaf,
-  business: Briefcase,
-  bar: MilkBottleFreeIcons,
-  parking: CarParking01FreeIcons,
-  laundry: Laundry,
-  ac: Snowflake,
-  generator: EngineFreeIcons,
-};
+import {
+  getHotelsAvailability,
+  useGetHotelsAvailability,
+} from "@/lib/public/useGetHotels";
+import { amenityIcons } from "@/lib/icons";
 
 const RoomAccommodationCard = ({ room }: { room: RoomTypes }) => {
   const pathname = usePathname();
@@ -126,22 +121,20 @@ const RoomAccommodationCard = ({ room }: { room: RoomTypes }) => {
   );
 };
 
-const ReviewsCard = ({
-  review,
-}: {
-  review: NonNullable<Hotel["reviews"]>[number];
-}) => {
+const ReviewsCard = ({ review }: { review: HotelReviews }) => {
   return (
     <div className="p-6 flex flex-col gap-4 rounded-xl bg-bg-mute">
       <div className="flex gap-2 w-full justify-between items-end">
         <div className="flex gap-2.5">
           <div className="flex size-12 items-center justify-center rounded-full bg-amber-600 font-bold text-white">
-            {review.guestInitials}
+            {review.customerName.split(" ").map((n) => (
+              <span>{n[0]}</span>
+            ))}
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="text-[16px] font-bold">{review.guestName}</span>
+            <span className="text-[16px] font-bold">{review.customerName}</span>
             <span className="text-muted-foreground text-[14px]">
-              Stayed in {review.stayDate}
+              Stayed in {review.created_at.split("T")[0]}
             </span>
           </div>
         </div>
@@ -161,7 +154,7 @@ const ReviewsCard = ({
         </div>
       </div>
       <p className="italic text-[14px] text-muted-foreground">
-        “{review.message}”
+        “{review.comment}”
       </p>
     </div>
   );
@@ -179,23 +172,20 @@ interface RoomsFilter {
 export const DetailsContent = ({
   hotel,
   isLoading,
+  id,
 }: {
   hotel?: HotelDetail;
   isLoading: boolean;
+  id: string;
 }) => {
-  const policies = [
-    "Cancellation: Free up to 24h before arrival for most bookings.",
-    "Children: Free stay for children under 12 using existing bedding.",
-    "Pets: Service animals only.",
-  ];
   // const [rooms, setRooms] = useState<RoomType[]>(hotel.rooms);
   const [myroomtype, setType] = useState("");
   console.log({ detail: hotel });
-  const [roomFilters, setRoomFilters] = useState<RoomsFilter>({
-    guests: "",
+  const [roomFilters, setRoomFilters] = useState<RoomsAvailabilityParams>({
+    adults: "",
     checkIn: "",
-    checkout: "",
-    roomtype: "",
+    checkOut: "",
+    // roomtype: "",
   });
   const [checking, setChecking] = useState<boolean>(false);
   const RoomsBlock = useRef<HTMLDivElement>(null);
@@ -209,8 +199,13 @@ export const DetailsContent = ({
     value: room.id,
   }));
 
-  const updateFilter = (key: keyof RoomsFilter, value: string) => {
+  const updateFilter = (key: keyof RoomsAvailabilityParams, value: string) => {
     setRoomFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const CheckAvailability = () => {
+    const { data } = useGetHotelsAvailability(id, roomFilters);
+    console.log({ availability: data });
   };
 
   // const checkAvailability = () => {
@@ -301,22 +296,22 @@ export const DetailsContent = ({
             <div className="flex gap-2 flex-row-reverse items-center w-fit md:flex-row md:items-end">
               <div className="flex flex-col gap-0.5">
                 <span className="font-bold text-xl">
-                  {hotel?.starRating} / 5
+                  {hotel?.starRating?.toFixed(1)} / 5.0
                 </span>
                 <span className="text-[14px] text-muted-foreground">
                   Based on {hotel?.reviewCount} reviews
                 </span>
               </div>
               <div className=" p-2 rounded-md size-10 bg-primary/30 text-primary text-xl flex items-center justify-center">
-                {hotel?.starRating}
+                {hotel?.starRating.toFixed(1)}
               </div>
             </div>
           </div>
-          {/* <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {(hotel.reviews ?? []).map((review) => (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {(hotel?.reviews ?? []).map((review) => (
               <ReviewsCard review={review} key={review.id} />
             ))}
-          </div> */}
+          </div>
         </div>
 
         <div className="flex flex-col gap-4">
@@ -416,7 +411,7 @@ export const DetailsContent = ({
                 <DatePickerDemo
                   className="bg-white"
                   onChange={(e) =>
-                    updateFilter("checkout", e ? format(e, "yyyy-MM-dd") : "")
+                    updateFilter("checkOut", e ? format(e, "yyyy-MM-dd") : "")
                   }
                 />
               </div>
@@ -426,12 +421,12 @@ export const DetailsContent = ({
               <Input
                 placeholder=""
                 type="number"
-                value={roomFilters.guests}
-                onChange={(e) => updateFilter("guests", e.target.value)}
+                value={roomFilters.adults}
+                onChange={(e) => updateFilter("adults", e.target.value)}
                 className="p-2 bg-white h-10"
               />
             </div>
-            <div className="flex flex-1 flex-col gap-1">
+            {/* <div className="flex flex-1 flex-col gap-1">
               <label className="text-[10px]">Room Type</label>
               <Combobox
                 value={myroomtype}
@@ -456,10 +451,10 @@ export const DetailsContent = ({
                   </ComboboxList>
                 </ComboboxContent>
               </Combobox>
-            </div>
+            </div> */}
             <Button
               type="button"
-              // onClick={InitiateCheck}
+              onClick={() => getHotelsAvailability(id, roomFilters)}
               className={"p-6"}
               disabled={checking}
             >
