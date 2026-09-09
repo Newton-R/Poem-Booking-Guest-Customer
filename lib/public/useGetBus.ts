@@ -1,12 +1,15 @@
+import { data } from "motion/react-client";
 import { isAxiosError } from "axios";
 import { publicClient } from "../api";
 import { ErrorType } from "../defined_types";
 import { useQuery } from "@tanstack/react-query";
 import { transportKeys } from "../query-keys/user";
+import { TransportRouteResponse } from "../types/transport";
 
-async function getTransportTrips() {
+async function getTransportRoutes(): Promise<TransportRouteResponse> {
   try {
-    const { data } = await publicClient.get("/transport/trips/search");
+    const { data } =
+      await publicClient.get<TransportRouteResponse>("/transport/routes");
     return data;
   } catch (e) {
     if (isAxiosError<ErrorType>(e)) {
@@ -16,9 +19,28 @@ async function getTransportTrips() {
   }
 }
 
-export function useGetTransport() {
+export function useGetTransportRoutes() {
   return useQuery({
-    queryFn: getTransportTrips,
+    queryFn: getTransportRoutes,
     queryKey: transportKeys.all,
+  });
+}
+
+async function getRouteDetail(routeId: string) {
+  try {
+    const { data } = await publicClient.get(`/transport/routes/${routeId}`);
+    return data;
+  } catch (e) {
+    if (isAxiosError<ErrorType>(e)) {
+      throw new Error(e.message);
+    }
+    throw new Error("Something went wrong");
+  }
+}
+
+export function useGetRouteDetail(routeId: string) {
+  return useQuery({
+    queryFn: () => getRouteDetail(routeId),
+    queryKey: transportKeys.detail(routeId),
   });
 }

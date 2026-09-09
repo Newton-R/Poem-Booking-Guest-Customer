@@ -1,3 +1,5 @@
+import { number } from "motion";
+
 export interface HotelImage {
   createdAt: string;
   hotelId: string;
@@ -10,7 +12,7 @@ export interface RoomsAvailabilityParams {
   adults: string;
   checkIn: string;
   checkOut: string;
-  // roomtype: RoomCategory | "";
+  roomtype: string;
 }
 
 export interface HotelReviews {
@@ -116,5 +118,48 @@ export interface HotelsResponse {
   data: { data: Hotel[]; total: number; page: number; limit: number };
   statusCode: 200;
   success: boolean;
+  timestamp: string;
+}
+
+export interface HotelRoomDetail {
+  areaSqm: string;
+  basePrice: string;
+  bedType: string;
+  createdAt: string;
+  currency: string;
+  description: string;
+  hotelId: string;
+  id: string;
+  imageUrl: string;
+  images: HotelImage[];
+  lengthM: string;
+  maxAdults: number;
+  maxChildren: string;
+  name: string;
+  status: string;
+  totalRooms: number;
+  updatedAt: string;
+  widthM: string;
+}
+
+export interface RoomDetailsResponse {
+  data: HotelRoomDetail;
+  statusCode: number;
+  success: boolean;
+  timestamp: string;
+}
+
+export interface RoomAvailable {
+  availableRooms: number;
+  basePrice: number;
+  name: string;
+  priceForStay: number;
+  roomTypeId: string;
+}
+
+export interface RoomAvailabilityResponse {
+  data: RoomAvailable[];
+  statusCode: number;
+  success: string;
   timestamp: string;
 }
