@@ -17,36 +17,26 @@ import { cn } from "@/lib/utils";
 import {
   ArrowRight,
   BedBunkFreeIcons,
-  Briefcase,
-  CarParking01FreeIcons,
   CircleCheck,
   Clock,
   CustomerService01FreeIcons,
-  Dumbbell,
-  EngineFreeIcons,
-  Laundry,
-  Leaf,
-  Loader,
   MilkBottleFreeIcons,
   Search,
-  Snowflake,
   Star,
-  UtensilsCrossed,
-  Waves,
-  Wifi01FreeIcons,
 } from "@hugeicons/core-free-icons";
 import { IconSvgObject } from "@hugeicons/core-free-icons/types";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { EmptyHotelsRooms } from "@/components/emptystuff";
 import {
   HotelDetail,
   HotelReviews,
+  RoomAvailabilityResponse,
   RoomsAvailabilityParams,
   RoomTypes,
 } from "@/lib/types/hotels";
@@ -56,8 +46,18 @@ import {
   useGetHotelsAvailability,
 } from "@/lib/public/useGetHotels";
 import { amenityIcons } from "@/lib/icons";
+import { apiClient } from "@/lib/api";
+import { isAxiosError } from "axios";
+import { ErrorType } from "@/lib/defined_types";
+import { Loader } from "@/components/ui/Loader";
 
-const RoomAccommodationCard = ({ room }: { room: RoomTypes }) => {
+const RoomAccommodationCard = ({
+  room,
+  roomParams,
+}: {
+  room: RoomTypes;
+  roomParams?: RoomsAvailabilityParams;
+}) => {
   const pathname = usePathname();
   const imagePaths = process.env.NEXT_PUBLIC_IMAGE_URL + room.imageUrl;
   return (
@@ -109,7 +109,13 @@ const RoomAccommodationCard = ({ room }: { room: RoomTypes }) => {
                 {formatPrice(room.basePrice)}
               </span>
             </div>
-            <Link href={`${pathname}/${room.id}`}>
+            <Link
+              href={
+                !roomParams
+                  ? `${pathname}/${room.id}`
+                  : `${pathname}/${room.id}?checkIn=${roomParams.checkIn}&checkOut=${roomParams.checkOut}&adults=${roomParams.adults}`
+              }
+            >
               <Button className="bg-primary text-white p-4 hover:bg-primary/90">
                 Book Now
               </Button>
@@ -178,21 +184,18 @@ export const DetailsContent = ({
   isLoading: boolean;
   id: string;
 }) => {
-  // const [rooms, setRooms] = useState<RoomType[]>(hotel.rooms);
+  const [rooms, setRooms] = useState<RoomTypes[] | null>(null);
   const [myroomtype, setType] = useState("");
-  console.log({ detail: hotel });
+  console.log({ rooms: rooms });
   const [roomFilters, setRoomFilters] = useState<RoomsAvailabilityParams>({
     adults: "",
     checkIn: "",
     checkOut: "",
-    // roomtype: "",
+    roomtype: "",
   });
   const [checking, setChecking] = useState<boolean>(false);
   const RoomsBlock = useRef<HTMLDivElement>(null);
-
-  if (isLoading) {
-    return <LoadingHotelDetailsContent />;
-  }
+  const MyRooms = !rooms ? hotel?.roomTypes : rooms;
 
   const roomtypes = hotel?.roomTypes.map((room) => ({
     label: room.name,
@@ -203,44 +206,43 @@ export const DetailsContent = ({
     setRoomFilters((prev) => ({ ...prev, [key]: value }));
   };
 
-  const CheckAvailability = () => {
-    const { data } = useGetHotelsAvailability(id, roomFilters);
-    console.log({ availability: data });
+  const CheckAvailability = async () => {
+    setChecking(true);
+    try {
+      const { data } = await apiClient.get<RoomAvailabilityResponse>(
+        `/hotels/${id}/availability?checkIn=${roomFilters.checkIn}&checkOut=${roomFilters.checkOut}&adults=${roomFilters.adults}`,
+      );
+
+      if (data && data.data.length > 0) {
+        const rooms = hotel?.roomTypes.filter(
+          (roomtype) =>
+            data.data.some((available) => roomtype.name === available.name) &&
+            roomtype.name === roomFilters.roomtype,
+        );
+        if (rooms) {
+          toast.success("Rooms available");
+          setRooms(rooms);
+        }
+      } else if (data.data.length === 0) {
+        toast.success("No rooms available");
+        setRooms([]);
+      }
+      console.log(data);
+      return data;
+    } catch (e) {
+      if (isAxiosError<ErrorType>(e)) {
+        toast.error("Something went wrong checking availability.");
+        throw new Error(e.message);
+      }
+      throw new Error("Something went wrong");
+    } finally {
+      setChecking(false);
+    }
   };
 
-  // const checkAvailability = () => {
-  //   const available = hotel.rooms.filter(
-  //     (r) =>
-  //       (!roomFilters.roomtype || r.type === roomFilters.roomtype) &&
-  //       (!roomFilters.guests || r.capacity >= Number(roomFilters.guests)) &&
-  //       (!roomFilters.checkIn ||
-  //         !roomFilters.checkout ||
-  //         r.availability.some(
-  //           (slot) =>
-  //             slot.checkIn === roomFilters.checkIn &&
-  //             slot.checkOut === roomFilters.checkout,
-  //         )),
-  //   );
-
-  //   if (available.length > 0) {
-  //     toast.success(
-  //       `${available.length} Rooms are available for the selected filters`,
-  //     );
-  //     setRooms(available);
-  //     RoomsBlock.current?.scrollIntoView({ behavior: "smooth" });
-  //   } else {
-  //     toast.error("No rooms are available for the selected filters");
-  //     setRooms([]);
-  //   }
-  // };
-
-  // const InitiateCheck = () => {
-  //   setChecking(true);
-  //   setTimeout(() => {
-  //     checkAvailability();
-  //     setChecking(false);
-  //   }, 2000);
-  // };
+  if (isLoading) {
+    return <LoadingHotelDetailsContent />;
+  }
 
   return (
     <div className="container-x lg:mb-20 flex md:flex-row flex-col-reverse gap-8">
@@ -267,9 +269,6 @@ export const DetailsContent = ({
                   className="mb-4 text-primary"
                 />
                 <h4 className="font-semibold">{amenity.name}</h4>
-                {/* <p className="text-sm text-muted-foreground">
-                  {amenity.description}
-                </p> */}
               </div>
             ))}
           </div>
@@ -279,9 +278,13 @@ export const DetailsContent = ({
         <div className="flex flex-col gap-4" ref={RoomsBlock}>
           <h3 className="text-2xl font-bold pb-2">Accommodation</h3>
           <div className="flex flex-col gap-4">
-            {hotel && hotel?.roomTypes.length > 0 ? (
-              hotel.roomTypes.map((room, i) => (
-                <RoomAccommodationCard room={room} key={i} />
+            {MyRooms && MyRooms.length > 0 ? (
+              MyRooms.map((room, i) => (
+                <RoomAccommodationCard
+                  roomParams={roomFilters}
+                  room={room}
+                  key={i}
+                />
               ))
             ) : (
               <EmptyHotelsRooms />
@@ -393,7 +396,6 @@ export const DetailsContent = ({
             className="flex flex-col gap-4 p-6"
             onSubmit={(e) => {
               e.preventDefault();
-              // InitiateCheck();
             }}
           >
             <div className="flex justify-between items-center gap-6">
@@ -426,13 +428,14 @@ export const DetailsContent = ({
                 className="p-2 bg-white h-10"
               />
             </div>
-            {/* <div className="flex flex-1 flex-col gap-1">
+            <div className="flex flex-1 flex-col gap-1">
               <label className="text-[10px]">Room Type</label>
               <Combobox
                 value={myroomtype}
                 onInputValueChange={(e) => {
                   setType(e);
                   updateFilter("roomtype", e);
+                  console.log();
                 }}
                 items={roomtypes}
               >
@@ -451,19 +454,15 @@ export const DetailsContent = ({
                   </ComboboxList>
                 </ComboboxContent>
               </Combobox>
-            </div> */}
+            </div>
             <Button
-              type="button"
-              onClick={() => getHotelsAvailability(id, roomFilters)}
+              type="submit"
+              onClick={() => CheckAvailability()}
               className={"p-6"}
               disabled={checking}
             >
               {checking ? (
-                <HugeiconsIcon
-                  icon={Loader}
-                  size={16}
-                  className="animate-spin"
-                />
+                <Loader />
               ) : (
                 <>
                   Check Availability <HugeiconsIcon icon={ArrowRight} />

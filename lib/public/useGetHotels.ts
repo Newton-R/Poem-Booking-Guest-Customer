@@ -7,6 +7,7 @@ import { hotelKeys, roomKey } from "../query-keys/user";
 import {
   HotelDetailsResponse,
   HotelsResponse,
+  RoomDetailsResponse,
   RoomsAvailabilityParams,
 } from "../types/hotels";
 
@@ -78,9 +79,12 @@ export function useGetHotelsAvailability(
   });
 }
 
-async function getRoomDetails(hotelid: string, roomId: string) {
+async function getRoomDetails(
+  hotelid: string,
+  roomId: string,
+): Promise<RoomDetailsResponse> {
   try {
-    const { data } = await publicClient.get(
+    const { data } = await publicClient.get<RoomDetailsResponse>(
       `/hotels/${hotelid}/room-types/${roomId}`,
     );
     return data;

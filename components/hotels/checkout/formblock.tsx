@@ -1,6 +1,8 @@
+"use client";
 import { PaymentMethodSelectionGrid } from "@/components/payments/MethodSelectionGrid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { formatPrice } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import {
   ArrowRight,
@@ -9,9 +11,20 @@ import {
   Payment01FreeIcons,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import React from "react";
+import { formatDate } from "date-fns";
+import { useSearchParams } from "next/navigation";
+import React, { Suspense } from "react";
 
 export const CheckoutFormBlock = () => {
+  const searchParams = useSearchParams();
+  const bookingData = {
+    entry: new Date(String(searchParams.get("checkIn"))),
+    exit: new Date(String(searchParams.get("checkOut"))),
+    days: Number(searchParams.get("days")),
+    adults: Number(searchParams.get("adults")),
+    roomType: String(searchParams.get("roomtype")),
+    price: Number(searchParams.get("per_price")),
+  };
   const paymentMethods = [
     {
       icon: "",
@@ -136,19 +149,26 @@ export const CheckoutFormBlock = () => {
                   <span className="text-muted-foreground text-[10px]">
                     CHECK IN
                   </span>
-                  <span className="font-bold">Thu, Dec 12, 2024</span>
+                  <span className="font-bold">
+                    {formatDate(bookingData.entry, "EEE, dd MMM yyyy")}
+                  </span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-muted-foreground text-[10px]">
                     CHECK OUT
                   </span>
-                  <span className="font-bold">Sun, Dec 15, 2024</span>
+                  <span className="font-bold">
+                    {" "}
+                    {formatDate(bookingData.exit, "EEE, dd MMM yyyy")}
+                  </span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-muted-foreground text-[10px]">
                     TRAVELERS
                   </span>
-                  <span className="font-bold">2 Adults, 1 Junior Suite</span>
+                  <span className="font-bold">
+                    {bookingData.adults} Adults, {bookingData.roomType}
+                  </span>
                 </div>
               </div>
               <div className="flex mt-3 flex-col gap-2 text-[14px]">
@@ -157,22 +177,23 @@ export const CheckoutFormBlock = () => {
                 </span>
                 <div className="flex flex-col gap-4">
                   <div className="flex justify-between w-full text-muted-foreground items-center">
-                    <span>3 Nights x 125,000 XAF</span>
-                    <span>375,000 XAF</span>
+                    <span>Nights</span>
+                    <span>{bookingData.days} Night(s)</span>
                   </div>
                   <div className="flex justify-between w-full text-muted-foreground items-center">
-                    <span>Local Tourism Tax</span>
-                    <span>375,000 XAF</span>
+                    <span>Price Per Night</span>
+                    <span>{formatPrice(bookingData.price)}</span>
                   </div>
-                  <div className="flex border-b-2 border-primary pb-3 justify-between w-full text-muted-foreground items-center">
+
+                  {/* <div className="flex border-b-2 border-primary pb-3 justify-between w-full text-muted-foreground items-center">
                     <span>Service Fee</span>
                     <span>375,000 XAF</span>
-                  </div>
+                  </div> */}
                   <div className="flex justify-between w-full text-muted-foreground items-center">
                     <span>Total payable</span>
                     <div className="flex flex-col text-end">
                       <span className="text-xl font-bold text-primary">
-                        375,000 XAF
+                        {formatPrice(bookingData.days * bookingData.price)}
                       </span>
                       <span className="text-[9px] text-muted-foreground">
                         All taxes included
@@ -203,5 +224,13 @@ export const CheckoutFormBlock = () => {
         </div>
       </div>
     </section>
+  );
+};
+
+export const CheckoutSuspenseBlock = () => {
+  return (
+    <Suspense>
+      <CheckoutFormBlock />
+    </Suspense>
   );
 };

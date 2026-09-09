@@ -18,6 +18,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 import { MobileFilter } from "./MobileFilter";
+import { useGetRouteDetail } from "@/lib/public/useGetBus";
 
 interface Voyages {
   index: number;
@@ -158,7 +159,15 @@ type FilterGroup = {
   options: FilterOption[];
 };
 
-export const RouteBlock = ({ busRoute }: { busRoute: BusRoute }) => {
+export const RouteBlock = ({
+  busRoute,
+  routeId,
+}: {
+  busRoute: BusRoute;
+  routeId: string;
+}) => {
+  const { data, isError } = useGetRouteDetail(routeId);
+  console.log({ transport_details: data });
   const filters: FilterGroup[] = [
     {
       id: "departureTime",

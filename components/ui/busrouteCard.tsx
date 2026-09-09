@@ -8,6 +8,7 @@ import Link from "next/link";
 import { BusRoute } from "@/lib/types";
 import { formatDuration } from "@/lib/data";
 import { usePathname } from "next/navigation";
+import { TransportRoute } from "@/lib/types/transport";
 
 interface BusRouteCard {}
 
@@ -53,42 +54,48 @@ export const BusRouteCard = ({ Busroute }: { Busroute: BusRoute }) => {
   );
 };
 
-export const DetailedBusRouteCard = ({ busroute }: { busroute: BusRoute }) => {
+export const DetailedBusRouteCard = ({
+  busroute,
+}: {
+  busroute: TransportRoute;
+}) => {
   return (
     <div className="flex flex-col bg-bg-mute h-120 overflow-hidden rounded-2xl">
       <div className="overflow-hidden flex-1 relative">
         <span className="p-1 px-2 rounded-full bg-white/80 text-primary font-bold absolute top-4 left-4 text-xs">
-          From {busroute.origin}
+          From {busroute.originCity}
         </span>
-        <Image
+        {/* <Image
           className="w-full h-full object-cover"
           width={200}
           height={200}
           src={busroute.image}
           alt="Image"
-        />
+        /> */}
       </div>
       <div className="p-6 flex flex-col">
         <div className="flex justify-between">
           <div>
-            <span className="text-xl font-bold">To {busroute.destination}</span>
+            <span className="text-xl font-bold">
+              To {busroute.destinationCity}
+            </span>
             <span className="text-muted-foreground text-xs flex items-center gap-1">
               {" "}
               <HugeiconsIcon icon={Clock} size={13} />{" "}
-              {formatDuration(busroute.duration)} Travel
+              {/* {formatDuration(busroute.estimatedDurationMinutes)} Travel */}
             </span>
           </div>
           <div className="flex flex-col">
             <span className="text-xs text-muted-foreground">STARTING FROM</span>
             <span className="text-xl font-bold text-primary">
-              {busroute.formattedStartingPrice}
+              {/* {busroute.formattedStartingPrice} */}
             </span>
           </div>
         </div>
         <div className="flex justify-between bg-background p-4 rounded-md items-center mt-3">
           <span className="text-xs flex items-center gap-2">
             <HugeiconsIcon icon={Redo} size={13} className="text-primary" />
-            {busroute.frequency}
+            {/* {busroute.frequency} */}
           </span>
           <span className="text-[10px] text-primary bg-primary/20 rounded-xs p-1 px-2">
             HIGH FREQUENCY

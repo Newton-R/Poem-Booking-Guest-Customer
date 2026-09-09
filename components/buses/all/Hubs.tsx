@@ -2,47 +2,48 @@ import { EmptyBusRoutes } from "@/components/emptystuff";
 import { LoadingDetailedBus } from "@/components/loaders/bus/LoadingDetailedBus";
 import { DetailedBusRouteCard } from "@/components/ui/busrouteCard";
 import { BusRegion, BusRoute } from "@/lib/types";
+import { TransportRoute } from "@/lib/types/transport";
 import React from "react";
 
 export const Hubs = ({
   routes,
   isLoading,
 }: {
-  routes: BusRoute[];
+  routes: TransportRoute[];
   isLoading: boolean;
 }) => {
-  const extract = (region: BusRegion) => {
-    return routes.filter((r) => r.region === region);
-  };
+  // const extract = (region: BusRegion) => {
+  //   return routes.filter((r) => r.originCity === region);
+  // };
 
-  const SplitGroups = () => {
-    return [
-      {
-        groupName: "Littoral",
-        routes: extract("Littoral"),
-      },
-      {
-        groupName: "Central",
-        routes: extract("Central"),
-      },
-      {
-        groupName: "North West",
-        routes: extract("North West"),
-      },
-      {
-        groupName: "North East",
-        routes: extract("North East"),
-      },
-      {
-        groupName: "South West",
-        routes: extract("South West"),
-      },
-      {
-        groupName: "South East",
-        routes: extract("South East"),
-      },
-    ];
-  };
+  // const SplitGroups = () => {
+  //   return [
+  //     {
+  //       groupName: "Littoral",
+  //       routes: extract("Littoral"),
+  //     },
+  //     {
+  //       groupName: "Central",
+  //       routes: extract("Central"),
+  //     },
+  //     {
+  //       groupName: "North West",
+  //       routes: extract("North West"),
+  //     },
+  //     {
+  //       groupName: "North East",
+  //       routes: extract("North East"),
+  //     },
+  //     {
+  //       groupName: "South West",
+  //       routes: extract("South West"),
+  //     },
+  //     {
+  //       groupName: "South East",
+  //       routes: extract("South East"),
+  //     },
+  //   ];
+  // };
 
   if (isLoading) {
     return (
@@ -60,7 +61,7 @@ export const Hubs = ({
 
   return (
     <section>
-      {SplitGroups().map(
+      {/* {SplitGroups().map(
         (group, i) =>
           group.routes.length > 0 && (
             <div key={i} className="container-x flex flex-col gap-6">
@@ -79,7 +80,12 @@ export const Hubs = ({
               <div></div>
             </div>
           ),
-      )}
+      )} */}
+      <div className="grid container-x grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {routes.map((route, i) => (
+          <DetailedBusRouteCard busroute={route} key={i} />
+        ))}
+      </div>
     </section>
   );
 };

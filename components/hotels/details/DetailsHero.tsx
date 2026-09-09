@@ -33,7 +33,7 @@ export const DetailsHero = ({
     (img) => `${process.env.NEXT_PUBLIC_IMAGE_URL}${img.imageUrl}`,
   );
 
-  console.log({ data: hotel });
+  // console.log({ data: hotel });
 
   return (
     <div className="hero grid grid-cols-1 md:grid-rows-2 gap-2 bg-secondary-foreground lg:grid-cols-4 relative">
