@@ -25,8 +25,8 @@ export const HotelRoomDetails = ({
   hotel: string;
 }) => {
   const { data, isLoading, isError } = useGetRoomDetails(hotel, roomId);
-
-  if (!isError) {
+  console.log({ room: data });
+  if (isError) {
     return (
       <div className="mt-[calc(var(--nav-height)+20px)]">
         <Empty>

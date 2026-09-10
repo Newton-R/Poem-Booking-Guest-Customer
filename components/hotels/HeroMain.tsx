@@ -7,7 +7,7 @@ import { HotelsFilters } from "../filtersblock/HotelsFilters";
 
 export const HeroMain = () => {
   return (
-    <section className="w-full flex items-center justify-center text-white md:h-[calc(600px+var(--nav-height))] bg-[url('/default.png')] bg-cover relative">
+    <section className="w-full flex items-center justify-center text-white h-screen md:h-[calc(600px+var(--nav-height))] bg-[url('/default.png')] bg-cover relative">
       <div className="absolute inset-0 bg-black/40">
         <div className="w-full h-full mt-[calc(var(--mobile-nav-height)-40px)] lg:mt-(--nav-height) container-x flex flex-col justify-center">
           <div className="flex flex-col gap-6 text-start w-full md:max-w-[50%]">

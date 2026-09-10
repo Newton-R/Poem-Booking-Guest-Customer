@@ -10,7 +10,10 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { toast } from "sonner";
-import { HotelPaymentIntiationPayload } from "@/lib/types/payments";
+import {
+  HotelPaymentInitiationResponse,
+  HotelPaymentIntiationPayload,
+} from "@/lib/types/payments";
 
 async function submitGuestInfo(
   payload: GuestHotelFormBookingData,
@@ -64,9 +67,12 @@ export function useInitiateHotelBooking() {
 
 async function initiateHotelBookingPayment(
   payload: HotelPaymentIntiationPayload,
-) {
+): Promise<HotelPaymentInitiationResponse> {
   try {
-    const { data } = await publicClient.post("/payments/initiate", payload);
+    const { data } = await publicClient.post<HotelPaymentInitiationResponse>(
+      "/payments/initiate",
+      payload,
+    );
     return data;
   } catch (e) {
     if (isAxiosError(e)) {

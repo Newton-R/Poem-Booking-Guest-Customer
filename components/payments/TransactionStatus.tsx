@@ -53,7 +53,7 @@ const ReviewModal = () => {
   );
 };
 
-const SuccessfullState = () => {
+export const SuccessfullState = () => {
   const [isSuccessfull, setSuccessfull] = useState(true);
 
   return (
@@ -68,7 +68,7 @@ const SuccessfullState = () => {
       <div className="flex flex-col text-center gap-4">
         <h1 className="text-2xl font-bold">Transaction Successful</h1>
         <p>
-          Your payment via MTN MoMo was processed securely. Your booking is now
+          Your payment status was processed securely. Your booking is now
           confirmed.
         </p>
       </div>
@@ -106,7 +106,7 @@ const SuccessfullState = () => {
   );
 };
 
-const FailedState = () => {
+export const FailedState = () => {
   return (
     <div className="p-6 rounded-2xl border bg-white border-border w-full flex flex-col items-center justify-center gap-6">
       <div className="w-18 h-18 rounded-full flex items-center justify-center bg-destructive/20 text-destructive">
