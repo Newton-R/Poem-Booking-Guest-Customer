@@ -3,9 +3,10 @@ import { LoadingRoomDetailsContent } from "@/components/loaders/hoteldetails/Roo
 import { Button } from "@/components/ui/button";
 import { RegistrationReminderBlock } from "@/components/ui/registrationReminderblock";
 import { formatPrice } from "@/lib/data";
+import { amenityIcons } from "@/lib/icons";
 import { HotelRoomDetail } from "@/lib/types/hotels";
 import { cn } from "@/lib/utils";
-import { Ruler, Star } from "@hugeicons/core-free-icons";
+import { CircleCheck, Ruler, Star } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { differenceInDays, formatDate } from "date-fns";
 import Link from "next/link";
@@ -111,14 +112,19 @@ export const RoomContent = ({
         <div className="p-6 bg-bg-mute/50 rounded-2xl flex flex-col">
           <span className="text-2xl font-bold">Exclusive Amenities</span>
           <div className="w-full grid gap-4 grid-cols-2 mt-2 md:grid-cols-3">
-            {/* {room.amenities.map((amenity, i) => (
+            {room.amenities.map((amenity, i) => (
               <div className="flex items-center gap-2" key={i}>
                 <div className="size-10 bg-bg-mute rounded-full flex items-center justify-center">
-                  <HugeiconsIcon icon={CircleCheck} className="text-primary" />
+                  <HugeiconsIcon
+                    icon={amenityIcons[amenity.icon] ?? CircleCheck}
+                    className="text-primary"
+                  />
                 </div>
-                <span className="text-xs text-muted-foreground">{amenity}</span>
+                <span className="text-xs text-muted-foreground">
+                  {amenity.name}
+                </span>
               </div>
-            ))} */}
+            ))}
           </div>
         </div>
       </div>

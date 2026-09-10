@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Field,
@@ -12,10 +12,18 @@ import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Card } from "@hugeicons/core-free-icons";
 
-export function RadioGroupChoiceCard() {
+export function PaymentMethodSelectionGrid({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: React.Dispatch<React.SetStateAction<string>>;
+}) {
   return (
     <RadioGroup
-      defaultValue="plus"
+      defaultValue="poem_pay"
+      value={value}
+      onValueChange={onChange}
       className="grid grid-cols-1 gap-4 md:grid-cols-2 w-full mt-4"
     >
       <FieldLabel htmlFor="poem" className="bg-white/60 rounded-md p-1">
@@ -31,7 +39,7 @@ export function RadioGroupChoiceCard() {
             <FieldTitle>PoemPay</FieldTitle>
             <FieldDescription>Get 3% discount</FieldDescription>
           </FieldContent>
-          <RadioGroupItem value="poem" id="poem" />
+          <RadioGroupItem value="poem_pay" id="poem" />
         </Field>
       </FieldLabel>
       <FieldLabel htmlFor="mtn" className="bg-white/60 rounded-md p-1">
@@ -47,7 +55,7 @@ export function RadioGroupChoiceCard() {
             <FieldTitle>MTN MoMo</FieldTitle>
             <FieldDescription>Instant Confirmation</FieldDescription>
           </FieldContent>
-          <RadioGroupItem value="mtn" id="mtn" />
+          <RadioGroupItem value="momo" id="mtn" />
         </Field>
       </FieldLabel>
       <FieldLabel htmlFor="orange" className="bg-white/60 rounded-md p-1">
@@ -63,7 +71,7 @@ export function RadioGroupChoiceCard() {
             <FieldTitle>Orange Money</FieldTitle>
             <FieldDescription>Secure Transfer</FieldDescription>
           </FieldContent>
-          <RadioGroupItem value="orange" id="orange" />
+          <RadioGroupItem value="orange_money" id="orange" />
         </Field>
       </FieldLabel>
       <FieldLabel htmlFor="visa" className="bg-white/60 rounded-md p-1">
@@ -82,7 +90,3 @@ export function RadioGroupChoiceCard() {
     </RadioGroup>
   );
 }
-
-export const PaymentMethodSelectionGrid = () => {
-  return <RadioGroupChoiceCard />;
-};

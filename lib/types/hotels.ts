@@ -56,6 +56,12 @@ export interface HotelAmenity {
   icon: string;
 }
 
+export interface RoomAmenities {
+  id: string;
+  name: string;
+  icon: string;
+}
+
 export interface HotelDetail {
   address: string;
   avgRating: string;
@@ -132,6 +138,7 @@ export interface HotelRoomDetail {
   id: string;
   imageUrl: string;
   images: HotelImage[];
+  amenities: RoomAmenities[];
   lengthM: string;
   maxAdults: number;
   maxChildren: string;

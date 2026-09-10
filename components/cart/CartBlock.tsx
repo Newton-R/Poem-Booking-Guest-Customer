@@ -217,7 +217,7 @@ export const CartBlock = () => {
         {/* paymentoptions */}
         <div className="flex p-6 flex-col rounded-md shadow-md bg-white gap-4">
           <span className="font-bold">Payment Method</span>
-          <PaymentMethodSelectionGrid />
+          {/* <PaymentMethodSelectionGrid /> */}
         </div>
       </div>
       <div className="bg-white w-full md:col-span-2 p-6 flex flex-col h-fit rounded-2xl shadow-md">

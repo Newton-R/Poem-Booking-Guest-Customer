@@ -6,9 +6,10 @@ import React from "react";
 import { Button } from "./button";
 import Link from "next/link";
 import { BusRoute } from "@/lib/types";
-import { formatDuration } from "@/lib/data";
+import { formatPrice } from "@/lib/data";
 import { usePathname } from "next/navigation";
 import { TransportRoute } from "@/lib/types/transport";
+import { formatDuration } from "@/lib/utils";
 
 interface BusRouteCard {}
 
@@ -59,19 +60,20 @@ export const DetailedBusRouteCard = ({
 }: {
   busroute: TransportRoute;
 }) => {
+  const imgUrl = String(process.env.NEXT_PUBLIC_IMAGE_URL) + busroute.imageUrl;
   return (
     <div className="flex flex-col bg-bg-mute h-120 overflow-hidden rounded-2xl">
       <div className="overflow-hidden flex-1 relative">
         <span className="p-1 px-2 rounded-full bg-white/80 text-primary font-bold absolute top-4 left-4 text-xs">
           From {busroute.originCity}
         </span>
-        {/* <Image
+        <Image
           className="w-full h-full object-cover"
           width={200}
           height={200}
-          src={busroute.image}
+          src={imgUrl}
           alt="Image"
-        /> */}
+        />
       </div>
       <div className="p-6 flex flex-col">
         <div className="flex justify-between">
@@ -82,13 +84,13 @@ export const DetailedBusRouteCard = ({
             <span className="text-muted-foreground text-xs flex items-center gap-1">
               {" "}
               <HugeiconsIcon icon={Clock} size={13} />{" "}
-              {/* {formatDuration(busroute.estimatedDurationMinutes)} Travel */}
+              {formatDuration(Number(busroute.estimatedDurationMinutes))} Travel
             </span>
           </div>
           <div className="flex flex-col">
             <span className="text-xs text-muted-foreground">STARTING FROM</span>
             <span className="text-xl font-bold text-primary">
-              {/* {busroute.formattedStartingPrice} */}
+              {formatPrice(busroute.startingPrice)}
             </span>
           </div>
         </div>
