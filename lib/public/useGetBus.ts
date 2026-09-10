@@ -29,10 +29,11 @@ export function useGetTransportRoutes() {
 async function getRouteDetail(routeId: string) {
   try {
     const { data } = await publicClient.get(`/transport/routes/${routeId}`);
+    console.log({ transport_data: data });
     return data;
   } catch (e) {
-    if (isAxiosError<ErrorType>(e)) {
-      throw new Error(e.message);
+    if (isAxiosError(e)) {
+      throw new Error(e.response?.data.message);
     }
     throw new Error("Something went wrong");
   }

@@ -60,6 +60,11 @@ const RoomAccommodationCard = ({
 }) => {
   const pathname = usePathname();
   const imagePaths = process.env.NEXT_PUBLIC_IMAGE_URL + room.imageUrl;
+  const NoParams =
+    !roomParams?.checkIn ||
+    !roomParams.checkOut ||
+    !roomParams.roomtype ||
+    !roomParams.adults;
   return (
     <div
       className={cn(
@@ -109,17 +114,30 @@ const RoomAccommodationCard = ({
                 {formatPrice(room.basePrice)}
               </span>
             </div>
-            <Link
-              href={
-                !roomParams
-                  ? `${pathname}/${room.id}`
-                  : `${pathname}/${room.id}?checkIn=${roomParams.checkIn}&checkOut=${roomParams.checkOut}&adults=${roomParams.adults}`
-              }
-            >
-              <Button className="bg-primary text-white p-4 hover:bg-primary/90">
+            {NoParams ? (
+              <Button
+                onClick={() =>
+                  toast.info(
+                    "Enter all booking info & check availabilty first!",
+                  )
+                }
+                className="bg-primary text-white p-4 hover:bg-primary/90"
+              >
                 Book Now
               </Button>
-            </Link>
+            ) : (
+              <Link
+                href={
+                  !roomParams
+                    ? `${pathname}/${room.id}`
+                    : `${pathname}/${room.id}?checkIn=${roomParams.checkIn}&checkOut=${roomParams.checkOut}&adults=${roomParams.adults}`
+                }
+              >
+                <Button className="bg-primary text-white p-4 hover:bg-primary/90">
+                  Book Now
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -219,9 +237,12 @@ export const DetailsContent = ({
             data.data.some((available) => roomtype.name === available.name) &&
             roomtype.name === roomFilters.roomtype,
         );
-        if (rooms) {
+        if (rooms && rooms?.length > 0) {
           toast.success("Rooms available");
           setRooms(rooms);
+        } else {
+          toast.success("Rooms not available");
+          setRooms([]);
         }
       } else if (data.data.length === 0) {
         toast.success("No rooms available");

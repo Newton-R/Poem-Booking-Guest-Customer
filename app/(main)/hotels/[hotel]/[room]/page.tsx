@@ -22,25 +22,6 @@ export default async function RoomDetailsPage({
   const currentHotel = hotels.find((h) => h.id === hotel);
   const currentRoom = currentHotel?.rooms.find((r) => r.id === room);
 
-  // if (!currentRoom) {
-  //   return (
-  //     <div className="mt-[calc(var(--nav-height)+20px)]">
-  //       <Empty>
-  //         <EmptyHeader>
-  //           <EmptyMedia variant="icon">
-  //             <HugeiconsIcon icon={AlertTriangle} size={40} />
-  //           </EmptyMedia>
-  //           <EmptyTitle>Hotel not found</EmptyTitle>
-  //           <EmptyDescription>
-  //             This hotel doesn't seem to exist please try refreshing the page or
-  //             going back
-  //           </EmptyDescription>
-  //         </EmptyHeader>
-  //       </Empty>
-  //     </div>
-  //   );
-  // }
-
   return (
     <HotelRoomDetails
       hotel={hotel}

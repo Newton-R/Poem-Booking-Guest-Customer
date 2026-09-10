@@ -14,6 +14,10 @@ export interface TransportRoute {
   destinationCity: string;
   destinationCityId: string;
   distanceKm: string;
+  originRegion: string;
+  startingPrice: number;
+  destinationRegion: string;
+  imageUrl: string;
   estimatedDurationMinutes: string;
   id: string;
   originCity: string;

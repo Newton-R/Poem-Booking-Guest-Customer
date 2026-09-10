@@ -1,16 +1,33 @@
+"use client";
 import { PaymentProcessingCard } from "@/components/payments/ProcessingCard";
 import { ReviewStates } from "@/components/payments/ReviewSuccessfull";
 import { TransactionStatusCard } from "@/components/payments/TransactionStatus";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Loader } from "@/components/ui/Loader";
 import { PaymentFormLink } from "@/components/ui/paymentformlink";
+import { useInitiateHotelPayment } from "@/lib/public/form/useHotelBooking";
 import { Lock } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import Image from "next/image";
-import React from "react";
+import { useSearchParams } from "next/navigation";
+import React, { Suspense, useState } from "react";
+import { toast } from "sonner";
 
-const MTNBlock = () => {
+interface paymentBlockProp {
+  onFormSubit: () => void;
+  setNumber: (value: string) => void;
+  number: string;
+  isLoading: boolean;
+}
+
+const MTNBlock = ({
+  onFormSubit,
+  setNumber,
+  number,
+  isLoading,
+}: paymentBlockProp) => {
   return (
     <div className="flex items-center text-center gap-6 flex-col">
       <div className="w-full border border-border shadow-md bg-white overflow-hidden rounded-2xl">
@@ -31,13 +48,24 @@ const MTNBlock = () => {
             </p>
           </div>
         </div>
-        <form className="p-6 flex gap-4 flex-col">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onFormSubit();
+          }}
+          className="p-6 flex gap-4 flex-col"
+        >
           <div className="flex flex-col text-start gap-1">
             <label className="text-[12px]">Phone Number</label>
-            <Input className="p-6" placeholder="237 6XX XXX XXX" />
+            <Input
+              className="p-6"
+              value={number}
+              onChange={(e) => setNumber(e.target.value)}
+              placeholder="237 6XX XXX XXX"
+            />
           </div>
-          <Button className={"w-full text-[14px] font-bold p-6"}>
-            Pay Now
+          <Button type="submit" className={"w-full text-[14px] font-bold p-6"}>
+            {isLoading ? <Loader /> : " Pay Now"}
           </Button>
           <span className="flex mt-2 mx-auto gap-1 items-center text-muted-foreground text-[10px]">
             <HugeiconsIcon icon={Lock} size={15} />
@@ -97,16 +125,61 @@ const OrangeBlock = () => {
 };
 
 export const PaymentinfoBlock = () => {
+  const searchParams = useSearchParams();
+  const [number, setNumber] = useState("");
+  const { mutate, isPending } = useInitiateHotelPayment();
+  const info = {
+    paymentMethod: String(searchParams.get("paymentMethod")),
+    bookingId: String(searchParams.get("bookingId")),
+  };
+
+  const handleFormSubmit = () => {
+    mutate(
+      {
+        paymentMethod: info.paymentMethod,
+        bookingId: info.bookingId,
+        phoneNumber: "237" + number,
+      },
+      {
+        onSuccess: (response) => {
+          console.log({ payment_response: response });
+          toast.success("Payment Intiated Successfully");
+        },
+        onError: (e) => {
+          toast.error(e.message);
+        },
+      },
+    );
+  };
+
   return (
     <div className="container-x flex items-center justify-center">
       <div className="w-full mx-auto items-start max-w-md flex flex-col">
         <PaymentFormLink />
+        {info.paymentMethod === "momo" ? (
+          <MTNBlock
+            number={number}
+            onFormSubit={handleFormSubmit}
+            isLoading={isPending}
+            setNumber={(e) => setNumber(e)}
+          />
+        ) : (
+          <></>
+        )}
         {/* <MTNBlock /> */}
         {/* <OrangeBlock /> */}
         {/* <PaymentProcessingCard /> */}
         {/* <TransactionStatusCard /> */}
-        <ReviewStates />
+        {/* <ReviewStates /> */}
       </div>
     </div>
+  );
+};
+
+export const PaymentInfoSuspenseBlock = () => {
+  return (
+    <Suspense>
+      <PaymentinfoBlock />
+    </Suspense>
   );
 };
