@@ -46,7 +46,7 @@ export const CheckoutFormBlock = () => {
   });
 
   const [promoCode, setPromoCode] = useState<string>("");
-  const [paymentMethod, setPaymentMethod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("poem_pay");
 
   const { mutate, isPending } = useGuestBookingInfo();
   const { mutate: HotelMutation, isPending: booking } =
@@ -273,6 +273,7 @@ export const CheckoutFormBlock = () => {
                   {/* continue button */}
                   <div className="flex flex-col items-center justify-center gap-2 text-center">
                     <Button
+                      disabled={booking || isPending}
                       onClick={InitiateBooking}
                       className={"p-6 w-full text-[14px]"}
                     >

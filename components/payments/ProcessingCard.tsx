@@ -1,15 +1,20 @@
+"use client";
 import { AlertTriangle, LoaderCircle, X } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import React from "react";
 import { Button } from "../ui/button";
+import { useParams } from "next/navigation";
+import { useGetLivePaymentStatus } from "@/lib/public/usePaymentStatus";
+import { useTrackPayment } from "@/lib/public/useTrackPayments";
+import { FailedState, SuccessfullState } from "./TransactionStatus";
 
 export const PaymentProcessingCard = () => {
   return (
     <div className="bg-white p-6 w-full gap-6 items-center justify-center rounded-2xl border border-border flex flex-col">
-      <div className="w-15 h-15 bg-white overflow-hidden rounded-full p-0.5">
+      {/* <div className="w-15 h-15 bg-white overflow-hidden rounded-full p-0.5">
         <Image src={"/icon/lom.png"} width={200} height={200} alt="Momo logo" />
-      </div>
+      </div> */}
       <div className="w-15 h-15 rounded-full flex items-center justify-center">
         <HugeiconsIcon
           icon={LoaderCircle}
@@ -21,7 +26,7 @@ export const PaymentProcessingCard = () => {
       <div className="flex flex-col gap-4 text-center">
         <span className="text-2xl font-bold">Awaiting Confirmation</span>
         <p>
-          Please check your phone for the MTN MoMo prompt and enter your PIN to
+          Please check your phone for the payment prompt and enter your PIN to
           authorize the transaction.
         </p>
       </div>
@@ -45,6 +50,45 @@ export const PaymentProcessingCard = () => {
         <span>XAF CURRENCY</span>
         <div className="border-b border-border flex flex-1" />
       </div>
+    </div>
+  );
+};
+
+export const PaymentProcessingBlock = () => {
+  const params = useParams();
+  const paymentId = String(params.paymentId);
+  const { status, isLoading } = useTrackPayment(paymentId);
+
+  if (isLoading || !status) {
+    return (
+      <div className="p-4">
+        <PaymentProcessingCard />
+      </div>
+    );
+  }
+
+  if (status.paymentStatus === "successful") {
+    return (
+      <div>
+        <SuccessfullState />
+      </div>
+    );
+  }
+
+  if (
+    status.paymentStatus === "failed" ||
+    status.paymentStatus === "reversed"
+  ) {
+    return (
+      <div>
+        <FailedState />
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4">
+      <PaymentProcessingCard />
     </div>
   );
 };

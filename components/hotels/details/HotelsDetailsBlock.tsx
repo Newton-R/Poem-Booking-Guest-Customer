@@ -11,6 +11,7 @@ import { data } from "motion/react-client";
 
 export const HotelsDetailsBlock = ({ id }: { id: string }) => {
   const { data: Hotel, isLoading } = useGetHotelsDetail(id);
+  console.log({ details: data });
 
   return (
     <div className="flex flex-col gap-4 md:gap-20">
