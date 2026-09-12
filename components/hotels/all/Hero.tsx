@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { regions } from "@/lib/data";
 import React, { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { useGetCities } from "@/lib/public/useCitiesAmeneties";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export type HotelFilters = {
   region: string;
@@ -25,19 +27,19 @@ interface FilterBlock {
   clearFilters: () => void;
 }
 
+export interface City {
+  value: string;
+  label: string;
+}
+
 export const AllHotelsHero = ({
   onChange,
   updateFilter,
   filters,
   clearFilters,
 }: FilterBlock) => {
-  const priceRanges = [
-    "under-100000",
-    "100000-150000",
-    "150000-250000",
-    "over-250000",
-  ];
-  const ratings = ["4.5", "4", "3.5"];
+  const priceRanges = ["Under-18000", "18000-25000", "Over-25000"];
+  const ratings = [5, "4.5", "4", "3.5"];
   const collections = [
     "coastal-escapes",
     "city-signatures",
@@ -45,6 +47,12 @@ export const AllHotelsHero = ({
     "heritage-stays",
   ];
   const searchParams = useSearchParams();
+  const { data, isLoading: citiesLoading } = useGetCities();
+  const cities: City[] | undefined = data?.data.map((data) => ({
+    value: data.id,
+    label: data.name,
+  }));
+  const selectedCity = cities?.find((city) => city.value === filters.region);
 
   return (
     <div className="mt-(--nav-height) w-full py-8 flex flex-col gap-4">
@@ -58,26 +66,32 @@ export const AllHotelsHero = ({
         </p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end py-6 border-y border-border mt-7">
-        <div className="flex flex-col gap-1">
-          <span className="text-xs text-muted-foreground">Location</span>
-          <Combobox
-            value={filters.region}
-            onInputValueChange={(value) => updateFilter("region", value)}
-            items={regions}
-          >
-            <ComboboxInput className={"h-10"} placeholder="Select a Region" />
-            <ComboboxContent>
-              <ComboboxEmpty>No items found.</ComboboxEmpty>
-              <ComboboxList>
-                {(item) => (
-                  <ComboboxItem key={item} value={item}>
-                    {item}
-                  </ComboboxItem>
-                )}
-              </ComboboxList>
-            </ComboboxContent>
-          </Combobox>
-        </div>
+        {citiesLoading ? (
+          <Skeleton className="h-9 w-full" />
+        ) : (
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-muted-foreground">Location</span>
+            <Combobox
+              value={selectedCity ?? null}
+              onValueChange={(value) =>
+                updateFilter("region", value?.value ?? "")
+              }
+              items={cities}
+            >
+              <ComboboxInput className={"h-10"} placeholder="Select a Region" />
+              <ComboboxContent>
+                <ComboboxEmpty>No items found.</ComboboxEmpty>
+                <ComboboxList>
+                  {(item) => (
+                    <ComboboxItem key={item.value} value={item}>
+                      {item.label}
+                    </ComboboxItem>
+                  )}
+                </ComboboxList>
+              </ComboboxContent>
+            </Combobox>
+          </div>
+        )}
         <div className="flex flex-col gap-1">
           <span className="text-xs text-muted-foreground">Price Range</span>
           <Combobox
@@ -113,7 +127,7 @@ export const AllHotelsHero = ({
               <ComboboxEmpty>No items found.</ComboboxEmpty>
               <ComboboxList>
                 {(item) => (
-                  <ComboboxItem key={item} value={item}>
+                  <ComboboxItem key={item} value={Number(item)}>
                     {item}+ stars
                   </ComboboxItem>
                 )}
@@ -121,7 +135,7 @@ export const AllHotelsHero = ({
             </ComboboxContent>
           </Combobox>
         </div>
-        <div className="flex flex-col gap-1">
+        {/* <div className="flex flex-col gap-1">
           <span className="text-xs text-muted-foreground">Collections</span>
           <Combobox
             value={filters.collectionId}
@@ -143,7 +157,7 @@ export const AllHotelsHero = ({
               </ComboboxList>
             </ComboboxContent>
           </Combobox>
-        </div>
+        </div> */}
         <Button
           type="button"
           variant="outline"

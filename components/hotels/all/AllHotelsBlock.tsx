@@ -37,27 +37,24 @@ export const AllHotelsBlock = () => {
     setFilters(emptyFilters);
   };
 
-  // const filterHotels = hotels?.data.data.filter((hotel) => {
-  //   const matchesRegion = !filters.region || hotel.cityId === filters.region;
-  //   const matchesCollection =
-  //     !filters.collectionId ||
-  //     hotel.collectionIds.includes(filters.collectionId);
-  //   const matchesRating =
-  //     !filters.rating || hotel.rating >= Number(filters.rating);
-  //   const price = hotel.startingPrice;
-  //   const matchesPrice =
-  //     !filters.priceRange ||
-  //     (filters.priceRange === "under-100000" && price < 100000) ||
-  //     (filters.priceRange === "100000-150000" &&
-  //       price >= 100000 &&
-  //       price <= 150000) ||
-  //     (filters.priceRange === "150000-250000" &&
-  //       price > 150000 &&
-  //       price <= 250000) ||
-  //     (filters.priceRange === "over-250000" && price > 250000);
+  const filterHotels = hotels?.data.data.filter((hotel) => {
+    const matchesRegion = !filters.region || hotel.cityId === filters.region;
+    // const matchesCollection =
+    //   !filters.collectionId ||
+    //   hotel.collectionIds.includes(filters.collectionId);
+    const matchesRating =
+      !filters.rating || hotel.starRating >= Number(filters.rating);
+    const price = hotel.minPrice;
+    const matchesPrice =
+      !filters.priceRange ||
+      (filters.priceRange === "Under-18000" && price < 18000) ||
+      (filters.priceRange === "18000-25000" &&
+        price >= 18000 &&
+        price <= 25000) ||
+      (filters.priceRange === "Over-25000" && price > 25000);
 
-  //   return matchesRegion && matchesCollection && matchesRating && matchesPrice;
-  // });
+    return matchesRegion && matchesRating && matchesPrice;
+  });
 
   useEffect(() => {
     setTimeout(() => {
@@ -75,7 +72,7 @@ export const AllHotelsBlock = () => {
       <HotelsGrid
         isLoading={isLoading}
         isError={isError}
-        hotels={hotels?.data.data}
+        hotels={filterHotels}
       />
     </div>
   );

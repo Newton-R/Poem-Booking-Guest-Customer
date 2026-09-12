@@ -4,7 +4,10 @@ import { publicClient } from "../api";
 import { ErrorType } from "../defined_types";
 import { useQuery } from "@tanstack/react-query";
 import { transportKeys } from "../query-keys/user";
-import { TransportRouteResponse } from "../types/transport";
+import {
+  TransportDetailsResponse,
+  TransportRouteResponse,
+} from "../types/transport";
 
 async function getTransportRoutes(): Promise<TransportRouteResponse> {
   try {
@@ -26,10 +29,14 @@ export function useGetTransportRoutes() {
   });
 }
 
-async function getRouteDetail(routeId: string) {
+async function getRouteDetail(
+  routeId: string,
+): Promise<TransportDetailsResponse> {
   try {
-    const { data } = await publicClient.get(`/transport/routes/${routeId}`);
-    console.log({ transport_data: data });
+    const { data } = await publicClient.get<TransportDetailsResponse>(
+      `/transport/routes/${routeId}`,
+    );
+
     return data;
   } catch (e) {
     if (isAxiosError(e)) {

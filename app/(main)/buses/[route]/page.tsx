@@ -1,7 +1,6 @@
 import { RouteBlock } from "@/components/buses/route/routeBlock";
 import { EmptyBusRoutes } from "@/components/emptystuff";
-import { busRoutes } from "@/lib/data";
-import { BusRoute } from "@/lib/types";
+
 import React from "react";
 
 export default async function RoutesPage({
@@ -10,7 +9,6 @@ export default async function RoutesPage({
   params: Promise<{ route: string }>;
 }) {
   const { route } = await params;
-  const BusRoute = busRoutes.find((r) => r.id === route);
 
   // if (!BusRoute) {
   //   return <EmptyBusRoutes />;
@@ -18,7 +16,7 @@ export default async function RoutesPage({
 
   return (
     <main className="flex flex-col gap-20">
-      <RouteBlock routeId={route} busRoute={BusRoute ?? ({} as BusRoute)} />
+      <RouteBlock routeId={route}  />
     </main>
   );
 }

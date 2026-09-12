@@ -47,8 +47,11 @@ export const HomeHero = () => {
       </div>
       <MainHomeFilters />
       <div className="w-full mt-4 flex flex-wrap gap-2 mx-auto md:max-w-[85%] items-center">
-        {amenitites.map((amenity) => (
-          <div className="flex p-2 px-4 flex-wrap rounded-full border gap-2 border-border bg-white text-xs justify-center items-center">
+        {amenitites.map((amenity, i) => (
+          <div
+            key={i}
+            className="flex p-2 px-4 flex-wrap rounded-full border gap-2 border-border bg-white text-xs justify-center items-center"
+          >
             <HugeiconsIcon icon={amenity.icon} size={12} />
             {amenity.label}
           </div>
