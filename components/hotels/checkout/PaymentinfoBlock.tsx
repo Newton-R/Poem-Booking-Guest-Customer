@@ -117,7 +117,7 @@ const OrangeBlock = ({
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            onFormSubit;
+            onFormSubit();
           }}
           className="p-6 flex gap-4 flex-col"
         >
@@ -137,7 +137,7 @@ const OrangeBlock = ({
             type="submit"
             className={"w-full text-[14px] font-bold p-6"}
           >
-            Pay Now
+            {isLoading ? <Loader /> : " Pay Now"}
           </Button>
           <span className="flex mt-2 mx-auto gap-1 items-center text-muted-foreground text-[10px]">
             <HugeiconsIcon icon={Lock} size={15} />

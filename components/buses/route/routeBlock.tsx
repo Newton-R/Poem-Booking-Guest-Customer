@@ -19,6 +19,10 @@ import { usePathname } from "next/navigation";
 import React from "react";
 import { MobileFilter } from "./MobileFilter";
 import { useGetRouteDetail } from "@/lib/public/useGetBus";
+import { VoyagesListSkeleton } from "@/components/loaders/bus/LoadingBusRouteDetails";
+import { EmptyBusRoutes } from "@/components/emptystuff";
+import { da } from "date-fns/locale";
+import { TransportBus, TransportRouteDetail } from "@/lib/types/transport";
 
 interface Voyages {
   index: number;
@@ -28,122 +32,123 @@ const VoyagesBlock = ({
   departure,
   busRoute,
 }: {
-  departure: BusDeparture;
-  busRoute: BusRoute;
+  departure: TransportRouteDetail;
+  busRoute: TransportBus;
 }) => {
   const pathname = usePathname();
-  const operator = busOperators.find(
-    (item) => item.id === departure.operatorId,
-  );
-  const ammenities = [
-    {
-      label: "Wifi",
-      icon: Wifi,
-    },
-    {
-      label: "Charging",
-      icon: Zap,
-    },
-    {
-      label: "AC",
-      icon: IceHockeyFreeIcons,
-    },
-  ];
+  // const operator = busOperators.find(
+  //   (item) => item.id === departure.operatorId,
+  // );
+  // const ammenities = [
+  //   {
+  //     label: "Wifi",
+  //     icon: Wifi,
+  //   },
+  //   {
+  //     label: "Charging",
+  //     icon: Zap,
+  //   },
+  //   {
+  //     label: "AC",
+  //     icon: IceHockeyFreeIcons,
+  //   },
+  // ];
   return (
-    <div className="p-6 md:p-8 rounded-xl border-2 h-fit md:h-60 border-border grid grid-cols-1 md:grid-cols-4 gap-6 md:flex-row">
-      <div className="w-full flex items-center md:justify-center item md:flex-col gap-4">
-        <div className="w-12 h-12 md:w-25 md:h-25 rounded-full overflow-hidden">
-          <Image
-            src={operator?.logo ?? "/default.png"}
-            className="w-full h-full"
-            width={300}
-            height={300}
-            alt="Image"
-          />
-        </div>
-        <div className="flex flex-col gap-1 text-center">
-          <span>{operator?.name ?? "Bus operator"}</span>
-          <span className="text-xs w-fit md:bg-primary/10 font-bold text-primary md:p-1 md:px-2 md:rounded-full">
-            {departure.class}
-          </span>
-        </div>
-      </div>
-      <div className="flex-1 md:pl-6 border-b md:border-b-0  md:border-l-2 border-border flex col-span-3 flex-col gap-6">
-        <div className="grid grid-cols-3 gap-6 md:grid-cols-4">
-          <div className="flex flex-col">
-            <span className="text-xl font-bold">{departure.departureTime}</span>
-            <div className="flex flex-col gap-0.5">
-              <span className="text-muted-foreground">{busRoute.origin}</span>
-              <span className="text-muted-foreground hidden md:flex text-xs">
-                ({departure.originStation})
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-col justify-center items-center text-center gap-1 text-xs">
-            <span>
-              {departure.duration.hours}h {departure.duration.minutes}m
-            </span>
-            <div className="flex h-0.5 relative bg-gray-400 w-40 items-center">
-              <div className="size-2 rounded-full border border-gray-400 bg-background absolute -left-1" />
-              <div className="size-2 rounded-full border bg-primary border-gray-400 absolute -right-1" />
-            </div>
-            <span className="text-xs text-primary">Non stop</span>
-          </div>
-          <div className="text-end flex flex-col">
-            <span className="text-xl font-bold">{departure.arrivalTime}</span>
-            <span className="text-muted-foreground">
-              {busRoute.destination}
-            </span>
-            <span className="text-muted-foreground hidden md:flex text-xs">
-              {" "}
-              ({departure.destinationStation})
-            </span>
-          </div>
-          <div className="text-end hidden md:flex flex-col">
-            <span className="text-muted-foreground">{departure.class}</span>
-            {/* <span className="text-muted-foreground text-xs">
-              {departure.departureDate}
-            </span> */}
-            <span className="text-xl font-bold">
-              {departure.formattedPrice}
-            </span>
-          </div>
-        </div>
-        <div className="w-full flex border-t border-border pt-4 md:pt-0 md:border-none justify-between mt-auto items-center flex-col md:flex-row gap-4">
-          <div className="w-full flex items-center justify-between">
-            <div className="flex gap-4 items-center">
-              {ammenities.map((ammenity, i) => (
-                <span
-                  key={i}
-                  className="flex gap-1 items-center text-xs font-bold md:font-normal md:text-[14px] text-muted-foreground"
-                >
-                  <HugeiconsIcon
-                    icon={ammenity.icon}
-                    size={18}
-                    className="font-bold"
-                    strokeWidth={2}
-                  />
-                  <span>{ammenity.label}</span>
-                </span>
-              ))}
-            </div>
-            <div className="text-end flex md:hidden flex-col">
-              <span className="text-xl font-bold">
-                {departure.formattedPrice}
-              </span>
-            </div>
-          </div>
-          <Link
-            className="md:w-fit w-full "
-            href={`${pathname}/${departure.id}`}
-          >
-            <Button className={"p-6 min-w-40 flex-1 w-full text-[16px]"}>
-              Select Seats
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </div>
+    // <div className="p-6 md:p-8 rounded-xl border-2 h-fit md:h-60 border-border grid grid-cols-1 md:grid-cols-4 gap-6 md:flex-row">
+    //   <div className="w-full flex items-center md:justify-center item md:flex-col gap-4">
+    //     <div className="w-12 h-12 md:w-25 md:h-25 rounded-full overflow-hidden">
+    //       <Image
+    //         src={operator?.logo ?? "/default.png"}
+    //         className="w-full h-full"
+    //         width={300}
+    //         height={300}
+    //         alt="Image"
+    //       />
+    //     </div>
+    //     <div className="flex flex-col gap-1 text-center">
+    //       <span>{operator?.name ?? "Bus operator"}</span>
+    //       <span className="text-xs w-fit md:bg-primary/10 font-bold text-primary md:p-1 md:px-2 md:rounded-full">
+    //         {departure.class}
+    //       </span>
+    //     </div>
+    //   </div>
+    //   <div className="flex-1 md:pl-6 border-b md:border-b-0  md:border-l-2 border-border flex col-span-3 flex-col gap-6">
+    //     <div className="grid grid-cols-3 gap-6 md:grid-cols-4">
+    //       <div className="flex flex-col">
+    //         <span className="text-xl font-bold">{departure.departureTime}</span>
+    //         <div className="flex flex-col gap-0.5">
+    //           <span className="text-muted-foreground">{busRoute.origin}</span>
+    //           <span className="text-muted-foreground hidden md:flex text-xs">
+    //             ({departure.originStation})
+    //           </span>
+    //         </div>
+    //       </div>
+    //       <div className="flex flex-col justify-center items-center text-center gap-1 text-xs">
+    //         <span>
+    //           {departure.duration.hours}h {departure.duration.minutes}m
+    //         </span>
+    //         <div className="flex h-0.5 relative bg-gray-400 w-40 items-center">
+    //           <div className="size-2 rounded-full border border-gray-400 bg-background absolute -left-1" />
+    //           <div className="size-2 rounded-full border bg-primary border-gray-400 absolute -right-1" />
+    //         </div>
+    //         <span className="text-xs text-primary">Non stop</span>
+    //       </div>
+    //       <div className="text-end flex flex-col">
+    //         <span className="text-xl font-bold">{departure.arrivalTime}</span>
+    //         <span className="text-muted-foreground">
+    //           {busRoute.destination}
+    //         </span>
+    //         <span className="text-muted-foreground hidden md:flex text-xs">
+    //           {" "}
+    //           ({departure.destinationStation})
+    //         </span>
+    //       </div>
+    //       <div className="text-end hidden md:flex flex-col">
+    //         <span className="text-muted-foreground">{departure.class}</span>
+    //         {/* <span className="text-muted-foreground text-xs">
+    //           {departure.departureDate}
+    //         </span> */}
+    //         <span className="text-xl font-bold">
+    //           {departure.formattedPrice}
+    //         </span>
+    //       </div>
+    //     </div>
+    //     <div className="w-full flex border-t border-border pt-4 md:pt-0 md:border-none justify-between mt-auto items-center flex-col md:flex-row gap-4">
+    //       <div className="w-full flex items-center justify-between">
+    //         <div className="flex gap-4 items-center">
+    //           {ammenities.map((ammenity, i) => (
+    //             <span
+    //               key={i}
+    //               className="flex gap-1 items-center text-xs font-bold md:font-normal md:text-[14px] text-muted-foreground"
+    //             >
+    //               <HugeiconsIcon
+    //                 icon={ammenity.icon}
+    //                 size={18}
+    //                 className="font-bold"
+    //                 strokeWidth={2}
+    //               />
+    //               <span>{ammenity.label}</span>
+    //             </span>
+    //           ))}
+    //         </div>
+    //         <div className="text-end flex md:hidden flex-col">
+    //           <span className="text-xl font-bold">
+    //             {departure.formattedPrice}
+    //           </span>
+    //         </div>
+    //       </div>
+    //       <Link
+    //         className="md:w-fit w-full "
+    //         href={`${pathname}/${departure.id}`}
+    //       >
+    //         <Button className={"p-6 min-w-40 flex-1 w-full text-[16px]"}>
+    //           Select Seats
+    //         </Button>
+    //       </Link>
+    //     </div>
+    //   </div>
+    // </div>
+    <></>
   );
 };
 
@@ -159,15 +164,10 @@ type FilterGroup = {
   options: FilterOption[];
 };
 
-export const RouteBlock = ({
-  busRoute,
-  routeId,
-}: {
-  busRoute: BusRoute;
-  routeId: string;
-}) => {
-  const { data, isError } = useGetRouteDetail(routeId);
-  console.log({ transport_details: data });
+export const RouteBlock = ({ routeId }: { routeId: string }) => {
+  const { data, isError, isLoading } = useGetRouteDetail(routeId);
+  const busRoute = data?.data;
+
   const filters: FilterGroup[] = [
     {
       id: "departureTime",
@@ -192,14 +192,24 @@ export const RouteBlock = ({
       ],
     },
   ];
+
+  if (isLoading) {
+    return <VoyagesListSkeleton />;
+  }
+
+  if (isError) {
+    return <EmptyBusRoutes />;
+  }
+
+  console.log({ transport_datails: data?.data });
   return (
     <section className="container-x flex flex-col mt-(--mobile-nav-height) lg:mt-(--nav-height) gap-10 md:gap-20">
       <div className="bg-secondary-foreground flex flex-col md:flex-row gap-4 justify-between md:items-center p-6 rounded-2xl">
         <div className="flex flex-col gap-2">
           <span className="flex text-white text-2xl items-center gap-3">
-            <span className="font-bold">{busRoute.origin}</span>
+            <span className="font-bold">{busRoute?.originCity}</span>
             <HugeiconsIcon icon={ArrowRight} className="text-primary" />
-            <span className="font-bold">{busRoute.destination}</span>
+            <span className="font-bold">{busRoute?.destinationCity}</span>
           </span>
           <p className="text-muted-foreground">
             Wednesday, 24 May 2024 • 1 Adult • Business Class
@@ -264,13 +274,13 @@ export const RouteBlock = ({
             </span>
           </div>
           {/* Array of mapped departure cards */}
-          {busRoute.departures.map((departure) => (
+          {/* {busRoute?.buses.map((departure) => (
             <VoyagesBlock
               key={departure.id}
               departure={departure}
               busRoute={busRoute}
             />
-          ))}
+          ))} */}
           {/* load departures button */}
           {/* <div className="w-full justify-center flex items-center">
             <Button

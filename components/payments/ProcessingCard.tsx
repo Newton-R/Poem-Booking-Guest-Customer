@@ -11,7 +11,7 @@ import { FailedState, SuccessfullState } from "./TransactionStatus";
 
 export const PaymentProcessingCard = () => {
   return (
-    <div className="bg-white p-6 w-full gap-6 items-center justify-center rounded-2xl border border-border flex flex-col">
+    <div className="bg-white p-6 max-w-md mx-auto w-full gap-6 items-center justify-center rounded-2xl border border-border flex flex-col">
       {/* <div className="w-15 h-15 bg-white overflow-hidden rounded-full p-0.5">
         <Image src={"/icon/lom.png"} width={200} height={200} alt="Momo logo" />
       </div> */}

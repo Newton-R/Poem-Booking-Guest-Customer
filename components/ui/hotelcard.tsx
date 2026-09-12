@@ -105,6 +105,7 @@ export const HotelInfoPlus = ({ hotel }: { hotel: Hotel }) => {
               Details
             </Button>
           </Link>
+
           <Link href={`/hotels/${hotel.id}`} className="flex-1">
             <Button className={"p-4 w-full"}>Book Now</Button>
           </Link>
