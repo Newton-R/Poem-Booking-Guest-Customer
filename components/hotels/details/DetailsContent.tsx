@@ -204,7 +204,6 @@ export const DetailsContent = ({
 }) => {
   const [rooms, setRooms] = useState<RoomTypes[] | null>(null);
   const [myroomtype, setType] = useState("");
-  console.log({ rooms: rooms });
   const [roomFilters, setRoomFilters] = useState<RoomsAvailabilityParams>({
     adults: "",
     checkIn: "",
@@ -224,6 +223,13 @@ export const DetailsContent = ({
     setRoomFilters((prev) => ({ ...prev, [key]: value }));
   };
 
+  const ScrollIntoView = () => {
+    RoomsBlock.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  };
+
   const CheckAvailability = async () => {
     setChecking(true);
     try {
@@ -240,6 +246,7 @@ export const DetailsContent = ({
         if (rooms && rooms?.length > 0) {
           toast.success("Rooms available");
           setRooms(rooms);
+          ScrollIntoView();
         } else {
           toast.success("Rooms not available");
           setRooms([]);
