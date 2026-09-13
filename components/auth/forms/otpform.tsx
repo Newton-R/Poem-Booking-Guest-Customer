@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Loader } from "@/components/ui/Loader";
 import { useTokens } from "@/lib/useTokens";
+import Cookies from "js-cookie";
 
 export const OTPForm = () => {
   const second = 30;
@@ -34,6 +35,7 @@ export const OTPForm = () => {
   };
 
   const [formData, setFormData] = useState<OTPPayload>(initialData);
+  const callbackUrl = Cookies.get("callbackUrl");
 
   const handleOnSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,7 +46,7 @@ export const OTPForm = () => {
           accessToken: response.data.accessToken,
           refreshToken: response.data.refreshToken,
         });
-        router.push("/account");
+        router.push(callbackUrl ? callbackUrl : "/account");
       },
       onError: (e) => {
         toast.error(e.message ?? "OTP Verification Failed");

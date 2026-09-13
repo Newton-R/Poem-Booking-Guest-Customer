@@ -8,7 +8,7 @@ import { LoginPayload } from "@/lib/types/auth";
 import { useTokens } from "@/lib/useTokens";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
@@ -23,6 +23,8 @@ export const LoginForm = () => {
   const { mutate, isPending } = useLogin();
   const [formData, setFormData] = useState<LoginPayload>(InitialData);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
   const { setTokens } = useTokens();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,7 +53,7 @@ export const LoginForm = () => {
             sameSite: "strict",
           },
         );
-        router.push("/account");
+        router.push(callbackUrl ? callbackUrl : "/account");
         queryClient.invalidateQueries({ queryKey: authKeys.currentUser() });
       },
       onError: (e) => {

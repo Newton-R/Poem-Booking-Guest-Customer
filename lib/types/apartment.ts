@@ -34,7 +34,7 @@ export interface Apartment {
   address: string;
   apartment_type: string;
   avg_rating: string;
-  base_price_per_night: string;
+  base_price_per_night: number;
   bathrooms: number;
   bedrooms: number;
   branch_id: number;
