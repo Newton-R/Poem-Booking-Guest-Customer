@@ -3,6 +3,7 @@ import { PaymentMethodSelectionGrid } from "@/components/payments/MethodSelectio
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader } from "@/components/ui/Loader";
+import { RegistrationReminderBlock } from "@/components/ui/registrationReminderblock";
 import { formatPrice } from "@/lib/data";
 import {
   useGuestBookingInfo,
@@ -296,12 +297,7 @@ export const CheckoutFormBlock = () => {
               </div>
             </div>
           </div>
-          <div className="p-6 flex text-center rounded-2xl flex-col gap-2 border items-center justify-center border-primary bg-primary/10">
-            <p className="text-xs">
-              Register and earn free tokens on each transaction
-            </p>
-            <Button className={"w-full p-6"}>Register Now</Button>
-          </div>
+          <RegistrationReminderBlock />
         </div>
       </div>
     </section>

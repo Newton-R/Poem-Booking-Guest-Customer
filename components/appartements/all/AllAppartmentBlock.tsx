@@ -6,6 +6,8 @@ import { apartments } from "@/lib/data";
 import { useSearchParams } from "next/navigation";
 import { useGetApartments } from "@/lib/public/useGetApartments";
 import { Apartment } from "@/lib/types/apartment";
+import { City } from "@/components/hotels/all/Hero";
+import { useGetCities } from "@/lib/public/useCitiesAmeneties";
 
 export interface ApartmentFilter {
   city: string;
@@ -36,19 +38,23 @@ export const AllAppartmentBlock = () => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
-  const apartmentsFormated = apartments.filter((a) => {
-    const FilteredCity = !filters.city || a.city === filters.city;
-    const FilteredType = !filters.type || a.type === filters.type;
+  const { data, isLoading } = useGetApartments();
+
+  console.log({ data: data });
+
+  const apartmentsFormated = data?.data.data.filter((a) => {
+    const FilteredCity = !filters.city || a.city_id === filters.city;
+    const FilteredType = !filters.type || a.apartment_type === filters.type;
     const FilteredPrice =
       !filters.price ||
-      (filters.price === "under-50000" && a.price < 50000) ||
+      (filters.price === "under-50000" && a.base_price_per_night < 50000) ||
       (filters.price === "50000-100000" &&
-        a.price >= 50000 &&
-        a.price <= 100000) ||
+        a.base_price_per_night >= 50000 &&
+        a.base_price_per_night <= 100000) ||
       (filters.price === "100000-150000" &&
-        a.price > 100000 &&
-        a.price <= 150000) ||
-      (filters.price === "over-150000" && a.price > 150000);
+        a.base_price_per_night > 100000 &&
+        a.base_price_per_night <= 150000) ||
+      (filters.price === "over-150000" && a.base_price_per_night > 150000);
     return FilteredCity && FilteredType && FilteredPrice;
   });
 
@@ -62,17 +68,17 @@ export const AllAppartmentBlock = () => {
     }, 2000);
   }, []);
 
-  const { data } = useGetApartments();
-  console.log({ data: data });
   return (
     <div className="flex flex-col gap-10 md:gap-20 container-x">
       <AllAppartmentHero
+        apartmentLoading={isLoading}
+        apartments={data?.data.data ?? ([] as Apartment[])}
         filter={filters}
         clearFilter={() => ClearFilter()}
         updateFilter={(key, val) => UpdateFilter(key, val)}
       />
       <AllAppartmentContent
-        Apartments={data?.data.data ?? ([] as Apartment[])}
+        Apartments={apartmentsFormated ?? ([] as Apartment[])}
         loading={loading}
       />
     </div>

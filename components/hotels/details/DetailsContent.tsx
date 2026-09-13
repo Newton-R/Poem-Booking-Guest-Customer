@@ -50,6 +50,7 @@ import { apiClient } from "@/lib/api";
 import { isAxiosError } from "axios";
 import { ErrorType } from "@/lib/defined_types";
 import { Loader } from "@/components/ui/Loader";
+import { RegistrationReminderBlock } from "@/components/ui/registrationReminderblock";
 
 const RoomAccommodationCard = ({
   room,
@@ -513,6 +514,7 @@ export const DetailsContent = ({
             </span>
           </div>
         </div>
+        <RegistrationReminderBlock />
       </div>
     </div>
   );

@@ -20,19 +20,19 @@ export const MainHomeFilters = () => {
   return (
     <Tabs className="w-full md:w-[85%] mt-8 p-4 shadow-md mx-auto bg-white rounded-2xl border border-border flex flex-col">
       <TabsList variant={"line"} className={""}>
-        <TabsTrigger value={"hotels"} className={""}>
+        <TabsTrigger value={"hotels"} className={"cursor-pointer"}>
           <span className="flex items-center gap-2 px-2">
             <HugeiconsIcon icon={Bed} size={18} />
             <span className="tri-label">Hotels</span>
           </span>
         </TabsTrigger>
-        <TabsTrigger value={"apartments"}>
+        <TabsTrigger value={"apartments"} className={"cursor-pointer"}>
           <span className="flex items-center px-2 gap-2">
             <HugeiconsIcon icon={Building01Icon} size={18} />
             <span className="tri-label">Appartments</span>
           </span>
         </TabsTrigger>
-        <TabsTrigger value={"bus"}>
+        <TabsTrigger value={"bus"} className={"cursor-pointer"}>
           <span className="flex items-center px-2 gap-2">
             <HugeiconsIcon icon={Bus01FreeIcons} size={18} />
             <span className="tri-label">Buses</span>
