@@ -9,7 +9,7 @@ import { useTokens } from "@/lib/useTokens";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
 
@@ -139,5 +139,13 @@ export const LoginForm = () => {
         </span>
       </form>
     </div>
+  );
+};
+
+export const LoginSuspenseBlock = () => {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 };
