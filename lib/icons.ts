@@ -12,9 +12,9 @@ import {
   Waves,
   Wifi01FreeIcons,
 } from "@hugeicons/core-free-icons";
-import { IconSvgObject } from "@hugeicons/core-free-icons/types";
+import { IconSvgElement } from "@hugeicons/react";
 
-export const amenityIcons: Record<string, IconSvgObject> = {
+export const amenityIcons: Record<string, IconSvgElement> = {
   wifi: Wifi01FreeIcons,
   pool: Waves,
   gym: Dumbbell,

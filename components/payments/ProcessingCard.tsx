@@ -1,10 +1,15 @@
 "use client";
-import { AlertTriangle, LoaderCircle, X } from "@hugeicons/core-free-icons";
+import {
+  AlertTriangle,
+  LoaderCircle,
+  LoaderCircleIcon,
+  X,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
-import React from "react";
+import React, { Suspense } from "react";
 import { Button } from "../ui/button";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useGetLivePaymentStatus } from "@/lib/public/usePaymentStatus";
 import { useTrackPayment } from "@/lib/public/useTrackPayments";
 import { FailedState, SuccessfullState } from "./TransactionStatus";
@@ -17,7 +22,7 @@ export const PaymentProcessingCard = () => {
       </div> */}
       <div className="w-15 h-15 rounded-full flex items-center justify-center">
         <HugeiconsIcon
-          icon={LoaderCircle}
+          icon={LoaderCircleIcon}
           className="text-primary h-15 w-15 animate-spin"
           size={30}
           strokeWidth={2}
@@ -56,6 +61,11 @@ export const PaymentProcessingCard = () => {
 
 export const PaymentProcessingBlock = () => {
   const params = useParams();
+  const searchParams = useSearchParams();
+  const trans_data = {
+    amt: String(searchParams.get("amt")),
+    method: String(searchParams.get("method")),
+  };
   const paymentId = String(params.paymentId);
   const { status, isLoading } = useTrackPayment(paymentId);
 
@@ -70,7 +80,11 @@ export const PaymentProcessingBlock = () => {
   if (status.paymentStatus === "successful") {
     return (
       <div>
-        <SuccessfullState />
+        <SuccessfullState
+          ref={paymentId}
+          method={trans_data.method}
+          amount={trans_data.amt}
+        />
       </div>
     );
   }
@@ -81,7 +95,7 @@ export const PaymentProcessingBlock = () => {
   ) {
     return (
       <div>
-        <FailedState />
+        <FailedState method={trans_data.method} />
       </div>
     );
   }
@@ -90,5 +104,13 @@ export const PaymentProcessingBlock = () => {
     <div className="p-4">
       <PaymentProcessingCard />
     </div>
+  );
+};
+
+export const SuspensePaymentProcessing = () => {
+  return (
+    <Suspense>
+      <PaymentProcessingBlock />
+    </Suspense>
   );
 };

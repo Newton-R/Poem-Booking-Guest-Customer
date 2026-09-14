@@ -28,10 +28,18 @@ export function useGetLivePaymentStatus(paymentId: string) {
 }
 
 async function fetchPaymentStatus(ref: string): Promise<PaymentStatusResponse> {
-  const { data } = await publicClient.get<PaymentStatusResponse>(
-    `/payments/public/status/${ref}`,
-  );
-  return data;
+  try {
+    const { data } = await publicClient.get<PaymentStatusResponse>(
+      `/payments/public/status/${ref}`,
+    );
+    console.log({ data });
+    return data;
+  } catch (e) {
+    if (isAxiosError(e)) {
+      throw new Error(e.response?.data.message);
+    }
+    throw e;
+  }
 }
 
 export function usePaymentStatus(ref: string, options?: { enabled?: boolean }) {

@@ -1,24 +1,31 @@
+"use client";
 import { LoadingRoomDetailsContent } from "@/components/loaders/hoteldetails/RoomDetailsContent";
 import MapView from "@/components/MapView";
-
 import { Button } from "@/components/ui/button";
 import { DatePickerDemo } from "@/components/ui/date-picker";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Loader } from "@/components/ui/Loader";
 import { RegistrationReminderBlock } from "@/components/ui/registrationReminderblock";
+import { publicClient } from "@/lib/api";
 import { formatPrice } from "@/lib/data";
 import { amenityIcons } from "@/lib/icons";
-import { ApartmentDetail, ApartmentReview } from "@/lib/types/apartment";
 import {
-  CircleCheck,
-  Location,
-  Star,
-  Tv,
-  Wifi,
-} from "@hugeicons/core-free-icons";
+  ApartmentAvailabilityResponse,
+  ApartmentDetail,
+  ApartmentReview,
+} from "@/lib/types/apartment";
+import { CircleCheck, Location, Star } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { format } from "date-fns";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
+import { toast } from "sonner";
+
+interface DateProps {
+  checkIn: string;
+  checkOut: string;
+}
 
 const AppartmentReviewsCard = ({ review }: { review: ApartmentReview }) => {
   return (
@@ -52,14 +59,38 @@ export const AppartmentDetailsContent = ({
   loading: Boolean;
   apartment: ApartmentDetail;
 }) => {
-  const places = [
-    { id: "1", name: "Bamenda", lat: 5.9631, lng: 10.1591 },
-    { id: "2", name: "Yaoundé", lat: 3.848, lng: 11.5021 },
-  ];
-
   if (loading) {
     return <LoadingRoomDetailsContent />;
   }
+
+  const [checkOutData, setCheckData] = useState<DateProps>({
+    checkIn: "",
+    checkOut: "",
+  });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleApartmentCheckout = async () => {
+    setIsLoading(true);
+    try {
+      const { data } = await publicClient.get<ApartmentAvailabilityResponse>(
+        `/apartments/${apartment.id}/availability?checkIn=${checkOutData.checkIn}&checkOut=${checkOutData.checkOut}`,
+      );
+      console.log({ apartment_av: data.data });
+      if (data.data.available) {
+        toast.success("Apartment available 🎉");
+      } else {
+        toast.success("Apartment not available for desired dates");
+      }
+    } catch (e) {
+      toast.error("Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDates = (key: keyof DateProps, value: string) => {
+    setCheckData((prev) => ({ ...prev, [key]: value }));
+  };
 
   return (
     <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -123,25 +154,43 @@ export const AppartmentDetailsContent = ({
               {apartment.avg_rating}
             </span>
           </div>
-          <div className=" border border-border bg-white rounded-2xl grid grid-cols-2">
-            <div className="flex flex-col p-2 border-r border-border gap-0.5">
+          <div className=" border border-border bg-white gap-2 rounded-2xl p-3 grid grid-cols-1 ">
+            <div className="flex flex-col gap-0.5">
               <span className="text-[10px] text-muted-foreground">
                 CHECK IN
               </span>
-              <DatePickerDemo />
+              <DatePickerDemo
+                onChange={(date) =>
+                  handleDates("checkIn", date ? format(date, "yyyy-MM-dd") : "")
+                }
+              />
             </div>
-            <div className="flex flex-col p-2 border-r border-border gap-0.5">
+            <div className="flex flex-col gap-0.5">
               <span className="text-[10px] text-muted-foreground">
                 CHECK OUT
               </span>
-              <DatePickerDemo className="text-xs" />
+              <DatePickerDemo
+                onChange={(date) =>
+                  handleDates(
+                    "checkOut",
+                    date ? format(date, "yyyy-MM-dd") : "",
+                  )
+                }
+                className="text-xs"
+              />
             </div>
-            <div className="flex flex-col col-span-2 border-t border-border p-2 gap-0.5">
+            {/* <div className="flex flex-col col-span-2 border-t border-border p-2 gap-0.5">
               <span className="text-[10px] text-muted-foreground">Guests</span>
               <Input className="h-9" placeholder="Number of guests" />
-            </div>
+            </div> */}
           </div>
-          <Button className={"p-4 h-10"}>Book Now</Button>
+          <Button
+            disabled={isLoading}
+            onClick={handleApartmentCheckout}
+            className={"p-4 h-10 cursor-pointer"}
+          >
+            {isLoading ? <Loader /> : "Book Now"}
+          </Button>
         </div>
         <div className="h-40 text-xs relative rounded-2xl overflow-hidden">
           <div className="absolute inset-0 p-4 bg-black/20 flex items-end">

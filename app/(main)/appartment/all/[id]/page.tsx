@@ -6,11 +6,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { apartments } from "@/lib/data";
-import { Apartment } from "@/lib/types";
-import { AlertTriangle } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
-import React from "react";
 
 export default async function AppartmentDetailsPage({
   params,
@@ -18,7 +13,6 @@ export default async function AppartmentDetailsPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const Apartment = apartments.find((a) => a.id === id);
 
   // if (!Apartment) {
   //   return (
@@ -39,10 +33,5 @@ export default async function AppartmentDetailsPage({
   //   );
   // }
 
-  return (
-    <AppartmentDetailsBlock
-      id={id}
-      apartment={Apartment ?? ({} as Apartment)}
-    />
-  );
+  return <AppartmentDetailsBlock id={id} />;
 }

@@ -1,7 +1,5 @@
 "use client";
-import { PaymentProcessingCard } from "@/components/payments/ProcessingCard";
-import { ReviewStates } from "@/components/payments/ReviewSuccessfull";
-import { TransactionStatusCard } from "@/components/payments/TransactionStatus";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader } from "@/components/ui/Loader";
@@ -165,9 +163,10 @@ const PoemPayBlock = ({
         <div className="w-full h-60 flex gap-4 flex-col items-center justify-center text-white p-4 bg-secondary-foreground">
           <div className="w-15 h-15 bg-white overflow-hidden rounded-full p-0.5">
             <Image
-              src={"/icon/poem_lg.png"}
+              src={"/icon/poem_lg.jpg"}
               width={200}
               height={200}
+              className="w-full object-cover h-full"
               alt="Poem Pay logo"
             />
           </div>
@@ -228,6 +227,13 @@ export const PaymentinfoBlock = () => {
     bookingId: String(searchParams.get("bookingId")),
   };
 
+  const method =
+    info.paymentMethod === "momo"
+      ? "Mobile Money"
+      : info.paymentMethod === "orange_money"
+        ? "Orange Money"
+        : "Poem Pay";
+
   const handleFormSubmit = () => {
     mutate(
       {
@@ -237,10 +243,9 @@ export const PaymentinfoBlock = () => {
       },
       {
         onSuccess: (response) => {
-          console.log({ payment_response: response });
           toast.success("Payment Intiated Successfully");
           router.push(
-            `/payment/waiting/${response.data.paymentReference}?code=${response.data.ussdCode}`,
+            `/payment/waiting/${response.data.paymentReference}?code=${response.data.ussdCode}&amt=${response.data.amount}&method=${method}`,
           );
         },
         onError: (e) => {

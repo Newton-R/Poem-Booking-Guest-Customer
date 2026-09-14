@@ -100,3 +100,18 @@ export interface ApartmentDetailResponse {
   success: boolean;
   timestamp: string;
 }
+
+export interface ApartmentAvailabilityData {
+  available: boolean;
+  blockedDates: string[];
+  nights: number;
+  priceForStay: number;
+  pricePerNight: number;
+}
+
+export interface ApartmentAvailabilityResponse {
+  data: ApartmentAvailabilityData;
+  statusCode: number;
+  success: boolean;
+  timestamp: string;
+}

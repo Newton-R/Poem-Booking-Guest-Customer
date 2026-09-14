@@ -6,23 +6,9 @@ import { Apartment } from "@/lib/types";
 import { useGetApartmentDetails } from "@/lib/public/useGetApartments";
 import { ApartmentDetail } from "@/lib/types/apartment";
 
-export const AppartmentDetailsBlock = ({
-  apartment,
-  id,
-}: {
-  apartment: Apartment;
-  id: string;
-}) => {
-  const [loading, setLoading] = useState<Boolean>(true);
-
+export const AppartmentDetailsBlock = ({ id }: { id: string }) => {
   const { data, isLoading } = useGetApartmentDetails(id);
   console.log({ apartment_details: data });
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     setLoading(false);
-  //   }, 2000);
-  // }, []);
 
   return (
     <div className="container-x flex flex-col gap-10">

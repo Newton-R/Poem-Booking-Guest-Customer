@@ -7,12 +7,11 @@ import {
   Share,
   UserCheck,
 } from "@hugeicons/core-free-icons";
-import { IconSvgObject } from "@hugeicons/core-free-icons/types";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { HugeiconsIcon, IconSvgElement } from "@hugeicons/react";
 import React from "react";
 
 interface StepsCard {
-  icon: IconSvgObject;
+  icon: IconSvgElement;
   number: number;
   description: string;
   heading: string;
