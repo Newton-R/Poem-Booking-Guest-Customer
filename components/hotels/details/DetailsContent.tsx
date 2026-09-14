@@ -24,7 +24,6 @@ import {
   Search,
   Star,
 } from "@hugeicons/core-free-icons";
-import { IconSvgObject } from "@hugeicons/core-free-icons/types";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import Link from "next/link";

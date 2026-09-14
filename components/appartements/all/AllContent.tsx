@@ -17,7 +17,7 @@ const AppartmentCard = ({ apartment }: { apartment: Apartment }) => {
   return (
     <div className="h-100 md:h-90 flex flex-col border border-border rounded-2xl overflow-hidden">
       <div className="flex-1 overflow-hidden">
-        <Image
+        <img
           src={imageUrl}
           width={400}
           height={400}

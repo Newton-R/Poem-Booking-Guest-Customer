@@ -47,3 +47,16 @@ export function useGetApartmentDetails(id: string) {
     queryKey: apartmentKeys.detail(id),
   });
 }
+
+async function checkHotelAvailablity(
+  id: string,
+  checkIn: string,
+  checkOut: string,
+) {
+  try {
+    const data = await publicClient.get(
+      `/apartments/${id}/availability?checkIn=${checkIn}&checkOut=${checkOut}`,
+    );
+    return data;
+  } catch (e) {}
+}

@@ -2,7 +2,7 @@ import React from "react";
 import { DashIntro } from "../DashIntro";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { HugeiconsIcon, IconSvgElement } from "@hugeicons/react";
 import {
   ArrowDown,
   CalendarCheck,
@@ -21,7 +21,6 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { IconSvgObject } from "@hugeicons/core-free-icons/types";
 
 const UsedHistory = () => {
   return (
@@ -84,7 +83,7 @@ const UsedHistory = () => {
 };
 
 interface FeatCard {
-  icon: IconSvgObject;
+  icon: IconSvgElement;
   heading: string;
   description: string;
 }
