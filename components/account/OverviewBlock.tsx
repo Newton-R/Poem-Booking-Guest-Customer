@@ -1,12 +1,15 @@
 "use client";
 import { Location, Pen, PlusSignCircleIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "../ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import Image from "next/image";
 import { useUserStore } from "@/lib/useUserStore";
 import { useGetUserData } from "@/lib/bearer/useUser";
+import { useSessionModal } from "@/lib/useSessionModal";
+import { PersonalDetailsSkeleton } from "../loaders/account/personaldetails";
+import { Skeleton } from "../ui/skeleton";
 
 const HotelBookingsCard = () => {
   return (
@@ -58,14 +61,26 @@ const HotelBookingsCard = () => {
 };
 
 export const AccountOverviewBlock = () => {
-  const { user } = useUserStore();
-  const { data } = useGetUserData();
+  const { setUserData } = useUserStore();
+  const { data, isLoading } = useGetUserData();
+
+  useEffect(() => {
+    if (data) {
+      setUserData(data);
+    }
+  }, [data]);
+
   return (
     <section className="w-full flex flex-col gap-6">
       <div className="flex flex-col md:flex-row gap-4 justify-between md:items-end">
         <div className="flex flex-col gap-1">
-          <h1 className="md:text-4xl text-2xl font-bold">
-            Hello, {data?.data.firstName}
+          <h1 className="md:text-4xl flex text-2xl font-bold">
+            Hello,{" "}
+            {isLoading ? (
+              <Skeleton className="w-30 h-9" />
+            ) : (
+              data?.data.firstName
+            )}
           </h1>
           <p className="text-muted-foreground text-[14px]">
             Welcome back to your Poem Booking portal.
@@ -77,39 +92,45 @@ export const AccountOverviewBlock = () => {
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl md:col-span-2 flex flex-col gap-6">
-          <div className="flex justify-between items-center gap-4">
-            <span className="text-xl font-bold">Personal Details</span>
-            <span className="flex gap-1 items-center text-xs text-primary">
-              <HugeiconsIcon icon={Pen} size={18} />
-              EDIT INFO
-            </span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex flex-col">
-              <span className="text-xs font-light">FULL NAME</span>
-              <span className="font-bold">
-                {data?.data.firstName} {data?.data.lastName}
+        {isLoading ? (
+          <PersonalDetailsSkeleton />
+        ) : (
+          <div className="bg-white p-6 rounded-2xl md:col-span-2 flex flex-col gap-6">
+            <div className="flex justify-between items-center gap-4">
+              <span className="text-xl font-bold">Personal Details</span>
+              <span className="flex gap-1 items-center text-xs text-primary">
+                <HugeiconsIcon icon={Pen} size={18} />
+                EDIT INFO
               </span>
             </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-light">EMAIL ADDRESS</span>
-              <span className="font-bold">{data?.data.email}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-light">NATIONALITY</span>
-              <span className="font-bold">Cameroonian</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-light">PHONE NUMBER</span>
-              <span className="font-bold">{data?.data.phoneNumber}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-xs font-light">PREF. LANGUAGE</span>
-              <span className="font-bold">{data?.data.preferredLanguage}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col">
+                <span className="text-xs font-light">FULL NAME</span>
+                <span className="font-bold">
+                  {data?.data.firstName} {data?.data.lastName}
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-light">EMAIL ADDRESS</span>
+                <span className="font-bold">{data?.data.email}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-light">NATIONALITY</span>
+                <span className="font-bold">Cameroonian</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-light">PHONE NUMBER</span>
+                <span className="font-bold">{data?.data.phoneNumber}</span>
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-light">PREF. LANGUAGE</span>
+                <span className="font-bold">
+                  {data?.data.preferredLanguage}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
         <div className="p-6 flex flex-col gap-4 bg-bg-mute rounded-2xl ">
           <span className="text-xl font-bold">Support Hub</span>
           <div className="bg-white p-4 border-l-3 border-primary flex flex-col gap-4 rounded-md">

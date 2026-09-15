@@ -2,9 +2,19 @@
 import { EmptyApartments } from "@/components/emptystuff";
 import { ApartmentLoading } from "@/components/loaders/appartment/ApartmentLoading";
 import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { formatPrice } from "@/lib/data";
 
-import { Apartment, ApartmentResponse } from "@/lib/types/apartment";
+import { Apartment } from "@/lib/types/apartment";
+import { CloudAlertIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -60,11 +70,15 @@ const AppartmentCard = ({ apartment }: { apartment: Apartment }) => {
 export const AllAppartmentContent = ({
   loading,
   Apartments,
+  isError,
+  refetch,
 }: {
   loading: boolean;
-  Apartments: Apartment[];
+  Apartments: Apartment[] | undefined;
+  isError: boolean;
+  refetch: () => void;
 }) => {
-  if (loading) {
+  if (loading || !Apartments) {
     return (
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-4">
         {Array.from({ length: 10 }).map((_, i) => (
@@ -78,6 +92,33 @@ export const AllAppartmentContent = ({
     return (
       <div>
         <EmptyApartments />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="mt-[20px]">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia
+              variant="icon"
+              className="bg-destructive/20 text-destructive"
+            >
+              <HugeiconsIcon icon={CloudAlertIcon} size={40} />
+            </EmptyMedia>
+            <EmptyTitle>Error</EmptyTitle>
+            <EmptyDescription>
+              Ooops! There seems to be an error getting apartments. Check your
+              internet connection and try again
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button className={"min-w-30"} onClick={() => refetch()}>
+              Try Again
+            </Button>
+          </EmptyContent>
+        </Empty>
       </div>
     );
   }

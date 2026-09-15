@@ -19,6 +19,7 @@ import { CircleCheck, Location, Star } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format } from "date-fns";
 import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
@@ -59,15 +60,13 @@ export const AppartmentDetailsContent = ({
   loading: Boolean;
   apartment: ApartmentDetail;
 }) => {
-  if (loading) {
-    return <LoadingRoomDetailsContent />;
-  }
-
   const [checkOutData, setCheckData] = useState<DateProps>({
     checkIn: "",
     checkOut: "",
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const router = useRouter();
+  const pathname = usePathname();
 
   const handleApartmentCheckout = async () => {
     setIsLoading(true);
@@ -75,9 +74,11 @@ export const AppartmentDetailsContent = ({
       const { data } = await publicClient.get<ApartmentAvailabilityResponse>(
         `/apartments/${apartment.id}/availability?checkIn=${checkOutData.checkIn}&checkOut=${checkOutData.checkOut}`,
       );
-      console.log({ apartment_av: data.data });
       if (data.data.available) {
-        toast.success("Apartment available 🎉");
+        toast.success("Apartment available🎉 proceeding to checkout");
+        router.push(
+          `${pathname}/checkout?checkIn=${checkOutData.checkIn}&checkOut=${checkOutData.checkOut}&price=${apartment.base_price_per_night}`,
+        );
       } else {
         toast.success("Apartment not available for desired dates");
       }
@@ -91,6 +92,10 @@ export const AppartmentDetailsContent = ({
   const handleDates = (key: keyof DateProps, value: string) => {
     setCheckData((prev) => ({ ...prev, [key]: value }));
   };
+
+  if (loading) {
+    return <LoadingRoomDetailsContent />;
+  }
 
   return (
     <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-6">

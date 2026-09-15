@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React, { Suspense, useState } from "react";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
+import { useSessionModal } from "@/lib/useSessionModal";
 
 const InitialData: LoginPayload = {
   phoneNumber: "",
@@ -26,6 +27,7 @@ export const LoginForm = () => {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
   const { setTokens } = useTokens();
+  const { closeModal } = useSessionModal();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -53,6 +55,8 @@ export const LoginForm = () => {
             sameSite: "strict",
           },
         );
+        closeModal();
+
         router.push(callbackUrl ? callbackUrl : "/account");
         queryClient.invalidateQueries({ queryKey: authKeys.currentUser() });
       },

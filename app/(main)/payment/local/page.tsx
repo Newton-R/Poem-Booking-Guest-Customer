@@ -1,7 +1,4 @@
-import {
-  PaymentinfoBlock,
-  PaymentInfoSuspenseBlock,
-} from "@/components/hotels/checkout/PaymentinfoBlock";
+import { PaymentInfoSuspenseBlock } from "@/components/hotels/checkout/PaymentinfoBlock";
 import React from "react";
 
 const Infopage = () => {
