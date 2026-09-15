@@ -8,7 +8,6 @@ import { ApartmentDetail } from "@/lib/types/apartment";
 
 export const AppartmentDetailsBlock = ({ id }: { id: string }) => {
   const { data, isLoading } = useGetApartmentDetails(id);
-  console.log({ apartment_details: data });
 
   return (
     <div className="container-x flex flex-col gap-10">

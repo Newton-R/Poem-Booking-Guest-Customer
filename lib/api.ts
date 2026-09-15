@@ -1,10 +1,7 @@
 import Cookies from "js-cookie";
 import axios from "axios";
 import { useTokens } from "./useTokens";
-
-// import { useTokens } from "./useTokens";
-
-// const tokens = Cookies.get("token");
+import { useSessionModal } from "./useSessionModal";
 
 export const publicClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
@@ -23,3 +20,15 @@ apiClient.interceptors.request.use((config) => {
   }
   return config;
 });
+
+apiClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    const { openModal } = useSessionModal.getState();
+    if (axios.isAxiosError(error) && error.response?.status === 401) {
+      openModal();
+    }
+  },
+);

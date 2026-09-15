@@ -11,24 +11,25 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "./hover-card";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Logout01FreeIcons, User } from "@hugeicons/core-free-icons";
 import { LogoutDialog } from "../auth/forms/LogoutBlock";
+import { useUserStore } from "@/lib/useUserStore";
 
 export const UserBlock = () => {
   const pathname = usePathname();
-  const { isLoading, data, isError } = useGetUserData();
+  const { user } = useUserStore();
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center gap-2">
-        <div className="flex flex-col items-end gap-1">
-          <Skeleton className="w-14 h-4" />
-          <Skeleton className="w-20 h-4" />
-        </div>
-        <Skeleton className="w-8 h-8 rounded-full" />
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex items-center gap-2">
+  //       <div className="flex flex-col items-end gap-1">
+  //         <Skeleton className="w-14 h-4" />
+  //         <Skeleton className="w-20 h-4" />
+  //       </div>
+  //       <Skeleton className="w-8 h-8 rounded-full" />
+  //     </div>
+  //   );
+  // }
 
-  if (!data || isError) {
+  if (!user) {
     return (
       <Link href={"/auth"}>
         <Button
@@ -51,17 +52,17 @@ export const UserBlock = () => {
         <div className="flex text-xs gap-2 items-center p-1 rounded-full">
           <div className="flex flex-col text-end pl-1">
             <span>
-              {data.data.firstName}
+              {user.data.firstName}
               {/* {data.data.lastName} */}
             </span>
             <span className="text-muted-foreground text-xs">
-              {data.data.email}
+              {user.data.email}
             </span>
           </div>
           <Avatar>
             <AvatarFallback className={"uppercase"}>
-              {data.data.firstName[0]}
-              {data.data.lastName[0]}
+              {user.data.firstName[0]}
+              {user.data.lastName[0]}
             </AvatarFallback>
           </Avatar>
         </div>
@@ -70,20 +71,20 @@ export const UserBlock = () => {
         <div className="flex text-xs gap-1 pb-4 items-center p-1 rounded-full">
           <Avatar>
             <AvatarFallback className={"uppercase"}>
-              {data.data.firstName[0]}
-              {data.data.lastName[0]}
+              {user.data.firstName[0]}
+              {user.data.lastName[0]}
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-col pl-1">
             <span className="flex items-center gap-1">
-              {data.data.firstName}
+              {user.data.firstName}
               <span className="text-[10px] p-0.5 px-2 first-letter:uppercase bg-green-500/20 text-green-500 rounded-full">
-                {data.data.status}
+                {user.data.status}
               </span>
               {/* {data.data.lastName} */}
             </span>
             <span className="text-muted-foreground text-xs">
-              {data.data.email}
+              {user.data.email}
             </span>
           </div>
         </div>

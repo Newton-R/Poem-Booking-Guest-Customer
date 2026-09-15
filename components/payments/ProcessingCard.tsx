@@ -66,8 +66,9 @@ export const PaymentProcessingBlock = () => {
     amt: String(searchParams.get("amt")),
     method: String(searchParams.get("method")),
   };
-  const paymentId = String(params.paymentId);
+  const paymentId = String(params.bookingRef);
   const { status, isLoading } = useTrackPayment(paymentId);
+  console.log({ status: status });
 
   if (isLoading || !status) {
     return (
@@ -79,7 +80,7 @@ export const PaymentProcessingBlock = () => {
 
   if (status.paymentStatus === "successful") {
     return (
-      <div>
+      <div className="p-4">
         <SuccessfullState
           ref={paymentId}
           method={trans_data.method}
@@ -94,7 +95,7 @@ export const PaymentProcessingBlock = () => {
     status.paymentStatus === "reversed"
   ) {
     return (
-      <div>
+      <div className="p-4">
         <FailedState method={trans_data.method} />
       </div>
     );

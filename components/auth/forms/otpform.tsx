@@ -46,7 +46,7 @@ export const OTPForm = () => {
           accessToken: response.data.accessToken,
           refreshToken: response.data.refreshToken,
         });
-        router.push("/account");
+        router.push(callbackUrl ? callbackUrl : "/account");
       },
       onError: (e) => {
         toast.error(e.message ?? "OTP Verification Failed");

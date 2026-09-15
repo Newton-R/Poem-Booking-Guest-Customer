@@ -38,7 +38,7 @@ export const AllAppartmentBlock = () => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
-  const { data, isLoading } = useGetApartments();
+  const { data, isLoading, isError, refetch } = useGetApartments();
 
   console.log({ data: data });
 
@@ -78,7 +78,9 @@ export const AllAppartmentBlock = () => {
         updateFilter={(key, val) => UpdateFilter(key, val)}
       />
       <AllAppartmentContent
-        Apartments={apartmentsFormated ?? ([] as Apartment[])}
+        refetch={refetch}
+        isError={isError}
+        Apartments={apartmentsFormated}
         loading={loading}
       />
     </div>

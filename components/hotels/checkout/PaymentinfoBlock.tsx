@@ -243,7 +243,7 @@ export const PaymentinfoBlock = () => {
       },
       {
         onSuccess: (response) => {
-          toast.success("Payment Intiated Successfully");
+          toast.success("Payment Initiated Successfully");
           router.push(
             `/payment/waiting/${response.data.paymentReference}?code=${response.data.ussdCode}&amt=${response.data.amount}&method=${method}`,
           );
@@ -281,10 +281,6 @@ export const PaymentinfoBlock = () => {
             setNumber={(e) => setNumber(e)}
           />
         )}
-        {/* <MTNBlock /> */}
-
-        {/* <TransactionStatusCard /> */}
-        {/* <ReviewStates /> */}
       </div>
     </div>
   );
