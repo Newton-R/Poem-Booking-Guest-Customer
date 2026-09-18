@@ -244,11 +244,11 @@ export const DetailsContent = ({
             roomtype.name === roomFilters.roomtype,
         );
         if (rooms && rooms?.length > 0) {
-          toast.success("Rooms available");
+          toast.success("Room available");
           setRooms(rooms);
           ScrollIntoView();
         } else {
-          toast.success("Rooms not available");
+          toast.success("Room not available");
           setRooms([]);
         }
       } else if (data.data.length === 0) {
@@ -487,7 +487,13 @@ export const DetailsContent = ({
               type="submit"
               onClick={() => CheckAvailability()}
               className={"p-6"}
-              disabled={checking}
+              disabled={
+                checking ||
+                !roomFilters.adults ||
+                !roomFilters.checkIn ||
+                !roomFilters.checkOut ||
+                !roomFilters.roomtype
+              }
             >
               {checking ? (
                 <Loader />

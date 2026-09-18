@@ -37,6 +37,12 @@ export interface ApartmentBookingPayload {
   items: ApartmentBookingItem[];
 }
 
+export interface ApartmentCustomerBookingPayload {
+  bookingType: "apartment";
+  idempotencyKey?: string;
+  items: ApartmentBookingItem[];
+}
+
 export interface ApartmentBookingResponseItem {
   bookingId: string;
   createdAt: string;

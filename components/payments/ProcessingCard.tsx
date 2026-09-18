@@ -10,7 +10,6 @@ import Image from "next/image";
 import React, { Suspense } from "react";
 import { Button } from "../ui/button";
 import { useParams, useSearchParams } from "next/navigation";
-import { useGetLivePaymentStatus } from "@/lib/public/usePaymentStatus";
 import { useTrackPayment } from "@/lib/public/useTrackPayments";
 import { FailedState, SuccessfullState } from "./TransactionStatus";
 
@@ -65,9 +64,10 @@ export const PaymentProcessingBlock = () => {
   const trans_data = {
     amt: String(searchParams.get("amt")),
     method: String(searchParams.get("method")),
+    number: String(searchParams.get("num")),
   };
-  const paymentId = String(params.bookingRef);
-  const { status, isLoading } = useTrackPayment(paymentId);
+  const bookingRef = String(params.bookingRef);
+  const { status, isLoading } = useTrackPayment(bookingRef);
   console.log({ status: status });
 
   if (isLoading || !status) {
@@ -82,9 +82,11 @@ export const PaymentProcessingBlock = () => {
     return (
       <div className="p-4">
         <SuccessfullState
-          ref={paymentId}
+          ref={bookingRef}
+          bookingId={status.bookingId}
           method={trans_data.method}
           amount={trans_data.amt}
+          number={trans_data.number}
         />
       </div>
     );

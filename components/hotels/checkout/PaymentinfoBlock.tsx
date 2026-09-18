@@ -4,9 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader } from "@/components/ui/Loader";
 import { PaymentFormLink } from "@/components/ui/paymentformlink";
+import { useInitiateCustomerBookingPayment } from "@/lib/bearer/form/useInitiatePayment";
 import { useInitiateHotelPayment } from "@/lib/public/form/useHotelBooking";
 import { Lock } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import Cookies from "js-cookie";
 import { router } from "next/client";
 
 import Image from "next/image";
@@ -221,7 +223,10 @@ export const PaymentinfoBlock = () => {
   const searchParams = useSearchParams();
   const [number, setNumber] = useState("");
   const router = useRouter();
+  const userCookie = Cookies.get("token");
   const { mutate, isPending } = useInitiateHotelPayment();
+  const { mutate: CustomerPayment, isPending: customerpaying } =
+    useInitiateCustomerBookingPayment();
   const info = {
     paymentMethod: String(searchParams.get("paymentMethod")),
     bookingId: String(searchParams.get("bookingId")),
@@ -235,24 +240,45 @@ export const PaymentinfoBlock = () => {
         : "Poem Pay";
 
   const handleFormSubmit = () => {
-    mutate(
-      {
-        paymentMethod: info.paymentMethod,
-        bookingId: info.bookingId,
-        phoneNumber: "237" + number,
-      },
-      {
-        onSuccess: (response) => {
-          toast.success("Payment Initiated Successfully");
-          router.push(
-            `/payment/waiting/${response.data.paymentReference}?code=${response.data.ussdCode}&amt=${response.data.amount}&method=${method}`,
-          );
+    if (userCookie) {
+      CustomerPayment(
+        {
+          paymentMethod: info.paymentMethod,
+          bookingId: info.bookingId,
+          phoneNumber: "237" + number,
         },
-        onError: (e) => {
-          toast.error(e.message);
+        {
+          onSuccess: (response) => {
+            toast.success("Payment Initiated Successfully");
+            router.push(
+              `/payment/waiting/${response.data.paymentReference}?num=${"237" + number}&amt=${response.data.amount}&method=${method}`,
+            );
+          },
+          onError: (e) => {
+            toast.error(e.message);
+          },
         },
-      },
-    );
+      );
+    } else {
+      mutate(
+        {
+          paymentMethod: info.paymentMethod,
+          bookingId: info.bookingId,
+          phoneNumber: "237" + number,
+        },
+        {
+          onSuccess: (response) => {
+            toast.success("Payment Initiated Successfully");
+            router.push(
+              `/payment/waiting/${response.data.paymentReference}?num=${"237" + number}&amt=${response.data.amount}&method=${method}`,
+            );
+          },
+          onError: (e) => {
+            toast.error(e.message);
+          },
+        },
+      );
+    }
   };
 
   return (
@@ -263,13 +289,13 @@ export const PaymentinfoBlock = () => {
           <MTNBlock
             number={number}
             onFormSubit={handleFormSubmit}
-            isLoading={isPending}
+            isLoading={isPending || customerpaying}
             setNumber={(e) => setNumber(e)}
           />
         ) : info.paymentMethod === "orange_money" ? (
           <OrangeBlock
             number={number}
-            onFormSubit={handleFormSubmit}
+            onFormSubit={handleFormSubmit || customerpaying}
             isLoading={isPending}
             setNumber={(e) => setNumber(e)}
           />
@@ -277,7 +303,7 @@ export const PaymentinfoBlock = () => {
           <PoemPayBlock
             number={number}
             onFormSubit={handleFormSubmit}
-            isLoading={isPending}
+            isLoading={isPending || customerpaying}
             setNumber={(e) => setNumber(e)}
           />
         )}

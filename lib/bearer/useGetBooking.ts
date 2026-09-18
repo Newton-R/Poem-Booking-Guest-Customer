@@ -1,11 +1,18 @@
-import { data } from "motion/react-client";
 import { isAxiosError } from "axios";
 import { apiClient } from "../api";
 import { useQuery } from "@tanstack/react-query";
+import { GuestBookingDetailsResponseData } from "../types/booking_data";
 
-async function getBookings() {
+interface BookingsFetchResponse {
+  data: GuestBookingDetailsResponseData[];
+  statusCode: number;
+  success: boolean;
+  timestamp: string;
+}
+
+async function getBookings(): Promise<BookingsFetchResponse> {
   try {
-    const { data } = await apiClient.get("bookings");
+    const { data } = await apiClient.get<BookingsFetchResponse>("/bookings");
     return data;
   } catch (e) {
     if (isAxiosError(e)) {
@@ -19,5 +26,24 @@ export function useGetCustomerBookings() {
   return useQuery({
     queryFn: getBookings,
     queryKey: ["customer_bookings"],
+  });
+}
+
+async function BookingDetails(id: string) {
+  try {
+    const { data } = await apiClient.get(`/bookings/${id}`);
+    return data;
+  } catch (e) {
+    if (isAxiosError(e)) {
+      throw new Error(e.response?.data.message ?? "Somehting went wrong");
+    }
+    throw e;
+  }
+}
+
+export function useGetCustomerBookingDetails(id: string) {
+  return useQuery({
+    queryKey: [`booking_detail_${id}`],
+    queryFn: () => BookingDetails(id),
   });
 }

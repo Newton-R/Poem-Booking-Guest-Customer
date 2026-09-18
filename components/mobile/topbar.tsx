@@ -18,10 +18,13 @@ import {
 import { useCartStore } from "@/lib/useCart";
 import { EmptyCart } from "../emptystuff";
 import { formatPrice } from "@/lib/data";
+import { useUserStore } from "@/lib/useUserStore";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 
 export const TopBar = () => {
   const pathname = usePathname();
   const { items } = useCartStore();
+  const { user } = useUserStore();
   return (
     <div className="fixed h-[calc(var(--mobile-nav-height))]  bg-background flex z-40 justify-between items-center p-2 lg:hidden top-0 w-full border-b border-border">
       <div className="flex gap-1 items-center">
@@ -95,18 +98,29 @@ export const TopBar = () => {
             )}
           </HoverCardContent>
         </HoverCard>
-        <Link href={"/account"}>
-          <Button
-            className={cn(
-              "text-[14px] bg-secondary-foreground hover:bg-secondary-foreground/80 h-9 text-white rounded-full p-3 px-4",
-              pathname.includes("/account")
-                ? "bg-primary hover:bg-primary/80"
-                : "",
-            )}
-          >
-            Account
-          </Button>
-        </Link>
+        {!user ? (
+          <Link href={"/account"}>
+            <Button
+              className={cn(
+                "text-[14px] bg-secondary-foreground hover:bg-secondary-foreground/80 h-9 text-white rounded-full p-3 px-4",
+                pathname.includes("/account")
+                  ? "bg-primary hover:bg-primary/80"
+                  : "",
+              )}
+            >
+              Account
+            </Button>
+          </Link>
+        ) : (
+          <Link href={"/account"}>
+            <Avatar>
+              <AvatarFallback className={"uppercase"}>
+                {user.data.firstName[0]}
+                {user.data.lastName[0]}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
+        )}
       </div>
     </div>
   );
