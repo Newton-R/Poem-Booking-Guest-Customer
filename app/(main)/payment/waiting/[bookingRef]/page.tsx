@@ -1,8 +1,4 @@
-import {
-  PaymentProcessingBlock,
-  PaymentProcessingCard,
-  SuspensePaymentProcessing,
-} from "@/components/payments/ProcessingCard";
+import { SuspensePaymentProcessing } from "@/components/payments/ProcessingCard";
 
 const WaitingPage = () => {
   return (

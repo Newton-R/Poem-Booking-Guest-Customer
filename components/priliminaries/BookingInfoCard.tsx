@@ -6,6 +6,8 @@ import {
   Cancel01FreeIcons,
   CheckmarkCircle02Icon,
   Copy01FreeIcons,
+  Location01Icon,
+  Star,
 } from "@hugeicons/core-free-icons";
 import { GuestBookingDetailsResponseData } from "@/lib/types/booking_data";
 import { Button } from "../ui/button";
@@ -24,6 +26,7 @@ import { toast } from "sonner";
 import { Loader } from "../ui/Loader";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 interface BookingSuccessCardProps {
   booking: GuestBookingDetailsResponseData;
 }
@@ -88,6 +91,53 @@ export function BookingInfoCard({ booking }: BookingSuccessCardProps) {
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
+        {/* Hotel/Property info */}
+        <div className="flex items-center gap-3 rounded-xl border border-border p-3">
+          <div className="size-16 rounded-lg overflow-hidden shrink-0">
+            <img
+              src={
+                process.env.NEXT_PUBLIC_IMAGE_URL +
+                booking.items[0].serviceImageUrl
+              }
+              width={100}
+              height={100}
+              alt={booking.hotelName}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="flex flex-col gap-0.5 min-w-0">
+            <span className="font-semibold truncate">
+              {booking.bookingType === "hotel"
+                ? booking.items[0].service.hotel.name
+                : booking.items[0].service.name}
+            </span>
+            <span className="text-xs flex items-center gap-1.5 text-muted-foreground truncate">
+              <HugeiconsIcon
+                icon={Location01Icon}
+                size={14}
+                className="shrink-0"
+              />
+              {booking.items[0].service.location.address}
+            </span>
+            <span className="flex items-center gap-1">
+              <HugeiconsIcon
+                icon={Star}
+                size={14}
+                className="text-primary fill-primary"
+              />
+              {booking.bookingType === "hotel" ? (
+                Number(booking.items[0].service.hotel.starRating).toFixed(1)
+              ) : (
+                <span className="first-letter:uppercase">
+                  {booking.items[0].service.kind}
+                </span>
+              )}
+            </span>
+          </div>
+        </div>
+
+        <Separator />
+
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">
             BOOKING REFERENCE
