@@ -4,8 +4,10 @@ import { DashIntro } from "../DashIntro";
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
+  Box,
   Calendar,
   CircleCheck,
+  CloudAlertIcon,
   Location01Icon,
   UserGroupIcon,
 } from "@hugeicons/core-free-icons";
@@ -17,6 +19,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { GuestBookingDetailsResponseData } from "@/lib/types/booking_data";
 import { differenceInCalendarDays, formatDate } from "date-fns";
 import { formatPrice } from "@/lib/data";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 export const BookingCardSkeleton = () => {
   return (
@@ -62,13 +72,16 @@ const BookingHistoryCard = ({
 }: {
   booking: GuestBookingDetailsResponseData;
 }) => {
-  if (booking.bookingType !== "restaurant") {
+  if (booking.bookingType === "hotel") {
     return (
       <div className="p-6 rounded-xl border bg-white border-border grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Image */}
         <div className="rounded-xl overflow-hidden h-40 relative">
-          <Image
-            src={"/apartment-placeholder.jpg"}
+          <img
+            src={
+              process.env.NEXT_PUBLIC_IMAGE_URL +
+              booking.items[0].service.imageUrl
+            }
             width={400}
             height={400}
             alt={booking.id}
@@ -85,11 +98,11 @@ const BookingHistoryCard = ({
               </span>
               <div className="flex flex-col gap-0.5">
                 <span className="text-2xl font-bold">
-                  {/* {booking.property.name} */}
+                  {booking.items[0].service.name}
                 </span>
                 <span className="text-xs flex items-center gap-2 text-muted-foreground">
                   <HugeiconsIcon icon={Location01Icon} size={16} />
-                  {/* {booking.property.location} */}
+                  {booking.items[0].service.location.address}
                 </span>
               </div>
             </div>
@@ -102,7 +115,10 @@ const BookingHistoryCard = ({
                   className="fill-green-500 text-white"
                   size={12}
                 />
-                Confirmed
+                <span className="first-letter:uppercase">
+                  {" "}
+                  {booking.bookingStatus}
+                </span>
               </span>
               <div className="flex flex-col gap-0.5 md:text-end">
                 <span className="text-xs text-muted-foreground">
@@ -155,7 +171,7 @@ const BookingHistoryCard = ({
               <span className="text-[10px] text-muted-foreground">GUESTS</span>
               <span className="text-xs font-semibold flex items-center gap-1.5">
                 <HugeiconsIcon icon={UserGroupIcon} size={14} />
-                {/* {booking.items[0].guests} Guests */}
+                {booking.items[0].guests.length} Guests
               </span>
             </div>
           </div>
@@ -177,64 +193,130 @@ const BookingHistoryCard = ({
     );
   }
 
-  return (
-    <div className="p-6 rounded-xl border bg-white border-border grid grid-cols-1 md:grid-cols-3 gap-5">
-      <div className="rounded-xl overflow-hidden h-40">
-        <Image
-          src={"/restau.jpg"}
-          width={400}
-          height={400}
-          alt="Img"
-          className="w-full h-full object-cover"
-        />
-      </div>
-      <div className="flex flex-col gap-2 col-span-2">
-        <div className="flex justify-between flex-col gap-4 md:flex-row">
-          <div className="flex flex-col gap-3">
-            <span className="text-xs uppercase font-bold w-fit bg-bg-mute p-1 px-2 rounded-md">
-              {booking.bookingType}
-            </span>
+  if (booking.bookingType === "apartment") {
+    return (
+      <div className="p-6 rounded-xl border bg-white border-border grid grid-cols-1 md:grid-cols-3 gap-5">
+        {/* Image */}
+        <div className="rounded-xl overflow-hidden h-40 relative">
+          <img
+            src={
+              process.env.NEXT_PUBLIC_IMAGE_URL +
+              booking.items[0].service.imageUrl
+            }
+            width={400}
+            height={400}
+            alt={booking.id}
+            className="w-full h-full object-cover"
+          />
+        </div>
+
+        <div className="flex flex-col gap-3 col-span-2">
+          <div className="flex justify-between flex-col gap-4 md:flex-row">
+            {/* Left: type tag, property name, location */}
+            <div className="flex flex-col gap-3">
+              <span className="text-xs uppercase font-bold w-fit bg-bg-mute p-1 px-2 rounded-md">
+                {booking.bookingType}
+              </span>
+              <div className="flex flex-col gap-0.5">
+                <span className="text-2xl font-bold">
+                  {booking.items[0].service.name}
+                </span>
+                <span className="text-xs flex items-center gap-2 text-muted-foreground">
+                  <HugeiconsIcon icon={Location01Icon} size={16} />
+                  {booking.items[0].service.location.address}
+                </span>
+              </div>
+            </div>
+
+            {/* Right: status + price */}
+            <div className="flex flex-col gap-2 md:items-end">
+              <span className="text-xs flex gap-1 w-fit items-center p-1 px-2 rounded-full bg-green-500/30 h-fit text-green-500">
+                <HugeiconsIcon
+                  icon={CircleCheck}
+                  className="fill-green-500 text-white"
+                  size={12}
+                />
+                <span className="first-letter:uppercase">
+                  {" "}
+                  {booking.bookingStatus}
+                </span>
+              </span>
+              <div className="flex flex-col gap-0.5 md:text-end">
+                <span className="text-xs text-muted-foreground">
+                  TOTAL PRICE
+                </span>
+                <span className="text-xl font-bold">
+                  {formatPrice(booking.totalAmount)}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Stay details: check-in / check-out / nights / guests */}
+          <div className="flex flex-wrap items-center gap-4 md:gap-6 py-3 border-y border-border">
             <div className="flex flex-col gap-0.5">
-              <span className="text-2xl font-bold">FUFU AND ERU</span>
-              <span className="text-xs flex items-center gap-2 text-muted-foreground">
-                <HugeiconsIcon icon={Calendar} size={16} />
-                Nov 12, 2024
+              <span className="text-[10px] text-muted-foreground">
+                CHECK IN
+              </span>
+              <span className="text-xs font-semibold flex items-center gap-1.5">
+                <HugeiconsIcon icon={Calendar} size={14} />
+                {formatDate(
+                  new Date(booking.items[0].startDatetime),
+                  "MMM dd, yyyy",
+                )}
+              </span>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[10px] text-muted-foreground">
+                CHECK OUT
+              </span>
+              <span className="text-xs font-semibold flex items-center gap-1.5">
+                <HugeiconsIcon icon={Calendar} size={14} />
+                {formatDate(
+                  new Date(booking.items[0].endDatetime),
+                  "MMM dd, yyyy",
+                )}
+              </span>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[10px] text-muted-foreground">NIGHTS</span>
+              <span className="text-xs font-semibold">
+                {differenceInCalendarDays(
+                  new Date(booking.items[0].endDatetime),
+                  new Date(booking.items[0].startDatetime),
+                )}{" "}
+                Night(s)
+              </span>
+            </div>
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[10px] text-muted-foreground">GUESTS</span>
+              <span className="text-xs font-semibold flex items-center gap-1.5">
+                <HugeiconsIcon icon={UserGroupIcon} size={14} />
+                {booking.items[0].guests.length} Guests
               </span>
             </div>
           </div>
-          <div className="flex flex-col gap-2 md:flex-row">
-            <span className="text-xs flex gap-1 w-fit items-center p-1 px-2 rounded-full bg-green-500/30 h-fit text-green-500">
-              <HugeiconsIcon
-                icon={CircleCheck}
-                className="fill-green-500 text-white"
-                size={12}
-              />
-              Confirmed
-            </span>
-            <div className="flex flex-col gap-0.5 md:text-end">
-              <span className="text-xs text-muted-foreground">TOTAL PRICE</span>
-              <span className="text-xl font-bold">12,000 XAF</span>
-            </div>
+
+          {/* Actions */}
+          <div className="flex mt-1 justify-between items-center gap-4">
+            <Link href={`/account/booking/${booking.id}`}>
+              <Button className={"p-4 w-40 rounded-md"}>VIEW RECEIPT</Button>
+            </Link>
+
+            <Link href={`/account/booking/${booking.id}`}>
+              <Button variant={"link"} className={"text-[14px]"}>
+                Download Receipt
+              </Button>
+            </Link>
           </div>
         </div>
-        <div className="flex mt-4 justify-between items-center gap-4">
-          <Link href={`/account/booking/${booking.id}`}>
-            <Button className={"p-4 w-40 rounded-md"}>VIEW RECIEPT</Button>
-          </Link>
-
-          <Link href={`/account/booking/${booking.id}`}>
-            <Button variant={"link"} className={"text-[14px]"}>
-              Download Receipt
-            </Button>
-          </Link>
-        </div>
       </div>
-    </div>
-  );
+    );
+  }
 };
 
 export const AllBookingBlock = () => {
-  const { data, isError, isLoading } = useGetCustomerBookings();
+  const { data, isError, isLoading, refetch } = useGetCustomerBookings();
   console.log({ bookings: data });
 
   return (
@@ -249,9 +331,58 @@ export const AllBookingBlock = () => {
             <BookingCardSkeleton key={i} />
           ))
         ) : isError ? (
-          <div></div>
+          <div className="mt-[20px]">
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia
+                  variant="icon"
+                  className="bg-destructive/20 text-destructive"
+                >
+                  <HugeiconsIcon icon={CloudAlertIcon} size={40} />
+                </EmptyMedia>
+                <EmptyTitle> Error</EmptyTitle>
+                <EmptyDescription>
+                  Ooops! there seems to be an error getting your bookings.
+                </EmptyDescription>
+                <EmptyContent>
+                  <Button
+                    onClick={() => refetch()}
+                    className={"h-9 px-4"}
+                    variant={"outline"}
+                  >
+                    Try Again
+                  </Button>
+                </EmptyContent>
+              </EmptyHeader>
+            </Empty>
+          </div>
         ) : data.data.length === 0 ? (
-          <> </>
+          <div className="mt-[20px]">
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia variant="icon">
+                  <HugeiconsIcon icon={Box} size={40} />
+                </EmptyMedia>
+                <EmptyTitle>No bookings yet</EmptyTitle>
+                <EmptyDescription>
+                  You don't have any bookings yet. Please checkout{" "}
+                  <Link
+                    href={"/hotels"}
+                    className="hover:underline underline-offset-2 text-primary"
+                  >
+                    Hotels
+                  </Link>
+                  ,{" "}
+                  <Link
+                    href={"/appartment"}
+                    className="hover:underline underline-offset-2 text-primary"
+                  >
+                    Hotels
+                  </Link>
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          </div>
         ) : (
           data.data.map((booking, i) => (
             <BookingHistoryCard booking={booking} key={i} />

@@ -32,7 +32,7 @@ const GuestBookingDetailsQrDisplay = () => {
     isError,
     refetch,
   } = useGetGuestBookingDetails(paymentRef, number);
-
+  console.log({ detais: data });
   if (isError) {
     return (
       <div className="mt-[20px] max-w-md mx-auto">
@@ -62,7 +62,7 @@ const GuestBookingDetailsQrDisplay = () => {
   return (
     <div className="flex flex-col gap-3 max-w-md p-4 mx-auto">
       <Tabs defaultValue={"details"} className={"mt-4 flex flex-col gap-3"}>
-        <TabsList className={"w-full bg-white border h-10 border-border"}>
+        <TabsList className={"w-full bg-white border min-h-12 border-border"}>
           <TabsTrigger value={"details"}>Details</TabsTrigger>
           <TabsTrigger value={"qr"}>QR Code</TabsTrigger>
         </TabsList>
