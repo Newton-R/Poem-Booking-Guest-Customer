@@ -36,7 +36,7 @@ async function initiateApartmentBooking(
   payload: ApartmentBookingPayload,
 ): Promise<ApartmentBookingResponse> {
   try {
-    const { data } = await apiClient.post<ApartmentBookingResponse>(
+    const { data } = await publicClient.post<ApartmentBookingResponse>(
       "/bookings",
       payload,
     );

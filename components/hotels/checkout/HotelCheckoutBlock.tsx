@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader } from "@/components/ui/Loader";
 import { RegistrationReminderBlock } from "@/components/ui/registrationReminderblock";
+import { useInitiateCustomerHotelBooking } from "@/lib/bearer/form/useHotelBooking";
 import { formatPrice } from "@/lib/data";
 import {
   useGuestBookingInfo,
@@ -14,11 +15,14 @@ import { cn } from "@/lib/utils";
 import {
   ArrowRight,
   Controller,
+  HandshakeFreeIcons,
   Lock,
   Payment01FreeIcons,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { formatDate } from "date-fns";
+import Cookies from "js-cookie";
+import { AnimatePresence, motion as m } from "motion/react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { Suspense, useState } from "react";
 import { toast } from "sonner";
@@ -28,6 +32,7 @@ export const CheckoutFormBlock = () => {
   const router = useRouter();
   const params = useParams();
   const roomId = String(params.room);
+  const userCookie = Cookies.get("token");
 
   const bookingData = {
     entry: new Date(String(searchParams.get("checkIn"))),
@@ -52,7 +57,11 @@ export const CheckoutFormBlock = () => {
   const { mutate, isPending } = useGuestBookingInfo();
   const { mutate: HotelMutation, isPending: booking } =
     useInitiateHotelBooking();
-
+  const [bookingAsGuest, setBookingAsGuest] = useState<boolean>(
+    userCookie ? false : true,
+  );
+  const { mutate: CustomerBooking, isPending: bookingCustomer } =
+    useInitiateCustomerHotelBooking();
   const InitiateBooking = () => {
     const BookedItemData: BookingItem = {
       itemType: "hotel_room",
@@ -63,37 +72,59 @@ export const CheckoutFormBlock = () => {
       quantity: Number(searchParams.get("adults")),
     };
 
-    mutate(GuestInfo, {
-      onSuccess: (response) => {
-        HotelMutation(
-          {
-            bookingType: "hotel",
-            guestCustomerId: response.data.id,
-            idempotencyKey: response.data.id,
-            items: [BookedItemData],
+    if (userCookie && !bookingAsGuest) {
+      CustomerBooking(
+        {
+          bookingType: "hotel",
+          items: [BookedItemData],
+        },
+        {
+          onSuccess: (response) => {
+            toast.success("Hotel room booked successfully 🎉");
+            Cookies.set("bookingRef", response.data.bookingReference);
+            router.push(
+              `/payment/local?paymentMethod=${paymentMethod}&bookingId=${response.data.id}`,
+            );
           },
-          {
-            onSuccess: (response) => {
-              console.log({ bookResponse: response });
-              toast.success("Hotel room booked successfully 🎉");
-              router.push(
-                `/payment/local?paymentMethod=${paymentMethod}&bookingId=${response.data.id}`,
-              );
-            },
-            onError: (e) => {
-              console.log({ error: e });
-              toast.error(e.message);
-            },
+          onError: (e) => {
+            console.log({ error: e });
+            toast.error(e.message);
           },
-        );
-        console.log({ guest: response });
-        toast.success("Guest key created successfully. Booking hotel..");
-      },
-      onError: (e) => {
-        console.log({ error: e });
-        toast.error(e.message);
-      },
-    });
+        },
+      );
+    } else {
+      mutate(GuestInfo, {
+        onSuccess: (response) => {
+          HotelMutation(
+            {
+              bookingType: "hotel",
+              guestCustomerId: response.data.id,
+              idempotencyKey: response.data.id,
+              items: [BookedItemData],
+            },
+            {
+              onSuccess: (response) => {
+                toast.success("Hotel room booked successfully 🎉");
+                Cookies.set("bookingRef", response.data.bookingReference);
+                router.push(
+                  `/payment/local?paymentMethod=${paymentMethod}&bookingId=${response.data.id}`,
+                );
+              },
+              onError: (e) => {
+                console.log({ error: e });
+                toast.error(e.message);
+              },
+            },
+          );
+          console.log({ guest: response });
+          toast.success("Guest key created successfully. Booking hotel..");
+        },
+        onError: (e) => {
+          console.log({ error: e });
+          toast.error(e.message);
+        },
+      });
+    }
   };
 
   const handleFormInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,14 +137,51 @@ export const CheckoutFormBlock = () => {
       <h2>Complete your reservation</h2>
       <div className="grid grid-cols-1 md:grid-cols-5 mt-4 gap-6">
         <div className="md:col-span-3 flex flex-col gap-6">
-          <div className="p-6 bg-bg-mute rounded-2xl">
-            <span className="flex gap-2 items-center mb-4">
-              <div className="size-8 bg-secondary-foreground flex items-center justify-center rounded-md text-white">
-                <HugeiconsIcon icon={Controller} size={16} />
-              </div>
-              Guest Details
-            </span>
-
+          <div className="p-6 bg-bg-mute rounded-2xl relative overflow-hidden">
+            <div className="w-full justify-between mb-4 items-center flex">
+              <span className="flex gap-2 items-center">
+                <div className="size-8 bg-secondary-foreground flex items-center justify-center rounded-md text-white">
+                  <HugeiconsIcon icon={Controller} size={16} />
+                </div>
+                Guest Details
+              </span>
+              {userCookie && (
+                <Button
+                  onClick={() => setBookingAsGuest(!bookingAsGuest)}
+                  className={"p-2 h-9"}
+                >
+                  Continue as User
+                </Button>
+              )}
+            </div>
+            <AnimatePresence initial={false}>
+              {userCookie && !bookingAsGuest && (
+                <m.div
+                  initial={{ y: "-100%", opacity: 1 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: "-100%", opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                  key={"hid"}
+                  className="absolute inset-0 p-4 bg-white rounded-2xl border border-border flex items-center justify-center flex-col gap-2"
+                >
+                  <div className="w-12 h-12 flex items-center justify-center bg-primary text-white rounded-full">
+                    <HugeiconsIcon icon={HandshakeFreeIcons} />
+                  </div>
+                  <span className="font-bold">Booking for a friend ?</span>
+                  <p className="text-muted-foreground text-[14px] max-w-sm mx-auto text-center">
+                    Booking for a friend or want to book as a guest? Add their
+                    details below no account needed to check in, and you'll
+                    still manage the booking and payment.
+                  </p>
+                  <Button
+                    onClick={() => setBookingAsGuest(!bookingAsGuest)}
+                    className={"p-2 px-4 h-9 mt-2"}
+                  >
+                    Book for a friend
+                  </Button>
+                </m.div>
+              )}
+            </AnimatePresence>
             {/* Guest form */}
             <form className="flex flex-col gap-5">
               <div className="flex flex-col gap-1">
@@ -274,11 +342,11 @@ export const CheckoutFormBlock = () => {
                   {/* continue button */}
                   <div className="flex flex-col items-center justify-center gap-2 text-center">
                     <Button
-                      disabled={booking || isPending}
+                      disabled={booking || isPending || bookingCustomer}
                       onClick={InitiateBooking}
                       className={"p-6 w-full text-[14px]"}
                     >
-                      {booking || isPending ? (
+                      {booking || isPending || bookingCustomer ? (
                         <Loader />
                       ) : (
                         <>

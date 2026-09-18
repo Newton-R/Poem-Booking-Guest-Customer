@@ -1,5 +1,3 @@
-import { number } from "motion";
-
 export interface GuestHotelFormBookingData {
   fullName: string;
   phoneNumber: string;
@@ -39,6 +37,12 @@ export interface BookingInitiatePayload {
   guestCustomerId: string;
   promoCode?: string;
   idempotencyKey: string;
+  items: BookingItem[];
+}
+
+export interface CustomerBookingInitiatePayload {
+  bookingType: "hotel" | "apartment" | "transport" | "mixed";
+  promoCode?: string;
   items: BookingItem[];
 }
 

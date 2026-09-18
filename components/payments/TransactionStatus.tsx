@@ -4,6 +4,7 @@ import {
   CircleCheck,
   CircleStar,
   Download,
+  QrCodeScanFreeIcons,
   Star,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -61,10 +62,19 @@ interface StatesProp {
   ref: string;
   amount: string;
   method: string;
+  bookingId: string;
+  number: string;
 }
 
-export const SuccessfullState = ({ ref, amount, method }: StatesProp) => {
-  const cookie = Cookies.get("token");
+export const SuccessfullState = ({
+  ref,
+  amount,
+  method,
+  bookingId,
+  number,
+}: StatesProp) => {
+  const bookingRef = Cookies.get("bookingRef");
+  const user = Cookies.get("token");
   return (
     <div className="p-6 rounded-2xl border max-w-md mx-auto bg-white border-border w-[95%] flex flex-col items-center justify-center gap-6">
       {/* <ReviewModal /> */}
@@ -100,19 +110,29 @@ export const SuccessfullState = ({ ref, amount, method }: StatesProp) => {
 
           <span className="text-xs text-muted-foreground">{method}</span>
         </div>
+        <div className="w-full flex items-center justify-between">
+          <span className="text-xs text-muted-foreground">Phone Number</span>
+
+          <span className="text-xs text-muted-foreground">{number}</span>
+        </div>
       </div>
-      {cookie ? (
-        <Link href={"/"}>
-          <Button variant={"link"}>Back Home</Button>
+
+      {user ? (
+        <Link href={`/account/booking`} className="w-full">
+          <Button variant={"outline"} className={"w-full min-w-40 h-10"}>
+            Dashboard
+          </Button>
         </Link>
       ) : (
-        <div className="flex flex-col md:flex-row gap-4 w-full">
-          <Button className={" flex-1 p-6 h-10"}>View my booking</Button>
-          <Button className={"p-6 flex-1 w-full h-10"} variant={"outline"}>
-            <HugeiconsIcon icon={Download} size={14} />
-            Download Reciept
+        <Link
+          href={`/guest-booking/${bookingRef}?num=${number}`}
+          className="w-full"
+        >
+          <Button variant={"outline"} className={"w-full min-w-40 h-10"}>
+            <HugeiconsIcon icon={QrCodeScanFreeIcons} />
+            Booking Details
           </Button>
-        </div>
+        </Link>
       )}
       <p className="text-center text-xs text-muted-foreground mt-2">
         A confirmation email has been sent to your registered address.

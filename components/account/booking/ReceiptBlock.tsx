@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { useGetCustomerBookingDetails } from "@/lib/bearer/useGetBooking";
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,8 +14,9 @@ import {
   User,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { da } from "date-fns/locale";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import React from "react";
 
 const MealReciept = () => {
@@ -366,6 +368,10 @@ const HotelReciept = () => {
 
 export const ReceiptBlock = () => {
   const router = useRouter();
+  const params = useParams<{ bookingId: string }>();
+  const bookingId = params.bookingId;
+  const { data } = useGetCustomerBookingDetails(bookingId);
+  console.log({ booking_details: data });
   return (
     <div className="flex flex-col gap-6 w-full items-start max-w-xl mx-auto">
       <Button

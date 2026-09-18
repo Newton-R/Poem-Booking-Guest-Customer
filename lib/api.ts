@@ -30,5 +30,6 @@ apiClient.interceptors.response.use(
     if (axios.isAxiosError(error) && error.response?.status === 401) {
       openModal();
     }
+    return Promise.reject(error);
   },
 );
