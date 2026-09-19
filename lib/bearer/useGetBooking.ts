@@ -1,7 +1,10 @@
 import { isAxiosError } from "axios";
 import { apiClient } from "../api";
 import { useQuery } from "@tanstack/react-query";
-import { GuestBookingDetailsResponseData } from "../types/booking_data";
+import {
+  GuestBookingDetailsResponse,
+  GuestBookingDetailsResponseData,
+} from "../types/booking_data";
 
 interface BookingsFetchResponse {
   data: GuestBookingDetailsResponseData[];
@@ -29,9 +32,13 @@ export function useGetCustomerBookings() {
   });
 }
 
-async function BookingDetails(id: string) {
+async function BookingDetails(
+  id: string,
+): Promise<GuestBookingDetailsResponse> {
   try {
-    const { data } = await apiClient.get(`/bookings/${id}`);
+    const { data } = await apiClient.get<GuestBookingDetailsResponse>(
+      `/bookings/${id}`,
+    );
     return data;
   } catch (e) {
     if (isAxiosError(e)) {
