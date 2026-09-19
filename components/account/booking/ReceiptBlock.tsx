@@ -1,12 +1,26 @@
 "use client";
+import { BookingQRCode } from "@/components/BookingQrCode";
+import { BookingReceiptSkeleton } from "@/components/loaders/account/bookingReciept";
 import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { useGetCustomerBookingDetails } from "@/lib/bearer/useGetBooking";
+import { formatPrice } from "@/lib/data";
+import { GuestBookingDetailsResponseData } from "@/lib/types/booking_data";
+import { useUserStore } from "@/lib/useUserStore";
 import {
   ArrowLeft,
   ArrowRight,
   Bus,
   Calendar,
   CircleCheck,
+  CloudAlertFreeIcons,
   Download,
   Money,
   Payment01Icon,
@@ -14,6 +28,7 @@ import {
   User,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { differenceInDays, formatDate } from "date-fns";
 import { da } from "date-fns/locale";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -239,7 +254,12 @@ const BusReciept = () => {
   );
 };
 
-const HotelReciept = () => {
+const HotelReciept = ({
+  booking,
+}: {
+  booking: GuestBookingDetailsResponseData;
+}) => {
+  const { user } = useUserStore();
   return (
     <div className="flex items-center overflow-hidden w-full text-[14px] justify-center bg-white shadow-md rounded-2xl flex-col ">
       <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 w-full p-4 md:p-6">
@@ -250,25 +270,29 @@ const HotelReciept = () => {
           </p>
         </div>
         <div className="flex flex-col md:items-end gap-2.5">
-          <span className="text-[10px] w-fit bg-primary p-1 px-2 rounded-full">
-            PAID IN FULL
+          <span className="text-[10px] w-fit bg-primary/10 border border-primary text-primary font-bold first-letter:uppercase p-1 px-2 rounded-full">
+            {booking.bookingStatus}
           </span>
           <div className="flex flex-col md:items-end">
             <span className="text-xs text-muted-foreground">RECEIPT NO</span>
-            <span className="font-bold">REC-8821-4490</span>
+            <span className="font-bold">{booking.bookingReference}</span>
           </div>
         </div>
       </div>
       <div className="grid md:grid-cols-3 bg-bg-mute/30 border-y border-border w-full gap-2 md:gap-6 grid-cols-1">
         <div className="flex flex-col gap-2 p-4 md:p-6 border-r border-border">
           <span className="text-xs text-muted-foreground">DATE OF ISSUE</span>
-          <span className="font-bold">October 12, 2024</span>
+          <span className="font-bold">
+            {formatDate(new Date(booking.createdAt), "EEE, dd MMM yyyy")}
+          </span>
         </div>
         <div className="flex flex-col gap-2 p-4 md:p-4">
           <span className="text-xs text-muted-foreground">CUSTOMER</span>
           <div className="flex flex-col gap-0.5">
-            <span className="font-bold">AMADOU MUSA</span>
-            <span className="text-muted-foreground">adamoumusa@gmail.com</span>
+            <span className="font-bold">
+              {user?.data.firstName} {user?.data.lastName}
+            </span>
+            <span className="text-muted-foreground">{user?.data.email}</span>
           </div>
         </div>
         <div className="flex flex-col gap-1 p-4 md:p-6 border-l border-border">
@@ -277,7 +301,9 @@ const HotelReciept = () => {
             {/* <Image/> */}
             <div className="flex text-xs flex-col gap-0.5">
               <span className="font-bold">MTN Mobile Money</span>
-              <span className="text-muted-foreground">******455</span>
+              <span className="text-muted-foreground">
+                {booking.customerPhoneNumber}
+              </span>
             </div>
           </div>
         </div>
@@ -287,27 +313,46 @@ const HotelReciept = () => {
           <span className="text-xs text-muted-foreground">
             RESERVATION DETAILS
           </span>
-          <div className="flex p-6 w-full bg-primary/30 rounded-2xl flex-col gap-4 md:flex-row">
-            <Image
+          <div className="flex p-6 w-full bg-primary/10 rounded-2xl flex-col gap-4 md:flex-row">
+            <img
               className="rounded-2xl"
-              src={"/default.png"}
+              src={
+                process.env.NEXT_PUBLIC_IMAGE_URL +
+                booking.items[0].service.imageUrl
+              }
               alt="img"
               width={100}
               height={100}
             />
             <div className=" flex flex-col  gap-1">
               <span className="text-xl font-bold">
-                Kribi Sands Resort & Spa
+                {booking.items[0].serviceName}
               </span>
-              <span className="text-primary">Ocean View Suite</span>
-              <div className="flex gap-4 items-center">
+              <span className="text-primary">
+                {booking.bookingType === "hotel" ? (
+                  <span>{booking.items[0].service.roomType.name}</span>
+                ) : (
+                  booking.items[0].service.apartment.apartmentType
+                )}
+              </span>
+              <div className="flex gap-4 flex-col md:flex-row">
                 <span className="flex items-center text-muted-foreground gap-1">
                   <HugeiconsIcon icon={Calendar} size={18} />
-                  <span>Oct 15 - Oct 18</span>
+                  <span>
+                    {formatDate(
+                      new Date(booking.items[0].service.startDatetime),
+                      "dd MMM yyyy",
+                    )}{" "}
+                    -{" "}
+                    {formatDate(
+                      new Date(booking.items[0].service.endDatetime),
+                      "dd MMM yyyy",
+                    )}{" "}
+                  </span>
                 </span>
                 <span className="flex items-center text-muted-foreground gap-1">
                   <HugeiconsIcon icon={User} size={18} />
-                  <span>2 Guest</span>
+                  <span>{booking.items[0].guests.length} Guest(s)</span>
                 </span>
               </div>
             </div>
@@ -320,29 +365,43 @@ const HotelReciept = () => {
           <div className="rounded-2xl p-6 flex flex-col gap-4 bg-bg-mute text-xs">
             <div className="w-full flex items-center justify-between gap-4">
               <span className="text-muted-foreground">
-                Accommodation Subtotal (3 Nights)
+                Accommodation Subtotal (
+                {differenceInDays(
+                  new Date(booking.items[0].service.endDatetime),
+                  new Date(booking.items[0].service.startDatetime),
+                )}{" "}
+                Nights)
               </span>
-              <span className="font-bold">213,043 XAF</span>
+              <span className="font-bold">
+                {formatPrice(booking.items[0].totalPrice)}
+              </span>
             </div>
             <div className="w-full flex items-center justify-between gap-4">
-              <span className="text-muted-foreground">
-                Service & Booking Fee
+              <span className="text-muted-foreground">Discount Amount</span>
+              <span className="font-bold whitespace-nowrap">
+                {formatPrice(booking.discountAmount)}
               </span>
-              <span className="font-bold whitespace-nowrap">12,000 XAF</span>
             </div>
-            <div className="w-full flex items-center justify-between pb-4 border-b border-border gap-4">
-              <span className="text-muted-foreground">
-                Local Hospitality Tax (10%)
-              </span>
-              <span className="font-bold">19,957 XAF</span>
-            </div>
+
             <div className="flex flex-col md:flex-row justify-between md:items-end">
               <div className="flex flex-col gap-0.5">
                 <span className="text-xs text-primary">TOTAL AMOUNT PAID</span>
-                <span className="text-xl font-bold">245,000 XAF</span>
+                <span className="text-xl font-bold">
+                  {formatPrice(booking.totalAmount)}
+                </span>
               </div>
               <p>Payment processed via Secured Gateway</p>
             </div>
+          </div>
+        </div>
+      </div>
+      <div className="p-6 w-full">
+        <div className="flex flex-col w-full gap-4">
+          <div className="flex flex-col">
+            <span className="small-mute">OR CODE</span>
+          </div>
+          <div className="w-full flex items-center justify-center">
+            <BookingQRCode data={booking.qrToken} initials="PB" />
           </div>
         </div>
       </div>
@@ -370,8 +429,9 @@ export const ReceiptBlock = () => {
   const router = useRouter();
   const params = useParams<{ bookingId: string }>();
   const bookingId = params.bookingId;
-  const { data } = useGetCustomerBookingDetails(bookingId);
-  console.log({ booking_details: data });
+  const { data, isLoading, isError, refetch } =
+    useGetCustomerBookingDetails(bookingId);
+
   return (
     <div className="flex flex-col gap-6 w-full items-start max-w-xl mx-auto">
       <Button
@@ -382,8 +442,39 @@ export const ReceiptBlock = () => {
         <HugeiconsIcon icon={ArrowLeft} size={16} />
         Back to bookings
       </Button>
+
+      {isError && (
+        <div className="mt-[20px]">
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia
+                variant="icon"
+                className="bg-destructive/20 text-destructive"
+              >
+                <HugeiconsIcon icon={CloudAlertFreeIcons} size={40} />
+              </EmptyMedia>
+              <EmptyTitle>Error</EmptyTitle>
+              <EmptyDescription>
+                Something went wrong getting your booking details.
+              </EmptyDescription>
+              <EmptyContent>
+                <Button variant={"outline"} onClick={() => refetch()}>
+                  Try Again
+                </Button>
+              </EmptyContent>
+            </EmptyHeader>
+          </Empty>
+        </div>
+      )}
+      {isLoading || !data ? (
+        <BookingReceiptSkeleton />
+      ) : (
+        <HotelReciept
+          booking={data?.data ?? ({} as GuestBookingDetailsResponseData)}
+        />
+      )}
       {/* <MealReciept /> */}
-      <HotelReciept />
+
       {/* <BusReciept /> */}
     </div>
   );

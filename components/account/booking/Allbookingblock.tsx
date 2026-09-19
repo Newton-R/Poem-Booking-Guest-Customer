@@ -317,8 +317,6 @@ const BookingHistoryCard = ({
 
 export const AllBookingBlock = () => {
   const { data, isError, isLoading, refetch } = useGetCustomerBookings();
-  console.log({ bookings: data });
-
   return (
     <main className="flex flex-col gap-6">
       <DashIntro

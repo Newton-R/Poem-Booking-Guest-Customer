@@ -54,7 +54,7 @@ export const AccountSideBar = () => {
   ];
   return (
     <div className="h-full hidden lg:flex">
-      <div className="sticky top-[calc(var(--nav-height)+20px)] h-fit flex gap-4 flex-col">
+      <div className="sticky top-[calc(var(--nav-height)+20px)] h-fit w-full flex gap-4 flex-col">
         <div className="flex flex-col gap-2">
           {links.map((link) => (
             <Link
@@ -62,7 +62,7 @@ export const AccountSideBar = () => {
               key={link.key}
               className={cn(
                 "flex items-center gap-2 p-3 rounded-md hover:bg-bg-mute/90",
-                pathname.includes(link.key) || pathname === link.link
+                pathname.includes(link.key) && pathname === link.link
                   ? "bg-secondary-foreground hover:bg-secondary-foreground/90 text-white"
                   : "",
               )}

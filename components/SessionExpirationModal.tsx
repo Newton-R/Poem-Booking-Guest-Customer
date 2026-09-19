@@ -5,18 +5,19 @@ import React from "react";
 import { Button } from "./ui/button";
 import { useSessionModal } from "@/lib/useSessionModal";
 import { useUserStore } from "@/lib/useUserStore";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
 export const SessionExpirationModal = () => {
   const { isOpen, closeModal } = useSessionModal();
   const { deleteUser } = useUserStore();
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = () => {
     deleteUser();
     Cookies.remove("token");
-    router.push("/auth");
+    router.push(`/auth?callbackUrl=${pathname}`);
     closeModal();
   };
 
