@@ -94,15 +94,15 @@ export const DetailedBusRouteCard = ({
             </span>
           </div>
         </div>
-        <div className="flex justify-between bg-background p-4 rounded-md items-center mt-3">
+        {/* <div className="flex justify-between bg-background p-4 rounded-md items-center mt-3">
           <span className="text-xs flex items-center gap-2">
             <HugeiconsIcon icon={Redo} size={13} className="text-primary" />
-            {/* {busroute.frequency} */}
+            {busroute.frequency}
           </span>
           <span className="text-[10px] text-primary bg-primary/20 rounded-xs p-1 px-2">
             HIGH FREQUENCY
           </span>
-        </div>
+        </div> */}
         <div className="flex mt-4 items-center gap-4">
           <Link className="w-full" href={`/buses/${busroute.id}`}>
             <Button className={"rounded-md w-full p-5 px-8"}>Book Seat</Button>
