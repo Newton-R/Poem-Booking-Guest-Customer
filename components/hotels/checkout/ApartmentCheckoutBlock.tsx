@@ -80,6 +80,7 @@ export const ApartmentCheckoutFormBlock = () => {
         {
           onSuccess: (response) => {
             Cookies.set("bookingRef", response.data.bookingReference);
+
             router.push(
               `/payment/local?paymentMethod=${paymentMethod}&bookingId=${response.data.id}`,
             );
@@ -105,6 +106,7 @@ export const ApartmentCheckoutFormBlock = () => {
               onSuccess: (response) => {
                 toast.success("Booking request successful.");
                 Cookies.set("bookingRef", response.data.bookingReference);
+
                 router.push(
                   `/payment/local?paymentMethod=${paymentMethod}&bookingId=${response.data.id}`,
                 );

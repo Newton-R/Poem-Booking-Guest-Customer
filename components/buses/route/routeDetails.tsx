@@ -2,6 +2,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import SeatPicker from "@/components/ui/SeatPicker";
+import {
+  useGetRouteDetail,
+  useGetTransportRoutes,
+} from "@/lib/public/useGetBus";
 import { cn } from "@/lib/utils";
 import {
   Alert01FreeIcons,
@@ -15,9 +19,22 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
+import { useParams } from "next/navigation";
 import React, { useState } from "react";
 
 export const RouteDetailsBlock = () => {
+  const params = useParams<{ id: string; route: string }>();
+  const { data, isError, isLoading } = useGetRouteDetail(params.route);
+
+  if (!data) {
+    return <>Not found</>;
+  }
+
+  const currentTrip = data.data.scheduledTrips.find(
+    (trip) => trip.id === params.id,
+  );
+  console.log({ trip: currentTrip });
+
   const Ranges = ["All", "VIP", "Classic"];
   const Filters = [
     {

@@ -116,21 +116,20 @@ export const SuccessfullState = ({
           <span className="text-xs text-muted-foreground">{number}</span>
         </div>
       </div>
+      <Link
+        href={`/guest-booking/${bookingRef}?num=${number}`}
+        className="w-full"
+      >
+        <Button variant={"outline"} className={"w-full min-w-40 h-10"}>
+          <HugeiconsIcon icon={QrCodeScanFreeIcons} />
+          Booking Details
+        </Button>
+      </Link>
 
-      {user ? (
+      {user && (
         <Link href={`/account/booking`} className="w-full">
           <Button variant={"outline"} className={"w-full min-w-40 h-10"}>
             Dashboard
-          </Button>
-        </Link>
-      ) : (
-        <Link
-          href={`/guest-booking/${bookingRef}?num=${number}`}
-          className="w-full"
-        >
-          <Button variant={"outline"} className={"w-full min-w-40 h-10"}>
-            <HugeiconsIcon icon={QrCodeScanFreeIcons} />
-            Booking Details
           </Button>
         </Link>
       )}
