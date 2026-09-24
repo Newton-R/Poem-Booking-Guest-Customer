@@ -12,8 +12,12 @@ import {
 } from "@/components/ui/empty";
 import { useGetCustomerBookingDetails } from "@/lib/bearer/useGetBooking";
 import { formatPrice } from "@/lib/data";
-import { GuestBookingDetailsResponseData } from "@/lib/types/booking_data";
+import {
+  GuestBookingDetailsResponseData,
+  TransportBookingData,
+} from "@/lib/types/booking_data";
 import { useUserStore } from "@/lib/useUserStore";
+import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
   ArrowRight,
@@ -139,7 +143,27 @@ const MealReciept = () => {
   );
 };
 
-const BusReciept = () => {
+interface BusReceiptProps {
+  booking: TransportBookingData;
+}
+
+const BusReceipt = ({ booking }: BusReceiptProps) => {
+  const {
+    bookingReference,
+    bookingStatus,
+    finalAmount,
+    totalAmount,
+    discountAmount,
+    currency,
+    createdAt,
+    customerPhoneNumber,
+    guestCustomer,
+  } = booking;
+
+  const item = booking.items[0];
+  const { guests, service } = item;
+  const { transport } = service;
+
   return (
     <div className="flex items-center w-full justify-center flex-col gap-6">
       <div className="border shadow-md border-border bg-white text-[14px] gap-6 w-full flex flex-col p-8 rounded-xl">
@@ -152,79 +176,122 @@ const BusReciept = () => {
               Thank you for travelling with POEM
             </p>
           </div>
-          <span className="text-xs flex gap-1 items-center p-1 px-2 rounded-full bg-green-500 text-white">
+          <span
+            className={cn(
+              "text-xs flex gap-1 w-fit flex-nowrap items-center p-1 px-2 rounded-full h-fit",
+              booking.bookingStatus === "confirmed"
+                ? " text-green-500 bg-green-500/20"
+                : booking.bookingStatus === "pending"
+                  ? "bg-yellow-500/20 text-yellow-500"
+                  : booking.bookingStatus === "completed"
+                    ? "bg-purple-500/20 text-purple-500"
+                    : "bg-destructive/20 text-destructive",
+            )}
+          >
             <HugeiconsIcon
               icon={CircleCheck}
               size={12}
-              className="text-green-500 fill-white"
+              className="fill-white"
             />
-            PAID
+            <span className="uppercase">{bookingStatus}</span>
           </span>
         </div>
+
         <div className="gap-6 grid grid-cols-1 pb-6 border-b border-border md:grid-cols-2">
           <div className="flex flex-col gap-1">
             <span className="small-mute">RECEIPT NUMBER</span>
-            <span className="text-xl font-bold">REC-BUS-5521</span>
+            <span className="text-xl font-bold">{bookingReference}</span>
           </div>
           <div className="flex flex-col gap-1">
-            <span className="small-mute">CUSTOMER NAME</span>
-            <span className="">Marc-Aurèle Tchangue</span>
+            <span className="small-mute">OTP</span>
+            <span className="text-xl font-bold">{booking.checkinOtp}</span>
           </div>
           <div className="flex flex-col gap-1">
             <span className="small-mute">DATE OF ISSUE</span>
-            <span className="">Sep 28, 2024</span>
+            <span>{formatDate(new Date(createdAt), "MMM dd, yyyy")}</span>
           </div>
           <div className="flex flex-col gap-1">
-            <span className="small-mute">EMAIL ADDRESS</span>
-            <span className="">newton4raul@gmail.com</span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="small-mute">PAYMENT METHOD</span>
-            <span className="">MTN MoMo</span>
+            <span className="small-mute">PHONE NUMBER</span>
+            <span>{customerPhoneNumber}</span>
           </div>
         </div>
+
         <div className="flex flex-col gap-2">
           <span className="flex gap-1 items-center">
             <HugeiconsIcon icon={Bus} size={18} className="text-primary" />
             Trip Summary
           </span>
-          <div className="flex justify-between p-6 rounded-2xl bg-primary/30">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-6 rounded-2xl bg-primary/20">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[10px] text-muted-foreground">AGENCY</span>
+              <span className="font-bold">{transport.agencyName}</span>
+            </div>
             <div className="flex flex-col gap-0.5">
               <span className="text-[10px] text-muted-foreground">ROUTE</span>
               <span className="font-bold flex items-center gap-2">
-                Douala <HugeiconsIcon icon={ArrowRight} size={10} /> Yaounde
+                {transport.originCity}{" "}
+                <HugeiconsIcon icon={ArrowRight} size={10} />{" "}
+                {transport.destinationCity}
               </span>
             </div>
             <div className="flex flex-col gap-0.5">
               <span className="text-[10px] text-muted-foreground">
                 DEPARTURE DATE
               </span>
-              <span className="font-bold">Sep 28, 2024</span>
+              <span className="font-bold">
+                {formatDate(new Date(service.startDatetime), "MMM dd, yyyy")}
+              </span>
             </div>
             <div className="flex flex-col gap-0.5">
               <span className="text-[10px] text-muted-foreground">
-                SEAT ALLOCATION
+                DEPARTURE TIME
               </span>
-              <span className="p-1 px-2 w-fit bg-black rounded-sm text-white">
-                12 - VIP
+              <span className="font-bold">
+                {formatDate(new Date(service.departureTime), "hh:mm a")}
               </span>
             </div>
           </div>
+          {/* Passenger seat allocations */}
+          <div className="flex flex-col gap-2 mt-2">
+            {guests.map((guest) => (
+              <div
+                key={guest.id}
+                className="flex items-center justify-between rounded-lg border border-border p-3"
+              >
+                <div className="flex flex-col gap-0.5">
+                  <span className="font-medium">{guest.fullName}</span>
+                  <span className="text-xs text-muted-foreground capitalize">
+                    {guest.passengerType}
+                  </span>
+                </div>
+                <span className="p-1 px-2 w-fit bg-black rounded-sm text-white text-xs">
+                  Seat {guest.seatNumber}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
+
         <div className="pt-6 border-t flex flex-col gap-4 border-border">
           <div className="flex items-center text-muted-foreground justify-between w-full">
-            <span>Ticket Base Fare</span>
-            <span>15,000 XAF</span>
+            <span>Ticket Amount</span>
+            <span>
+              {currency} {formatPrice(totalAmount)}
+            </span>
           </div>
-          <div className="flex items-center text-muted-foreground justify-between w-full">
-            <span>Booking & Service Fee</span>
-            <span>1,500 XAF</span>
-          </div>
+          {Number(discountAmount) > 0 && (
+            <div className="flex items-center text-muted-foreground justify-between w-full">
+              <span>Discount</span>
+              <span className="text-green-600">
+                -{currency} {formatPrice(discountAmount)}
+              </span>
+            </div>
+          )}
 
           <div className="p-6 mt-2 bg-secondary-foreground rounded-2xl text-white flex items-center justify-between">
             <div className="flex flex-col gap-1">
               <span className="opacity-80">TOTAL AMOUNT PAID</span>
-              <span className="text-3xl">16,500 XAF</span>
+              <span className="text-3xl">{formatPrice(finalAmount)}</span>
             </div>
             <div className="rounded-full w-10 h-10 bg-white/20 flex items-center justify-center">
               <HugeiconsIcon
@@ -235,12 +302,13 @@ const BusReciept = () => {
             </div>
           </div>
         </div>
+
         <div className="mt-2 flex flex-col md:flex-row gap-4">
-          <Button className={" p-6 rounded-md flex-1"}>
+          <Button className={"p-6 rounded-md flex-1"}>
             <HugeiconsIcon icon={Download} size={16} />
             Download PDF
           </Button>
-          <Button variant={"outline"} className={" p-6 rounded-md flex-1"}>
+          <Button variant={"outline"} className={"p-6 rounded-md flex-1"}>
             <HugeiconsIcon icon={Printer} size={16} />
             Print Receipt
           </Button>
@@ -270,7 +338,18 @@ const HotelReciept = ({
           </p>
         </div>
         <div className="flex flex-col md:items-end gap-2.5">
-          <span className="text-[10px] w-fit bg-primary/10 border border-primary text-primary font-bold first-letter:uppercase p-1 px-2 rounded-full">
+          <span
+            className={cn(
+              "text-xs flex gap-1 w-fit flex-nowrap items-center p-1 px-2 rounded-full h-fit",
+              booking.bookingStatus === "confirmed"
+                ? " text-green-500 bg-green-500/20"
+                : booking.bookingStatus === "pending"
+                  ? "bg-yellow-500/20 text-yellow-500"
+                  : booking.bookingStatus === "completed"
+                    ? "bg-purple-500/20 text-purple-500"
+                    : "bg-destructive/20 text-destructive",
+            )}
+          >
             {booking.bookingStatus}
           </span>
           <div className="flex flex-col md:items-end">
@@ -285,6 +364,10 @@ const HotelReciept = ({
           <span className="font-bold">
             {formatDate(new Date(booking.createdAt), "EEE, dd MMM yyyy")}
           </span>
+        </div>
+        <div className="flex flex-col gap-2 p-4 md:p-6 border-r border-border">
+          <span className="text-xs text-muted-foreground">OTP</span>
+          <span className="font-bold">{booking.checkinOtp}</span>
         </div>
         <div className="flex flex-col gap-2 p-4 md:p-4">
           <span className="text-xs text-muted-foreground">CUSTOMER</span>
@@ -332,6 +415,7 @@ const HotelReciept = ({
                 {booking.bookingType === "hotel" ? (
                   <span>{booking.items[0].service.roomType.name}</span>
                 ) : (
+                  booking.bookingType === "apartment" &&
                   booking.items[0].service.apartment.apartmentType
                 )}
               </span>
@@ -425,6 +509,20 @@ const HotelReciept = ({
   );
 };
 
+const ReceiptCardBlock = ({
+  booking,
+}: {
+  booking: GuestBookingDetailsResponseData;
+}) => {
+  if (booking.bookingType === "apartment" || booking.bookingType === "hotel") {
+    return <HotelReciept booking={booking} />;
+  }
+
+  if (booking.bookingType === "transport") {
+    return <BusReceipt booking={booking} />;
+  }
+};
+
 export const ReceiptBlock = () => {
   const router = useRouter();
   const params = useParams<{ bookingId: string }>();
@@ -469,13 +567,8 @@ export const ReceiptBlock = () => {
       {isLoading || !data ? (
         <BookingReceiptSkeleton />
       ) : (
-        <HotelReciept
-          booking={data?.data ?? ({} as GuestBookingDetailsResponseData)}
-        />
+        <ReceiptCardBlock booking={data.data} />
       )}
-      {/* <MealReciept /> */}
-
-      {/* <BusReciept /> */}
     </div>
   );
 };

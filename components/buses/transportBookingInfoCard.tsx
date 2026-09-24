@@ -6,10 +6,9 @@ import {
   Cancel01FreeIcons,
   CheckmarkCircle02Icon,
   Copy01FreeIcons,
-  Location01Icon,
-  Star,
+  Bus02Icon,
+  UserIcon,
 } from "@hugeicons/core-free-icons";
-import { GuestBookingDetailsResponseData } from "@/lib/types/booking_data";
 import { Button } from "../ui/button";
 import { formatDate } from "date-fns";
 import {
@@ -26,10 +25,10 @@ import { toast } from "sonner";
 import { Loader } from "../ui/Loader";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { TransportBookingInfoCard } from "../buses/transportBookingInfoCard";
-interface BookingSuccessCardProps {
-  booking: GuestBookingDetailsResponseData;
+import { TransportBookingData } from "@/lib/types/booking_data";
+
+interface TransportBookingInfoCardProps {
+  booking: TransportBookingData;
 }
 
 const statusVariant: Record<string, "default" | "secondary" | "destructive"> = {
@@ -38,18 +37,30 @@ const statusVariant: Record<string, "default" | "secondary" | "destructive"> = {
   failed: "destructive",
 };
 
-export function BookingInfoCard({ booking }: BookingSuccessCardProps) {
+function formatDuration(minutes: number) {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return `${h}h ${m > 0 ? `${m}m` : ""}`.trim();
+}
+
+export function TransportBookingInfoCard({
+  booking,
+}: TransportBookingInfoCardProps) {
   const {
     bookingReference,
     bookingStatus,
-    bookingType,
-    checkinOtp,
     finalAmount,
     currency,
     discountAmount,
     createdAt,
+    customerPhoneNumber,
     guestCustomer,
   } = booking;
+
+  const item = booking.items[0];
+  const { guests, service } = item;
+  const { transport } = service;
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const router = useRouter();
 
@@ -59,14 +70,14 @@ export function BookingInfoCard({ booking }: BookingSuccessCardProps) {
 
   const { mutate, isPending } = useCancelBooking(
     bookingReference,
-    guestCustomer.phoneNumber,
+    String(customerPhoneNumber),
   );
 
   const handleCancel = () => {
     mutate(
-      { ref: bookingReference, number: guestCustomer.phoneNumber },
+      { ref: bookingReference, number: String(customerPhoneNumber) },
       {
-        onSuccess: (response) => {
+        onSuccess: () => {
           toast.success("Booking cancelled successfully..");
           router.push("/");
         },
@@ -76,10 +87,6 @@ export function BookingInfoCard({ booking }: BookingSuccessCardProps) {
       },
     );
   };
-
-  if (booking.bookingType === "transport") {
-    return <TransportBookingInfoCard booking={booking} />;
-  }
 
   return (
     <Card className="w-full max-w-md rounded-[11px]">
@@ -96,49 +103,56 @@ export function BookingInfoCard({ booking }: BookingSuccessCardProps) {
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4">
-        {/* Hotel/Property info */}
+        {/* Agency info */}
         <div className="flex items-center gap-3 rounded-xl border border-border p-3">
-          <div className="size-16 rounded-lg overflow-hidden shrink-0">
-            <img
-              src={
-                process.env.NEXT_PUBLIC_IMAGE_URL +
-                booking.items[0].serviceImageUrl
-              }
-              width={100}
-              height={100}
-              alt={booking.hotelName}
-              className="w-full h-full object-cover"
+          <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+            <HugeiconsIcon
+              icon={Bus02Icon}
+              size={22}
+              className="text-primary"
             />
           </div>
           <div className="flex flex-col gap-0.5 min-w-0">
             <span className="font-semibold truncate">
-              {booking.bookingType === "hotel"
-                ? booking.items[0].service.hotel.name
-                : booking.items[0].service.name}
+              {transport.agencyName}
             </span>
-            <span className="text-xs flex items-center gap-1.5 text-muted-foreground truncate">
-              <HugeiconsIcon
-                icon={Location01Icon}
-                size={14}
-                className="shrink-0"
-              />
-              {booking.items[0].service.location.address}
-            </span>
-            <span className="flex items-center gap-1">
-              <HugeiconsIcon
-                icon={Star}
-                size={14}
-                className="text-primary fill-primary"
-              />
-              {booking.bookingType === "hotel" ? (
-                Number(booking.items[0].service.hotel.starRating).toFixed(1)
-              ) : (
-                <span className="first-letter:uppercase">
-                  {booking.items[0].service.kind}
-                </span>
-              )}
+            <span className="text-xs text-muted-foreground truncate">
+              {service.name}
             </span>
           </div>
+        </div>
+
+        <Separator />
+
+        {/* Route timeline */}
+        <div className="flex flex-col gap-3 rounded-xl bg-muted p-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col">
+              <span className="text-lg font-bold">
+                {formatDate(new Date(service.startDatetime), "hh:mm a")}
+              </span>
+              <span className="font-medium">{transport.originCity}</span>
+            </div>
+            <div className="flex flex-col items-center justify-center gap-1 pt-1.5 flex-1">
+              <div className="flex h-0.5 relative bg-gray-400 w-full items-center">
+                <div className="size-2 rounded-full border border-gray-400 bg-background absolute -left-1" />
+                <div className="size-2 rounded-full border bg-primary border-gray-400 absolute -right-1" />
+              </div>
+              <span className="text-xs text-primary whitespace-nowrap">
+                {formatDuration(transport.estimatedDurationMinutes)} &bull;{" "}
+                {transport.distanceKm}km
+              </span>
+            </div>
+            <div className="flex flex-col text-end">
+              <span className="text-lg font-bold">
+                {formatDate(new Date(service.endDatetime), "hh:mm a")}
+              </span>
+              <span className="font-medium">{transport.destinationCity}</span>
+            </div>
+          </div>
+          <span className="text-xs text-muted-foreground pt-1 border-t border-border/60">
+            {formatDate(new Date(service.startDatetime), "EEE, dd MMM yyyy")}
+          </span>
         </div>
 
         <Separator />
@@ -158,14 +172,46 @@ export function BookingInfoCard({ booking }: BookingSuccessCardProps) {
 
         <Separator />
 
+        {/* Passengers + seats */}
+        <div className="flex flex-col gap-2">
+          <span className="text-xs text-muted-foreground">
+            PASSENGER(S) & SEAT(S)
+          </span>
+          <div className="flex flex-col gap-2">
+            {guests.map((guest) => (
+              <div
+                key={guest.id}
+                className="flex items-center justify-between rounded-lg border border-border p-2.5"
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  <HugeiconsIcon
+                    icon={UserIcon}
+                    size={16}
+                    className="text-muted-foreground shrink-0"
+                  />
+                  <div className="flex flex-col min-w-0">
+                    <span className="font-medium truncate">
+                      {guest.fullName}
+                    </span>
+                    <span className="text-xs text-muted-foreground capitalize">
+                      {guest.passengerType}
+                    </span>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="shrink-0">
+                  Seat {guest.seatNumber}
+                </Badge>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <Separator />
+
         <div className="grid grid-cols-2 gap-4">
           <div className="flex flex-col">
-            <span className="text-xs text-muted-foreground">GUEST</span>
+            <span className="text-xs text-muted-foreground">BOOKED BY</span>
             <span className="font-medium">{guestCustomer.fullName}</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs text-muted-foreground">TYPE</span>
-            <span className="font-medium capitalize">{bookingType}</span>
           </div>
           <div className="flex flex-col">
             <span className="text-xs text-muted-foreground">AMOUNT PAID</span>
@@ -182,12 +228,9 @@ export function BookingInfoCard({ booking }: BookingSuccessCardProps) {
             </div>
           )}
           <div className="flex flex-col">
-            <span className="text-xs text-muted-foreground">DATE</span>
+            <span className="text-xs text-muted-foreground">BOOKED ON</span>
             <span className="font-medium">
-              {formatDate(
-                new Date(createdAt).toLocaleDateString(),
-                "EEE, dd MMM yyyy",
-              )}
+              {formatDate(new Date(createdAt), "EEE, dd MMM yyyy")}
             </span>
           </div>
         </div>
@@ -197,7 +240,7 @@ export function BookingInfoCard({ booking }: BookingSuccessCardProps) {
         <div className="flex flex-col items-center gap-1 rounded-xl bg-muted p-4">
           <span className="text-xs text-muted-foreground">CHECK-IN OTP</span>
           <span className="text-2xl font-bold tracking-widest">
-            {checkinOtp}
+            {booking.checkinOtp}
           </span>
         </div>
 

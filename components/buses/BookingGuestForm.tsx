@@ -88,9 +88,9 @@ const BookingGuestForm = ({ iteminfo }: PassengerFormProps) => {
                 toast.success("Ticket booking successful.");
                 Cookies.set("bookingRef", response.data.bookingReference);
                 console.log({ response });
-                // router.push(
-                //   `/payment/local?paymentMethod=${paymentMethod}&bookingId=${response.data.id}`,
-                // );
+                router.push(
+                  `/payment/local?paymentMethod=${paymentMethod}&bookingId=${response.data.id}`,
+                );
               },
               onError: (error) => {
                 toast.error(error.message);

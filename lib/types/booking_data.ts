@@ -80,6 +80,30 @@ interface ApartmentItemService {
   startDatetime: string;
 }
 
+interface TransportItemService {
+  arrivalTime: string;
+  departureTime: string;
+  endDatetime: string;
+  imageUrl: string;
+  kind: "transport";
+  location: {
+    cityName: string;
+    address: string;
+    latitude: string;
+    longitude: string;
+    originCity: string;
+  };
+  name: string;
+  startDatetime: string;
+  transport: {
+    agencyName: "CamCoaches Express";
+    destinationCity: "Yaoundé";
+    distanceKm: 240;
+    estimatedDurationMinutes: 180;
+    originCity: "Douala";
+  };
+}
+
 type HotelBookingItem = {
   bookingId: string;
   createdAt: string;
@@ -144,9 +168,41 @@ type ApartmentBookingItem = {
   serviceType: string;
 };
 
+type TransportBookingItem = {
+  bookingId: string;
+  createdAt: string;
+  endDatetime: string;
+  guests: {
+    bookingItemId: string;
+    createdAt: string;
+    fullName: string;
+    id: string;
+    idDocumentNumber: string;
+    passengerType: string;
+    phoneNumber: string;
+    seatNumber: string;
+  }[];
+  id: string;
+  hotelName: String;
+  itemId: string;
+  itemType: "hotel_room";
+  providerId: string;
+  quantity: number;
+  roomTypeName: string;
+  roomAssignments: RoomAssignment[];
+  startDatetime: string;
+  status: string;
+  totalPrice: string;
+  unitPrice: string;
+  service: TransportItemService;
+  serviceImageUrl: string;
+  serviceName: string;
+  serviceType: string;
+};
+
 type BaseBookingData = {
   bookingReference: string;
-  bookingStatus: "confirmed" | "pending" | "failed";
+  bookingStatus: "confirmed" | "pending" | "failed" | "completed";
   cancellationFee: string;
   checkedInAt: string;
   checkedInBy: string;
@@ -179,9 +235,15 @@ type ApartmentBookingData = BaseBookingData & {
   items: ApartmentBookingItem[];
 };
 
+export type TransportBookingData = BaseBookingData & {
+  bookingType: "transport";
+  items: TransportBookingItem[];
+};
+
 export type GuestBookingDetailsResponseData =
   | HotelBookingData
-  | ApartmentBookingData;
+  | ApartmentBookingData
+  | TransportBookingData;
 
 export interface GuestBookingDetailsResponse {
   data: GuestBookingDetailsResponseData;

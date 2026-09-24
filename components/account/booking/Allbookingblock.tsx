@@ -7,6 +7,8 @@ import {
   Box,
   Calendar,
   CircleCheck,
+  CircleXFreeIcons,
+  Clock01FreeIcons,
   CloudAlertIcon,
   Location01Icon,
   UserGroupIcon,
@@ -27,6 +29,9 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { TransportBookingCard } from "./transportBookingCard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 
 export const BookingCardSkeleton = () => {
   return (
@@ -109,12 +114,23 @@ const BookingHistoryCard = ({
 
             {/* Right: status + price */}
             <div className="flex flex-col gap-2 md:items-end">
-              <span className="text-xs flex gap-1 w-fit items-center p-1 px-2 rounded-full bg-green-500/30 h-fit text-green-500">
-                <HugeiconsIcon
+              <span
+                className={cn(
+                  "text-xs flex gap-1 w-fit flex-nowrap items-center p-1 px-2 rounded-full h-fit",
+                  booking.bookingStatus === "confirmed"
+                    ? " text-green-500 bg-green-500/20"
+                    : booking.bookingStatus === "pending"
+                      ? "bg-yellow-500/20 text-yellow-500"
+                      : booking.bookingStatus === "completed"
+                        ? "bg-purple-500/20 text-purple-500"
+                        : "bg-destructive/20 text-destructive",
+                )}
+              >
+                {/* <HugeiconsIcon
                   icon={CircleCheck}
                   className="fill-green-500 text-white"
                   size={12}
-                />
+                /> */}
                 <span className="first-letter:uppercase">
                   {" "}
                   {booking.bookingStatus}
@@ -230,13 +246,24 @@ const BookingHistoryCard = ({
 
             {/* Right: status + price */}
             <div className="flex flex-col gap-2 md:items-end">
-              <span className="text-xs flex gap-1 w-fit items-center p-1 px-2 rounded-full bg-green-500/30 h-fit text-green-500">
-                <HugeiconsIcon
+              <span
+                className={cn(
+                  "text-xs flex gap-1 w-fit flex-nowrap items-center p-1 px-2 rounded-full h-fit",
+                  booking.bookingStatus === "confirmed"
+                    ? " text-green-500 bg-green-500/20"
+                    : booking.bookingStatus === "pending"
+                      ? "bg-yellow-500/20 text-yellow-500"
+                      : booking.bookingStatus === "completed"
+                        ? "bg-purple-500/20 text-purple-500"
+                        : "bg-destructive/20 text-destructive",
+                )}
+              >
+                {/* <HugeiconsIcon
                   icon={CircleCheck}
                   className="fill-green-500 text-white"
                   size={12}
-                />
-                <span className="first-letter:uppercase">
+                /> */}
+                <span className={"first-letter:uppercase flex-nowrap"}>
                   {" "}
                   {booking.bookingStatus}
                 </span>
@@ -313,23 +340,162 @@ const BookingHistoryCard = ({
       </div>
     );
   }
+
+  if (booking.bookingType === "transport") {
+    return <TransportBookingCard booking={booking} />;
+  }
+};
+
+const BookingHistoryBlock = ({
+  bookings,
+}: {
+  bookings: GuestBookingDetailsResponseData[];
+}) => {
+  const Confirmed = bookings.filter(
+    (booking) => booking.bookingStatus === "confirmed",
+  );
+  const Failed = bookings.filter(
+    (booking) => booking.bookingStatus === "failed",
+  );
+  const Pending = bookings.filter(
+    (booking) => booking.bookingStatus === "pending",
+  );
+  const Completed = bookings.filter(
+    (booking) => booking.bookingStatus === "completed",
+  );
+  return (
+    <Tabs defaultValue={"all"} className={"w-full"}>
+      <TabsList variant={"line"} className={"mb-4"}>
+        <TabsTrigger value={"all"}>All ({bookings.length})</TabsTrigger>
+        <TabsTrigger value={"Confirmed"}>
+          <div className="w-2 h-2 rounded-full bg-green-500" /> Confirmed (
+          {Confirmed.length})
+        </TabsTrigger>
+        <TabsTrigger value={"Complete"}>
+          <div className="w-2 h-2 rounded-full bg-purple-500" /> Completed (
+          {Completed.length})
+        </TabsTrigger>
+        <TabsTrigger value={"Failed"}>
+          <div className="w-2 h-2 rounded-full bg-red-500" /> Failed (
+          {Failed.length})
+        </TabsTrigger>
+        {/* <TabsTrigger value={"Pending"}>
+          <div className="w-2 h-2 rounded-full bg-yellow-500" /> Pending (
+          {Pending.length})
+        </TabsTrigger> */}
+      </TabsList>
+      <TabsContent
+        className={"flex flex-col w-full bg-amber-5 gap-4"}
+        value={"all"}
+      >
+        {bookings.map((booking, i) => (
+          <BookingHistoryCard booking={booking} key={i} />
+        ))}
+      </TabsContent>
+      <TabsContent className={"flex flex-col gap-4"} value={"Complete"}>
+        {Completed.map((booking, i) => (
+          <BookingHistoryCard booking={booking} key={i} />
+        ))}
+      </TabsContent>
+      <TabsContent className={"flex flex-col gap-4"} value={"Confirmed"}>
+        {Confirmed.length > 0 ? (
+          Confirmed.map((booking, i) => (
+            <BookingHistoryCard booking={booking} key={i} />
+          ))
+        ) : (
+          <div className="mt-5">
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia
+                  variant="icon"
+                  className="bg-green-500/20 text-green-500"
+                >
+                  <HugeiconsIcon icon={CircleCheck} size={40} />
+                </EmptyMedia>
+                <EmptyTitle>No Booking</EmptyTitle>
+                <EmptyDescription>
+                  You don't have any confirmed bookings
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          </div>
+        )}
+      </TabsContent>
+      <TabsContent className={"flex flex-col gap-4"} value={"Pending"}>
+        {Pending.length > 0 ? (
+          Pending.map((booking, i) => (
+            <BookingHistoryCard booking={booking} key={i} />
+          ))
+        ) : (
+          <div className="mt-5">
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia
+                  variant="icon"
+                  className="bg-yellow-500/20 text-yellow-500"
+                >
+                  <HugeiconsIcon icon={Clock01FreeIcons} size={40} />
+                </EmptyMedia>
+                <EmptyTitle>No Booking</EmptyTitle>
+                <EmptyDescription>
+                  You don't have any bookings that are pending
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          </div>
+        )}
+      </TabsContent>
+      <TabsContent className={"flex flex-col gap-4"} value={"Failed"}>
+        {Failed.length > 0 ? (
+          Failed.map((booking, i) => (
+            <BookingHistoryCard booking={booking} key={i} />
+          ))
+        ) : (
+          <div className="mt-5">
+            <Empty>
+              <EmptyHeader>
+                <EmptyMedia
+                  variant="icon"
+                  className="bg-red-500/20 text-red-500"
+                >
+                  <HugeiconsIcon icon={CircleXFreeIcons} size={40} />
+                </EmptyMedia>
+                <EmptyTitle>No Booking</EmptyTitle>
+                <EmptyDescription>
+                  You don't have any failed bookings
+                </EmptyDescription>
+              </EmptyHeader>
+            </Empty>
+          </div>
+        )}
+      </TabsContent>
+    </Tabs>
+  );
 };
 
 export const AllBookingBlock = () => {
   const { data, isError, isLoading, refetch } = useGetCustomerBookings();
+  console.log({ data });
   return (
     <main className="flex flex-col gap-6">
       <DashIntro
         heading={"My Bookings"}
         description={"Manage your curated travel experiences across Cameroon."}
       />
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col w-full gap-4">
         {isLoading || !data ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <BookingCardSkeleton key={i} />
-          ))
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-2">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton className="h-9 w-30" key={i} />
+              ))}
+            </div>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <BookingCardSkeleton key={i} />
+            ))}
+          </div>
         ) : isError ? (
-          <div className="mt-[20px]">
+          <div className="mt-5">
             <Empty>
               <EmptyHeader>
                 <EmptyMedia
@@ -355,7 +521,7 @@ export const AllBookingBlock = () => {
             </Empty>
           </div>
         ) : data.data.length === 0 ? (
-          <div className="mt-[20px]">
+          <div className="mt-5">
             <Empty>
               <EmptyHeader>
                 <EmptyMedia variant="icon">
@@ -382,9 +548,7 @@ export const AllBookingBlock = () => {
             </Empty>
           </div>
         ) : (
-          data.data.map((booking, i) => (
-            <BookingHistoryCard booking={booking} key={i} />
-          ))
+          <BookingHistoryBlock bookings={data.data} />
         )}
       </div>
     </main>
