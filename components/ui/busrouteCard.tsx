@@ -1,73 +1,84 @@
 "use client";
-import { Clock, Redo } from "@hugeicons/core-free-icons";
-import { HugeiconsIcon } from "@hugeicons/react";
+
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "./button";
 import Link from "next/link";
-import { BusRoute } from "@/lib/types";
 import { formatPrice } from "@/lib/data";
-import { usePathname } from "next/navigation";
-import { TransportRoute } from "@/lib/types/transport";
+import { usePathname, useRouter } from "next/navigation";
+
+import { Agency, AgencyRoute } from "@/lib/types/agency";
+import { useAgencies } from "@/lib/useAgency";
 import { formatDuration } from "@/lib/utils";
+import { City } from "@/lib/types/cities&amenities";
 
 interface BusRouteCard {}
 
-export const BusRouteCard = ({ Busroute }: { Busroute: BusRoute }) => {
+export const BusRouteCard = ({
+  Busroute,
+  cities,
+  onClick,
+}: {
+  Busroute: AgencyRoute;
+  onClick?: (id: AgencyRoute) => void;
+  cities: City[];
+}) => {
   const pathname = usePathname();
+  const imgUrl = process.env.NEXT_PUBLIC_IMAGE_URL + Busroute.imageUrl;
+  const originCity = cities.find((city) => city.id === Busroute.originCityId);
+  const destinationCity = cities.find(
+    (city) => city.id === Busroute.destinationCityId,
+  );
+
   return (
-    <Link
-      href={`${pathname}/${Busroute.id}`}
+    <div
+      onClick={() => {
+        if (onClick) {
+          onClick(Busroute);
+        }
+      }}
       className="flex flex-col gap-4 h-80"
     >
       <div className="flex-1 relative rounded-2xl overflow-hidden">
         <Image
-          src={Busroute.image}
+          src={imgUrl}
           className="w-full h-full object-cover"
           width={300}
           height={300}
           alt="Img"
         />
         <span className="absolute top-4 left-4 p-1 px-2 bg-white/70 rounded-full text-xs">
-          {Busroute.duration.hours}h {Busroute.duration.minutes}min
+          {formatDuration(Number(Busroute.estimatedDurationMinutes))}
         </span>
       </div>
-      <div className=" flex justify-between">
+      <div className=" flex flex-col justify-between">
         <div className="flex flex-col gap-0.5">
           <span className="font-bold text-xl">
-            {Busroute.origin} to {Busroute.destination}
+            {originCity?.name} to {destinationCity?.name}
           </span>
-          <p className="text-[14px] text-muted-foreground">
-            {/* Daily departures every  mins */}
+          {/* <p className="text-[14px] text-muted-foreground">
+           
             {Busroute.frequency}
-          </p>
+          </p> */}
         </div>
         <div className="flex flex-col">
           {/* <span className="text-xs decoration-1">
             {Busroute.formattedStartingPrice}
           </span> */}
-          <span className="text-2xl font-bold text-primary">
-            {Busroute.formattedStartingPrice}
-          </span>
+          <span className="text-2xl font-bold text-primary">10 XAF</span>
         </div>
       </div>
-    </Link>
+    </div>
   );
 };
 
-export const DetailedBusRouteCard = ({
-  busroute,
-}: {
-  busroute: TransportRoute;
-}) => {
-  const imgUrl = String(process.env.NEXT_PUBLIC_IMAGE_URL) + busroute.imageUrl;
+export const AgencyCard = ({ agency }: { agency: Agency }) => {
+  const imgUrl = String(process.env.NEXT_PUBLIC_IMAGE_URL) + agency.imageUrl;
+
   return (
     <div className="flex flex-col bg-bg-mute h-120 overflow-hidden rounded-2xl">
       <div className="overflow-hidden flex-1 relative">
-        <span className="p-1 px-2 rounded-full bg-white/80 text-primary font-bold absolute top-4 left-4 text-xs">
-          From {busroute.originCity}
-        </span>
-        <Image
+        <img
           className="w-full h-full object-cover"
           width={200}
           height={200}
@@ -76,35 +87,24 @@ export const DetailedBusRouteCard = ({
         />
       </div>
       <div className="p-6 flex flex-col">
-        <div className="flex justify-between">
+        <div className="flex flex-col">
           <div>
-            <span className="text-xl font-bold">
-              To {busroute.destinationCity}
-            </span>
-            <span className="text-muted-foreground text-xs flex items-center gap-1">
+            <span className="text-xl font-bold">{agency.name}</span>
+            {/* <span className="text-muted-foreground text-xs flex items-center gap-1">
               {" "}
               <HugeiconsIcon icon={Clock} size={13} />{" "}
               {formatDuration(Number(busroute.estimatedDurationMinutes))} Travel
-            </span>
+            </span> */}
           </div>
-          <div className="flex flex-col">
-            <span className="text-xs text-muted-foreground">STARTING FROM</span>
+          <div className="flex w-full items-center justify-between">
+            <span className="text-muted-foreground">STARTING FROM</span>
             <span className="text-xl font-bold text-primary">
-              {formatPrice(busroute.startingPrice)}
+              {formatPrice(agency.basePrice)}
             </span>
           </div>
         </div>
-        {/* <div className="flex justify-between bg-background p-4 rounded-md items-center mt-3">
-          <span className="text-xs flex items-center gap-2">
-            <HugeiconsIcon icon={Redo} size={13} className="text-primary" />
-            {busroute.frequency}
-          </span>
-          <span className="text-[10px] text-primary bg-primary/20 rounded-xs p-1 px-2">
-            HIGH FREQUENCY
-          </span>
-        </div> */}
         <div className="flex mt-4 items-center gap-4">
-          <Link className="w-full" href={`/buses/${busroute.id}`}>
+          <Link className="w-full" href={`/buses/${agency.id}`}>
             <Button className={"rounded-md w-full p-5 px-8"}>Book Seat</Button>
           </Link>
         </div>

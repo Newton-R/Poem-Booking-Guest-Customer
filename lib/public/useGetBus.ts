@@ -2,19 +2,22 @@ import { data } from "motion/react-client";
 import { isAxiosError } from "axios";
 import { publicClient } from "../api";
 import { ErrorType } from "../defined_types";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { transportKeys } from "../query-keys/user";
 import {
   TransportDetailsResponse,
   TransportRouteResponse,
 } from "../types/transport";
+import { TransportGuestPayLoad } from "../types/agency";
 
 async function getTransportRoutes(): Promise<TransportRouteResponse> {
   try {
     const { data } =
       await publicClient.get<TransportRouteResponse>("/transport/routes");
+    console.log({ data: data });
     return data;
   } catch (e) {
+    console.log({ error: e });
     if (isAxiosError<ErrorType>(e)) {
       throw new Error("Something went wrong");
     }
