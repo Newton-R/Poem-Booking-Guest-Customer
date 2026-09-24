@@ -3,7 +3,9 @@ import { AllBusHero } from "@/components/buses/all/AllBusHero";
 import { Experience } from "@/components/buses/all/experience";
 import { Hubs } from "@/components/buses/all/Hubs";
 import { busRoutes } from "@/lib/data";
+import { useGetAgencies } from "@/lib/public/useGetAgencies";
 import { useGetTransportRoutes } from "@/lib/public/useGetBus";
+import { Agency } from "@/lib/types/agency";
 import { TransportRoute } from "@/lib/types/transport";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
@@ -27,9 +29,8 @@ export const AllBusesRouteBLock = () => {
     origin: urlFilters.origin ?? "",
   });
 
-  const { data, isLoading } = useGetTransportRoutes();
-  console.log({ transport: data?.data.data });
-
+  const { data: agencies, isLoading } = useGetAgencies();
+  console.log({ agencies: agencies });
   const updateFilters = (key: keyof OurFilter, value: string) => {
     setFilter((prev) => ({ ...prev, [key]: value }));
   };
@@ -47,7 +48,7 @@ export const AllBusesRouteBLock = () => {
       <AllBusHero updateFilter={updateFilters} filter={filter} />
       <Hubs
         isLoading={isLoading}
-        routes={data?.data.data ?? ([] as TransportRoute[])}
+        agencies={agencies?.data ?? ([] as Agency[])}
       />
       <Experience />
     </main>

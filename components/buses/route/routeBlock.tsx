@@ -6,6 +6,7 @@ import {
   ArrowDown,
   ArrowLeft,
   ArrowRight,
+  ArrowTurnUpFreeIcons,
   BadgeCheck,
   Bus02FreeIcons,
   IceHockeyFreeIcons,
@@ -17,7 +18,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MobileFilter } from "./MobileFilter";
 import { useGetRouteDetail } from "@/lib/public/useGetBus";
 import { VoyagesListSkeleton } from "@/components/loaders/bus/LoadingBusRouteDetails";
@@ -25,20 +26,46 @@ import { EmptyBusRoutes } from "@/components/emptystuff";
 import { da } from "date-fns/locale";
 import { ScheduledTrips, TransportRouteDetail } from "@/lib/types/transport";
 import { formatDate } from "date-fns";
+import { useGetAgencyDetails } from "@/lib/public/useGetAgencies";
+import { label } from "motion/react-client";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
+import {
+  AgencyBus,
+  AgencyDetail,
+  AgencyDetailResponse,
+  AgencyRegion,
+  AgencyRoute,
+  AgencyRouteTrip,
+  AgencyTrip,
+  Bus,
+} from "@/lib/types/agency";
+import { AgencyDetailSkeleton } from "@/components/loaders/bus/AgencyDetailSkeleton";
+import { useAgencies } from "@/lib/useAgency";
+import { useGetCities } from "@/lib/public/useCitiesAmeneties";
+import { BusRouteCard } from "@/components/ui/busrouteCard";
 
 interface Voyages {
   index: number;
 }
 
 const VoyagesBlock = ({
-  departure,
-  busRoute,
+  bus,
+  originCity,
+  destinationCity,
 }: {
-  departure: ScheduledTrips;
-  busRoute: TransportRouteDetail;
+  bus: AgencyRouteTrip;
+  originCity?: string;
+  destinationCity?: string;
 }) => {
   const pathname = usePathname();
-  const operator = departure;
+
   const ammenities = [
     {
       label: "Wifi",
@@ -65,11 +92,9 @@ const VoyagesBlock = ({
           />
         </div>
         <div className="flex flex-col gap-1 text-center">
-          <span className="font-bold">
-            {busRoute.agency.name ?? "Bus operator"}
-          </span>
-          <span className="text-xs w-fit mx-auto md:bg-primary/10 font-bold text-primary md:p-1 md:px-2 md:rounded-full">
-            {departure.bus.busType}
+          <span className="font-bold">{originCity}</span>
+          <span className="text-xs w-fit mx-auto uppercase md:bg-primary/10 font-bold text-primary md:p-1 md:px-2 md:rounded-full">
+            {bus.bus.busType}
           </span>
         </div>
       </div>
@@ -78,14 +103,12 @@ const VoyagesBlock = ({
         <div className="grid grid-cols-3 gap-6 md:grid-cols-4">
           <div className="flex flex-col">
             <span className="text-xl font-bold">
-              {formatDate(new Date(departure.basePrice), "dd MMM 'at' hh:mm a")}
+              {formatDate(new Date(bus.departureTime), "hh:mm a")}
             </span>
             <div className="flex flex-col gap-0.5">
-              <span className="text-muted-foreground">
-                {busRoute.originCity}
-              </span>
+              <span className="text-muted-foreground">{originCity}</span>
               <span className="text-muted-foreground hidden md:flex text-xs">
-                ({busRoute.agency.name})
+                {/* ({busRoute.agency.name}) */}
               </span>
             </div>
           </div>
@@ -99,25 +122,16 @@ const VoyagesBlock = ({
           </div>
           <div className="text-end flex flex-col">
             <span className="text-xl font-bold">
-              {formatDate(
-                new Date(departure.arrivalTime),
-                "dd MMM 'at' hh:mm a",
-              )}
+              {formatDate(new Date(bus.arrivalTime), "hh:mm a")}
             </span>
-            <span className="text-muted-foreground">
-              {busRoute.destinationCity}
-            </span>
-            <span className="text-muted-foreground hidden md:flex text-xs">
-              {" "}
-              ({busRoute.destinationCity})
-            </span>
+            <span className="text-muted-foreground">{destinationCity}</span>
           </div>
           <div className="text-end hidden md:flex flex-col">
-            <span className="text-muted-foreground">
-              {departure.bus.busType}
+            <span className="text-muted-foreground uppercase text-xs font-bold">
+              {bus.bus.busType}
             </span>
             <span className="text-xl font-bold">
-              {formatPrice(departure.basePrice)}
+              {formatPrice(bus.basePrice)}
             </span>
           </div>
         </div>
@@ -141,14 +155,11 @@ const VoyagesBlock = ({
             </div>
             <div className="text-end flex md:hidden flex-col">
               <span className="text-xl font-bold">
-                {formatPrice(departure.basePrice)}
+                {formatPrice(bus.basePrice)}
               </span>
             </div>
           </div>
-          <Link
-            className="md:w-fit w-full"
-            href={`${pathname}/${departure.id}`}
-          >
+          <Link className="md:w-fit w-full" href={`${pathname}/${bus.id}`}>
             <Button className={"p-6 min-w-40 flex-1 w-full text-[16px]"}>
               Select Seats
             </Button>
@@ -171,9 +182,14 @@ type FilterGroup = {
   options: FilterOption[];
 };
 
+type AvRegions = {
+  label: string;
+  value: string;
+};
+
 export const RouteBlock = ({ routeId }: { routeId: string }) => {
-  const { data, isError, isLoading } = useGetRouteDetail(routeId);
-  const busRoute = data?.data;
+  // const { data, isLoading, isError } = useGetAgencyDetails(routeId);
+  const { agencies } = useAgencies();
 
   const filters: FilterGroup[] = [
     {
@@ -189,50 +205,87 @@ export const RouteBlock = ({ routeId }: { routeId: string }) => {
         { id: "evening", label: "Evening (18:00 - 00:00)", checked: false },
       ],
     },
-    {
-      id: "busOperator",
-      title: "Bus Operator",
-      options: [
-        { id: "finexs", label: "Finexs Voyages", checked: true },
-        { id: "general", label: "General Express", checked: false },
-        { id: "buca", label: "Buca Voyages", checked: true },
-      ],
-    },
   ];
 
+  const agency = agencies.find((a) => a.id === routeId);
+  const { data: cities, isLoading } = useGetCities();
+
+  const [currentBranch, setCurrentBranch] = useState<AgencyRegion>({
+    region: "",
+    city: "",
+  });
+  const [viewingRoute, setViewingRoute] = useState<AgencyRoute | null>(null);
+
   if (isLoading) {
-    return <VoyagesListSkeleton />;
+    return <AgencyDetailSkeleton />;
   }
 
-  if (isError) {
+  if (!agency || !cities) {
     return <EmptyBusRoutes />;
   }
+  // const sameBranch = (a: AgencyRegion, b: AgencyRegion) =>
+  //   a.region === b.region && a.city === b.city;
 
-  console.log({ transport_datails: data?.data });
+  // const cTrip = agency.trips.find((t) => sameBranch(t.branch, currentBranch));
+  // const branchIndex = cTrip ? agency.trips.indexOf(cTrip) : 0;
+
+  // const nextBranch = agency.trips[branchIndex + 1];
+  // const prevBranch = agency.trips[branchIndex - 1];
+
+  // const handleNext = () => {
+  //   if (nextBranch) setCurrentBranch(nextBranch.branch);
+  // };
+
+  // const handlePrev = () => {
+  //   if (prevBranch) setCurrentBranch(prevBranch.branch);
+  // };
+
+  // const available_regions: AvRegions[] = agency.availableRegions.map((a) => ({
+  //   label: a.region,
+  //   value: a.city,
+  // }));
+
+  // const currentBranchTrips = agency.trips.find((trip) =>
+  //   sameBranch(trip.branch, currentBranch),
+  // );
+
+  console.log({ agency });
+
   return (
     <section className="container-x flex flex-col mt-(--mobile-nav-height) lg:mt-(--nav-height) gap-10 md:gap-20">
       <div className="bg-secondary-foreground flex flex-col md:flex-row gap-4 justify-between md:items-center p-6 rounded-2xl">
         <div className="flex flex-col gap-2">
           <span className="flex text-white text-2xl items-center gap-3">
-            <span className="font-bold">{busRoute?.originCity}</span>
-            <HugeiconsIcon icon={ArrowRight} className="text-primary" />
-            <span className="font-bold">{busRoute?.destinationCity}</span>
+            <span className="font-bold">{agency.name}</span>
           </span>
           <p className="text-muted-foreground">
-            Wednesday, 24 May 2024 • 1 Adult • Business Class
+            {formatDate(new Date(), "EEEE, MMM d")} • {agency.routes.length}{" "}
+            Route(s) Available
           </p>
         </div>
-        <Button
-          className={
-            "bg-white/30 p-6 w-40 rounded-full border border-white text-white"
-          }
-        >
-          <HugeiconsIcon icon={Pen} size={14} /> Change Search
-        </Button>
+        {/* <div className="flex flex-col gap-2">
+          <Combobox items={available_regions}>
+            <ComboboxInput
+              className={"bg-white rounded-full h-9"}
+              placeholder="Choose Region"
+            />
+            <ComboboxContent>
+              <ComboboxEmpty>No items found.</ComboboxEmpty>
+              <ComboboxList>
+                {(framework) => (
+                  <ComboboxItem key={framework.value} value={framework}>
+                    {framework.label}
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
+          <p className="text-muted-foreground">You are at Bonaberi, Douala</p>
+        </div> */}
       </div>
       <div className="min-h-screen gap-4 md:gap-6 grid grid-cols-1 lg:grid-cols-4">
         <div className="sticky hidden top-[calc(var(--nav-height)+10px)] lg:flex flex-col gap-6 h-[calc(100vh-13%)]">
-          <div className="flex flex-col gap-6 bg-bg-mute/50 border-2 flex-1 border-border rounded-2xl p-6 ">
+          <div className="flex flex-col gap-6 bg-bg-mute/50 border-2 flex-1 border-border rounded-2xl p-4 ">
             {filters.map((group) => (
               <div key={group.id} className="flex flex-col gap-2">
                 <span className="font-bold">{group.title}</span>
@@ -251,6 +304,19 @@ export const RouteBlock = ({ routeId }: { routeId: string }) => {
                 </div>
               </div>
             ))}
+            <div className="flex flex-col gap-2">
+              <span className="font-bold">Locations</span>
+              {/* <div className="flex flex-wrap gap-2">
+                {available_regions.map((a, i) => (
+                  <span
+                    key={i}
+                    className="p-1.5 px-2 rounded-full text-[12px] border border-border bg-white"
+                  >
+                    {a.label} {`(${a.value})`}
+                  </span>
+                ))}
+              </div> */}
+            </div>
           </div>
           <div className="p-6 bg-primary/10 flex flex-col rounded-2xl gap-1">
             <HugeiconsIcon
@@ -268,37 +334,131 @@ export const RouteBlock = ({ routeId }: { routeId: string }) => {
           </div>
         </div>
         <MobileFilter />
-        <div className="flex col-span-3 flex-col gap-6">
-          <div className="bg-bg-mute rounded-xl text-xs p-4 flex justify-between">
-            <span className="flex items-center gap-2">
-              <HugeiconsIcon icon={ArrowLeft} size={16} />
-              Previous day
-            </span>
-            <span className="font-bold md:text-xl">Today, May 24</span>
-            <span className="flex items-center gap-2">
-              Next day
-              <HugeiconsIcon icon={ArrowRight} size={16} />
-            </span>
-          </div>
-          {/* Array of mapped departure cards */}
-          {busRoute?.scheduledTrips.map((departure) => (
-            <VoyagesBlock
-              key={departure.id}
-              departure={departure}
-              busRoute={data?.data ?? ({} as TransportRouteDetail)}
-            />
-          ))}
-          {/* load departures button */}
-          {/* <div className="w-full justify-center flex items-center">
-            <Button
-              className={"rounded-full text-[16px] p-6 "}
-              variant={"outline"}
-            >
-              Load More Departures
-              <HugeiconsIcon icon={ArrowDown} size={18} />
-            </Button>
+        {!viewingRoute ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 col-span-3 gap-6">
+            {/* filter navigation */}
+            {/* <div className="bg-bg-mute rounded-xl items-center text-xs p-4 flex justify-between">
+            {prevBranch ? (
+              <Button
+                variant={"link"}
+                onClick={() => handlePrev()}
+                className="flex items-center gap-2"
+              >
+                <HugeiconsIcon icon={ArrowLeft} size={16} />
+                {prevBranch.branch.region}
+              </Button>
+            ) : (
+              <div>
+                {" "}
+                <HugeiconsIcon icon={ArrowLeft} size={16} />
+              </div>
+            )}
+            <div className="flex flex-col text-center">
+              <span className="font-bold md:text-xl">
+                {currentBranch.region}
+              </span>
+              <span className="text-[10px] text-muted-foreground ">
+                ({currentBranch.city})
+              </span>
+            </div>
+            {nextBranch ? (
+              <Button
+                variant={"link"}
+                onClick={() => handleNext()}
+                className="flex items-center gap-2"
+              >
+                {nextBranch.branch.region}
+                <HugeiconsIcon icon={ArrowRight} size={16} />
+              </Button>
+            ) : (
+              <div>
+                <HugeiconsIcon icon={ArrowRight} size={16} />
+              </div>
+            )}
           </div> */}
-        </div>
+            {/* Array of mapped departure cards */}
+            {agency.routes.map((route) => (
+              <BusRouteCard
+                Busroute={route}
+                cities={cities.data}
+                onClick={(e) => setViewingRoute(e)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col col-span-3 gap-6">
+            {/* filter navigation */}
+            {/* <div className="bg-bg-mute rounded-xl items-center text-xs p-4 flex justify-between">
+            {prevBranch ? (
+              <Button
+                variant={"link"}
+                onClick={() => handlePrev()}
+                className="flex items-center gap-2"
+              >
+                <HugeiconsIcon icon={ArrowLeft} size={16} />
+                {prevBranch.branch.region}
+              </Button>
+            ) : (
+              <div>
+                {" "}
+                <HugeiconsIcon icon={ArrowLeft} size={16} />
+              </div>
+            )}
+            <div className="flex flex-col text-center">
+              <span className="font-bold md:text-xl">
+                {currentBranch.region}
+              </span>
+              <span className="text-[10px] text-muted-foreground ">
+                ({currentBranch.city})
+              </span>
+            </div>
+            {nextBranch ? (
+              <Button
+                variant={"link"}
+                onClick={() => handleNext()}
+                className="flex items-center gap-2"
+              >
+                {nextBranch.branch.region}
+                <HugeiconsIcon icon={ArrowRight} size={16} />
+              </Button>
+            ) : (
+              <div>
+                <HugeiconsIcon icon={ArrowRight} size={16} />
+              </div>
+            )}
+          </div> */}
+            {/* Array of mapped departure cards */}
+            <Button
+              variant={"outline"}
+              className={"w-fit h-9 min-w-30"}
+              onClick={() => setViewingRoute(null)}
+            >
+              <HugeiconsIcon
+                icon={ArrowTurnUpFreeIcons}
+                className="-rotate-90"
+              />
+              Back
+            </Button>
+            {viewingRoute ? (
+              viewingRoute.trips.map((bus) => (
+                <VoyagesBlock
+                  bus={bus}
+                  originCity={
+                    cities.data.find((c) => c.id === viewingRoute.originCityId)
+                      ?.name
+                  }
+                  destinationCity={
+                    cities.data.find(
+                      (c) => c.id === viewingRoute.destinationCityId,
+                    )?.name
+                  }
+                />
+              ))
+            ) : (
+              <></>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );

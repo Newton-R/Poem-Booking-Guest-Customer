@@ -1,49 +1,23 @@
 import { EmptyBusRoutes } from "@/components/emptystuff";
 import { LoadingDetailedBus } from "@/components/loaders/bus/LoadingDetailedBus";
-import { DetailedBusRouteCard } from "@/components/ui/busrouteCard";
-import { BusRegion, BusRoute } from "@/lib/types";
-import { TransportRoute } from "@/lib/types/transport";
-import React from "react";
+import { AgencyCard } from "@/components/ui/busrouteCard";
+import { Agency } from "@/lib/types/agency";
+import { useAgencies } from "@/lib/useAgency";
+import { useEffect } from "react";
 
 export const Hubs = ({
-  routes,
+  agencies,
   isLoading,
 }: {
-  routes: TransportRoute[];
+  agencies: Agency[];
   isLoading: boolean;
 }) => {
-  // const extract = (region: BusRegion) => {
-  //   return routes.filter((r) => r.originCity === region);
-  // };
-
-  // const SplitGroups = () => {
-  //   return [
-  //     {
-  //       groupName: "Littoral",
-  //       routes: extract("Littoral"),
-  //     },
-  //     {
-  //       groupName: "Central",
-  //       routes: extract("Central"),
-  //     },
-  //     {
-  //       groupName: "North West",
-  //       routes: extract("North West"),
-  //     },
-  //     {
-  //       groupName: "North East",
-  //       routes: extract("North East"),
-  //     },
-  //     {
-  //       groupName: "South West",
-  //       routes: extract("South West"),
-  //     },
-  //     {
-  //       groupName: "South East",
-  //       routes: extract("South East"),
-  //     },
-  //   ];
-  // };
+  const { setAgency } = useAgencies();
+  useEffect(() => {
+    if (agencies) {
+      setAgency(agencies);
+    }
+  }, [agencies]);
 
   if (isLoading) {
     return (
@@ -55,35 +29,15 @@ export const Hubs = ({
     );
   }
 
-  if (routes.length === 0) {
+  if (agencies.length === 0) {
     return <EmptyBusRoutes />;
   }
 
   return (
     <section>
-      {/* {SplitGroups().map(
-        (group, i) =>
-          group.routes.length > 0 && (
-            <div key={i} className="container-x flex flex-col gap-6">
-              <div className="flex items-center gap-2 mb-8">
-                <h2 className="text-xl">{group.groupName} Hub</h2>
-                <div className="flex-1 border-b border-primary bg-primary" />
-                <span className="text-xs text-primary ">
-                  {group.routes.length} Active Routes
-                </span>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {group.routes.map((r, i) => (
-                  <DetailedBusRouteCard busroute={r} key={i} />
-                ))}
-              </div>
-              <div></div>
-            </div>
-          ),
-      )} */}
       <div className="grid container-x grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {routes.map((route, i) => (
-          <DetailedBusRouteCard busroute={route} key={i} />
+        {agencies.map((agency, i) => (
+          <AgencyCard agency={agency} key={i} />
         ))}
       </div>
     </section>
