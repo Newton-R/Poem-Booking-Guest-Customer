@@ -35,6 +35,7 @@ import { AnimatePresence, motion as m } from "motion/react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { Suspense, useState } from "react";
 import { toast } from "sonner";
+import { useGetApartmentDetails } from "@/lib/public/useGetApartments";
 
 export type BookingType = "hotel" | "apartment";
 
@@ -63,14 +64,18 @@ export const BookingCheckoutComponent = ({
     isHotel ? String(params.hotel) : "",
     isHotel ? String(params.room) : "",
   );
+  const { data: apartment, isLoading: isApartmentLoading } =
+    useGetApartmentDetails(params.id);
   const entry = new Date(String(searchParams.get("checkIn")));
   const exit = new Date(String(searchParams.get("checkOut")));
   const days = differenceInDays(exit, entry);
   const adults = Number(searchParams.get("adults"));
-  const apartmentPrice = Number(searchParams.get("price"));
   const selectedRoom = room?.data;
-  const price = isHotel ? Number(selectedRoom?.basePrice ?? 0) : apartmentPrice;
-  const displayName = isHotel ? selectedRoom?.name : "Apartment";
+  const selectedApartment = apartment?.data;
+  const price = isHotel
+    ? Number(selectedRoom?.basePrice ?? 0)
+    : Number(selectedApartment?.base_price_per_night ?? 0);
+  const displayName = isHotel ? selectedRoom?.name : selectedApartment?.title;
 
   const [bookingAsGuest, setBookingAsGuest] = useState(!userCookie);
   const [guestInfo, setGuestInfo] = useState(initialGuestInfo);
@@ -202,7 +207,11 @@ export const BookingCheckoutComponent = ({
     setGuestInfo((previous) => ({ ...previous, [name]: value }));
   };
 
-  if (isHotel && (isRoomLoading || !selectedRoom)) {
+  if (
+    isHotel
+      ? isRoomLoading || !selectedRoom
+      : isApartmentLoading || !selectedApartment
+  ) {
     return <CompleteReservationSkeleton />;
   }
 
