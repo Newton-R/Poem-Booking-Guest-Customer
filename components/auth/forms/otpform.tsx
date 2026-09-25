@@ -46,6 +46,17 @@ export const OTPForm = () => {
           accessToken: response.data.accessToken,
           refreshToken: response.data.refreshToken,
         });
+        Cookies.set(
+          "token",
+          JSON.stringify({
+            refreshToken: response.data.refreshToken,
+            accessToken: response.data.accessToken,
+          }),
+          {
+            secure: true,
+            sameSite: "strict",
+          },
+        );
         router.push(callbackUrl ? callbackUrl : "/account");
       },
       onError: (e) => {

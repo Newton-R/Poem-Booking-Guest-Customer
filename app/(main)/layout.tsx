@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { MobileNavigationTab } from "@/components/mobile/navigation";
 import { TopBar } from "@/components/mobile/topbar";
 import { QueryWrapper } from "@/components/QueryWrapper";
+import { SessionExpirationModal } from "@/components/SessionExpirationModal";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -47,6 +48,7 @@ export default function RootLayout({
           <HomeNavbar />
           <TopBar />
           <Toaster />
+          <SessionExpirationModal />
           {children}
           <MobileNavigationTab />
           <Footer />

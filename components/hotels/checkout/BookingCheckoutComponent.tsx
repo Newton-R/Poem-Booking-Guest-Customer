@@ -1,18 +1,25 @@
 "use client";
+
 import { CompleteReservationSkeleton } from "@/components/loaders/ReservationSkeleton";
 import { PaymentMethodSelectionGrid } from "@/components/payments/MethodSelectionGrid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader } from "@/components/ui/Loader";
 import { RegistrationReminderBlock } from "@/components/ui/registrationReminderblock";
+import { useInitiateCustomerApartmentBooking } from "@/lib/bearer/form/useApartmentBooking";
 import { useInitiateCustomerHotelBooking } from "@/lib/bearer/form/useHotelBooking";
 import { formatPrice } from "@/lib/data";
+import {
+  useGuestApartmentInfo,
+  useInitiateApartmentBooking,
+} from "@/lib/public/form/useApartmentBooking";
 import {
   useGuestBookingInfo,
   useInitiateHotelBooking,
 } from "@/lib/public/form/useHotelBooking";
 import { useGetRoomDetails } from "@/lib/public/useGetHotels";
 import { BookingItem, GuestHotelFormBookingData } from "@/lib/types/booking";
+import { ApartmentBookingItem } from "@/lib/types/apartmentbooking";
 import { cn } from "@/lib/utils";
 import {
   ArrowRight,
@@ -29,125 +36,176 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { Suspense, useState } from "react";
 import { toast } from "sonner";
 
-export const CheckoutFormBlock = () => {
+export type BookingType = "hotel" | "apartment";
+
+interface BookingCheckoutComponentProps {
+  bookingType: BookingType;
+}
+
+const initialGuestInfo: GuestHotelFormBookingData = {
+  email: "",
+  fullName: "",
+  idDocumentNumber: "",
+  phoneNumber: "",
+  idDocumentType: "national_id",
+};
+
+export const BookingCheckoutComponent = ({
+  bookingType,
+}: BookingCheckoutComponentProps) => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const params = useParams<{ room: string; hotel: string }>();
-  const roomId = String(params.room);
+  const params = useParams<{ id: string; hotel: string; room: string }>();
   const userCookie = Cookies.get("token");
-  const { data: room, isLoading } = useGetRoomDetails(
-    params.hotel,
-    params.room,
+  const isHotel = bookingType === "hotel";
+  const resourceId = isHotel ? String(params.room) : String(params.id);
+  const { data: room, isLoading: isRoomLoading } = useGetRoomDetails(
+    isHotel ? String(params.hotel) : "",
+    isHotel ? String(params.room) : "",
   );
+  const entry = new Date(String(searchParams.get("checkIn")));
+  const exit = new Date(String(searchParams.get("checkOut")));
+  const days = differenceInDays(exit, entry);
+  const adults = Number(searchParams.get("adults"));
+  const apartmentPrice = Number(searchParams.get("price"));
+  const selectedRoom = room?.data;
+  const price = isHotel ? Number(selectedRoom?.basePrice ?? 0) : apartmentPrice;
+  const displayName = isHotel ? selectedRoom?.name : "Apartment";
 
-  const bookingData = {
-    entry: new Date(String(searchParams.get("checkIn"))),
-    exit: new Date(String(searchParams.get("checkOut"))),
-    days: differenceInDays(
-      new Date(String(searchParams.get("checkOut"))),
-      new Date(String(searchParams.get("checkIn"))),
-    ),
-    adults: Number(searchParams.get("adults")),
-  };
-
-  const [GuestInfo, setGuestInfo] = useState<GuestHotelFormBookingData>({
-    email: "",
-    fullName: "",
-    idDocumentNumber: "",
-    phoneNumber: "",
-    idDocumentType: "national_id",
-  });
-
-  const [promoCode, setPromoCode] = useState<string>("");
+  const [bookingAsGuest, setBookingAsGuest] = useState(!userCookie);
+  const [guestInfo, setGuestInfo] = useState(initialGuestInfo);
+  const [promoCode, setPromoCode] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("poem_pay");
 
-  const { mutate, isPending } = useGuestBookingInfo();
-  const { mutate: HotelMutation, isPending: booking } =
+  const { mutate: createHotelGuest, isPending: hotelGuestPending } =
+    useGuestBookingInfo();
+  const { mutate: createHotelBooking, isPending: hotelBookingPending } =
     useInitiateHotelBooking();
-  const [bookingAsGuest, setBookingAsGuest] = useState<boolean>(
-    userCookie ? false : true,
-  );
-  const { mutate: CustomerBooking, isPending: bookingCustomer } =
-    useInitiateCustomerHotelBooking();
-  const InitiateBooking = () => {
-    const BookedItemData: BookingItem = {
-      itemType: "hotel_room",
-      itemId: roomId,
-      endDatetime: String(searchParams.get("checkOut")),
-      startDatetime: String(searchParams.get("checkIn")),
-      guests: [{ fullName: GuestInfo.fullName, passengerType: "adult" }],
-      quantity: 1,
-    };
+  const { mutate: createApartmentGuest, isPending: apartmentGuestPending } =
+    useGuestApartmentInfo();
+  const { mutate: createApartmentBooking, isPending: apartmentBookingPending } =
+    useInitiateApartmentBooking();
+  const {
+    mutate: createCustomerHotelBooking,
+    isPending: customerHotelPending,
+  } = useInitiateCustomerHotelBooking();
+  const {
+    mutate: createCustomerApartmentBooking,
+    isPending: customerApartmentPending,
+  } = useInitiateCustomerApartmentBooking();
+
+  const isPending =
+    hotelGuestPending ||
+    hotelBookingPending ||
+    apartmentGuestPending ||
+    apartmentBookingPending ||
+    customerHotelPending ||
+    customerApartmentPending;
+
+  const goToPayment = (response: {
+    data: { bookingReference: string; id: string };
+  }) => {
+    Cookies.set("bookingRef", response.data.bookingReference);
+    router.push(
+      `/payment/local?paymentMethod=${paymentMethod}&bookingId=${response.data.id}`,
+    );
+  };
+
+  const initiateBooking = () => {
+    const item: BookingItem | ApartmentBookingItem = isHotel
+      ? {
+          itemType: "hotel_room",
+          itemId: resourceId,
+          endDatetime: String(searchParams.get("checkOut")),
+          startDatetime: String(searchParams.get("checkIn")),
+          guests: [{ fullName: guestInfo.fullName, passengerType: "adult" }],
+          quantity: 1,
+        }
+      : {
+          itemType: "apartment",
+          itemId: resourceId,
+          endDatetime: String(searchParams.get("checkOut")),
+          startDatetime: String(searchParams.get("checkIn")),
+          quantity: 1,
+        };
 
     if (userCookie && !bookingAsGuest) {
-      CustomerBooking(
-        {
-          bookingType: "hotel",
-          items: [BookedItemData],
-        },
-        {
-          onSuccess: (response) => {
-            toast.success("Hotel room booked successfully 🎉", {
-              duration: 0.3,
-            });
-            Cookies.set("bookingRef", response.data.bookingReference);
-            router.push(
-              `/payment/local?paymentMethod=${paymentMethod}&bookingId=${response.data.id}`,
-            );
+      const onSuccess = (response: {
+        data: { bookingReference: string; id: string };
+      }) => {
+        toast.success("Booking initiated. Proceed to payment.");
+        goToPayment(response);
+      };
+      const onError = (error: Error) => toast.error(error.message);
+      if (isHotel) {
+        createCustomerHotelBooking(
+          { bookingType: "hotel", items: [item as BookingItem] },
+          { onSuccess, onError },
+        );
+      } else {
+        createCustomerApartmentBooking(
+          { bookingType: "apartment", items: [item as ApartmentBookingItem] },
+          { onSuccess, onError },
+        );
+      }
+      return;
+    }
+
+    const createGuestBooking = (guestCustomerId: string) => {
+      const onSuccess = (response: {
+        data: { bookingReference: string; id: string };
+      }) => {
+        toast.success("Booking request successful.");
+        goToPayment(response);
+      };
+      const onError = (error: Error) => toast.error(error.message);
+      if (isHotel) {
+        createHotelBooking(
+          {
+            bookingType: "hotel",
+            guestCustomerId,
+            idempotencyKey: guestCustomerId,
+            items: [item as BookingItem],
           },
-          onError: (e) => {
-            console.log({ error: e });
-            toast.error(e.message);
+          { onSuccess, onError },
+        );
+      } else {
+        createApartmentBooking(
+          {
+            bookingType: "apartment",
+            guestCustomerId,
+            items: [item as ApartmentBookingItem],
           },
-        },
-      );
+          { onSuccess, onError },
+        );
+      }
+    };
+
+    const onGuestSuccess = (response: { data: { id: string } }) =>
+      createGuestBooking(response.data.id);
+    const onGuestError = (error: Error) => toast.error(error.message);
+    if (isHotel) {
+      createHotelGuest(guestInfo, {
+        onSuccess: onGuestSuccess,
+        onError: onGuestError,
+      });
     } else {
-      mutate(GuestInfo, {
-        onSuccess: (response) => {
-          HotelMutation(
-            {
-              bookingType: "hotel",
-              guestCustomerId: response.data.id,
-              idempotencyKey: response.data.id,
-              items: [BookedItemData],
-            },
-            {
-              onSuccess: (response) => {
-                toast.success("Hotel room booked successfully 🎉", {
-                  duration: 0.3,
-                });
-                Cookies.set("bookingRef", response.data.bookingReference);
-                router.push(
-                  `/payment/local?paymentMethod=${paymentMethod}&bookingId=${response.data.id}`,
-                );
-              },
-              onError: (e) => {
-                console.log({ error: e });
-                toast.error(e.message);
-              },
-            },
-          );
-          console.log({ guest: response });
-          toast.success("Guest key created successfully. Booking hotel..");
-        },
-        onError: (e) => {
-          console.log({ error: e });
-          toast.error(e.message);
-        },
+      createApartmentGuest(guestInfo, {
+        onSuccess: onGuestSuccess,
+        onError: onGuestError,
       });
     }
   };
 
-  const handleFormInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setGuestInfo((prev) => ({ ...prev, [name]: value }));
+  const handleFormInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setGuestInfo((previous) => ({ ...previous, [name]: value }));
   };
 
-  if (isLoading || !room) {
+  if (isHotel && (isRoomLoading || !selectedRoom)) {
     return <CompleteReservationSkeleton />;
   }
 
-  const selectedRoom = room.data;
   return (
     <section className="lg:mt-[calc(var(--nav-height)+10px)] mt-(--mobile-nav-height) container-x flex flex-col gap-2">
       <h2>Complete your reservation</h2>
@@ -164,7 +222,7 @@ export const CheckoutFormBlock = () => {
               {userCookie && (
                 <Button
                   onClick={() => setBookingAsGuest(!bookingAsGuest)}
-                  className={"p-2 h-9"}
+                  className="p-2 h-9"
                 >
                   Continue as User
                 </Button>
@@ -177,50 +235,46 @@ export const CheckoutFormBlock = () => {
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: "-100%", opacity: 1 }}
                   transition={{ duration: 0.2 }}
-                  key={"hid"}
                   className="absolute inset-0 p-4 bg-white rounded-2xl border border-border flex items-center justify-center flex-col gap-2"
                 >
                   <div className="w-12 h-12 flex items-center justify-center bg-primary text-white rounded-full">
                     <HugeiconsIcon icon={HandshakeFreeIcons} />
                   </div>
-                  <span className="font-bold">Booking for a friend ?</span>
+                  <span className="font-bold">Booking for a friend?</span>
                   <p className="text-muted-foreground text-[14px] max-w-sm mx-auto text-center">
                     Booking for a friend or want to book as a guest? Add their
-                    details below no account needed to check in, and you'll
+                    details below no account needed to check in, and you&apos;ll
                     still manage the booking and payment.
                   </p>
                   <Button
                     onClick={() => setBookingAsGuest(!bookingAsGuest)}
-                    className={"p-2 px-4 h-9 mt-2"}
+                    className="p-2 px-4 h-9 mt-2"
                   >
                     Book for a friend
                   </Button>
                 </m.div>
               )}
             </AnimatePresence>
-            {/* Guest form */}
             <form className="flex flex-col gap-5">
-              <div className="flex flex-col gap-1">
-                <Input
-                  onChange={handleFormInput}
-                  name="fullName"
-                  value={GuestInfo.fullName}
-                  placeholder="FullName"
-                  className="p-6 bg-white"
-                />
-              </div>
+              <Input
+                onChange={handleFormInput}
+                name="fullName"
+                value={guestInfo.fullName}
+                placeholder="FullName"
+                className="p-6 bg-white"
+              />
               <div className="flex justify-between gap-4">
                 <Input
                   placeholder="Email"
                   onChange={handleFormInput}
-                  value={GuestInfo.email}
+                  value={guestInfo.email}
                   name="email"
                   type="email"
                   className="p-6 bg-white flex-1"
                 />
                 <Input
                   onChange={handleFormInput}
-                  value={GuestInfo.phoneNumber}
+                  value={guestInfo.phoneNumber}
                   name="phoneNumber"
                   placeholder="Phone"
                   type="number"
@@ -230,14 +284,14 @@ export const CheckoutFormBlock = () => {
               <div className="flex pb-3 border-b flex-col md:flex-row border-border gap-4">
                 <Input
                   placeholder="ID Number"
-                  value={GuestInfo.idDocumentNumber}
+                  value={guestInfo.idDocumentNumber}
                   onChange={handleFormInput}
                   name="idDocumentNumber"
                   className="p-6 bg-white"
                 />
                 <Input
                   value={promoCode}
-                  onChange={(e) => setPromoCode(e.target.value)}
+                  onChange={(event) => setPromoCode(event.target.value)}
                   placeholder="Promotional Code (optional)"
                   className="p-6 bg-white"
                 />
@@ -246,12 +300,13 @@ export const CheckoutFormBlock = () => {
                 <p className="text-xs text-muted-foreground">
                   How should we send your booking reminders and checkups?
                 </p>
-                <div className="flex  text-[14px] items-center gap-2">
-                  {["Email", "SMS", "Whatsapp"].map((service, i) => (
+                <div className="flex text-[14px] items-center gap-2">
+                  {["Email", "SMS", "Whatsapp"].map((service, index) => (
                     <span
+                      key={service}
                       className={cn(
                         "p-2 px-4 rounded-full",
-                        i === 0 ? "bg-primary" : "",
+                        index === 0 ? "bg-primary" : "",
                       )}
                     >
                       {service}
@@ -262,7 +317,7 @@ export const CheckoutFormBlock = () => {
               <div className="flex flex-col gap-1">
                 <Input placeholder="Whatsapp Number" className="p-6 bg-white" />
                 <div className="flex items-center gap-2 mt-2">
-                  <Input type="checkbox" className="w-4 h-4" value={""} />
+                  <Input type="checkbox" className="w-4 h-4" value="" />
                   <span className="text-xs text-muted-foreground">
                     Same as phone number
                   </span>
@@ -270,8 +325,6 @@ export const CheckoutFormBlock = () => {
               </div>
             </form>
           </div>
-
-          {/* Payment Method */}
           <div className="p-6 bg-bg-mute rounded-2xl flex flex-col gap-6">
             <span className="flex gap-2 items-center">
               <div className="size-8 bg-secondary-foreground flex items-center justify-center rounded-md text-white">
@@ -297,7 +350,6 @@ export const CheckoutFormBlock = () => {
         </div>
         <div className="md:col-span-2 flex flex-col gap-6">
           <div className="flex flex-col rounded-2xl border border-border shadow-md gap-4">
-            <div></div>
             <div className="flex flex-col gap-2 p-6">
               <div className="grid-cols-2 grid gap-3 pb-4 border-b border-border">
                 <div className="flex flex-col">
@@ -305,7 +357,7 @@ export const CheckoutFormBlock = () => {
                     CHECK IN
                   </span>
                   <span className="font-bold">
-                    {formatDate(bookingData.entry, "EEE, dd MMM yyyy")}
+                    {formatDate(entry, "EEE, dd MMM yyyy")}
                   </span>
                 </div>
                 <div className="flex flex-col">
@@ -313,18 +365,19 @@ export const CheckoutFormBlock = () => {
                     CHECK OUT
                   </span>
                   <span className="font-bold">
-                    {" "}
-                    {formatDate(bookingData.exit, "EEE, dd MMM yyyy")}
+                    {formatDate(exit, "EEE, dd MMM yyyy")}
                   </span>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-muted-foreground text-[10px]">
-                    TRAVELERS
-                  </span>
-                  <span className="font-bold">
-                    {bookingData.adults} Adults, {selectedRoom.name}
-                  </span>
-                </div>
+                {isHotel && (
+                  <div className="flex flex-col">
+                    <span className="text-muted-foreground text-[10px]">
+                      TRAVELERS
+                    </span>
+                    <span className="font-bold">
+                      {adults} Adults, {displayName}
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="flex mt-3 flex-col gap-2 text-[14px]">
                 <span className="text-xs font-semibold mb-4">
@@ -333,42 +386,28 @@ export const CheckoutFormBlock = () => {
                 <div className="flex flex-col gap-4">
                   <div className="flex justify-between w-full text-muted-foreground items-center">
                     <span>Nights</span>
-                    <span>{bookingData.days} Night(s)</span>
+                    <span>{days} Night(s)</span>
                   </div>
                   <div className="flex justify-between w-full text-muted-foreground items-center">
                     <span>Price Per Night</span>
-                    <span>{formatPrice(selectedRoom.basePrice)}</span>
+                    <span>{formatPrice(price)}</span>
                   </div>
-
-                  {/* <div className="flex border-b-2 border-primary pb-3 justify-between w-full text-muted-foreground items-center">
-                    <span>Service Fee</span>
-                    <span>375,000 XAF</span>
-                  </div> */}
                   <div className="flex justify-between w-full text-muted-foreground items-center">
                     <span>Total payable</span>
-                    <div className="flex flex-col text-end">
-                      <span className="text-xl font-bold text-primary">
-                        {formatPrice(
-                          bookingData.days * Number(selectedRoom.basePrice),
-                        )}
-                      </span>
-                      <span className="text-[9px] text-muted-foreground">
-                        All taxes included
-                      </span>
-                    </div>
+                    <span className="text-xl font-bold text-primary">
+                      {formatPrice(price * days)}
+                    </span>
                   </div>
-                  {/* continue button */}
                   <div className="flex flex-col items-center justify-center gap-2 text-center">
                     <Button
-                      disabled={booking || isPending || bookingCustomer}
-                      onClick={InitiateBooking}
-                      className={"p-6 w-full text-[14px]"}
+                      disabled={isPending}
+                      onClick={initiateBooking}
+                      className="p-6 w-full text-[14px]"
                     >
-                      {booking || isPending || bookingCustomer ? (
+                      {isPending ? (
                         <Loader />
                       ) : (
                         <>
-                          {" "}
                           Complete Booking{" "}
                           <HugeiconsIcon icon={ArrowRight} size={20} />
                         </>
@@ -390,10 +429,10 @@ export const CheckoutFormBlock = () => {
   );
 };
 
-export const CheckoutSuspenseBlock = () => {
-  return (
-    <Suspense>
-      <CheckoutFormBlock />
-    </Suspense>
-  );
-};
+export const BookingCheckoutSuspense = ({
+  bookingType,
+}: BookingCheckoutComponentProps) => (
+  <Suspense>
+    <BookingCheckoutComponent bookingType={bookingType} />
+  </Suspense>
+);

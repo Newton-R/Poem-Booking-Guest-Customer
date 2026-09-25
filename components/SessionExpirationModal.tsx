@@ -4,19 +4,16 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import React from "react";
 import { Button } from "./ui/button";
 import { useSessionModal } from "@/lib/useSessionModal";
-import { useUserStore } from "@/lib/useUserStore";
 import { usePathname, useRouter } from "next/navigation";
-import Cookies from "js-cookie";
+import { clearSession } from "@/lib/clearSession";
 
 export const SessionExpirationModal = () => {
   const { isOpen, closeModal } = useSessionModal();
-  const { deleteUser } = useUserStore();
   const router = useRouter();
   const pathname = usePathname();
 
   const handleLogout = () => {
-    deleteUser();
-    Cookies.remove("token");
+    clearSession();
     router.push(`/auth?callbackUrl=${pathname}`);
     closeModal();
   };

@@ -74,7 +74,7 @@ export function useGetHotelsAvailability(
   config: RoomsAvailabilityParams,
 ) {
   return useQuery({
-    queryKey: hotelKeys.details(),
+    queryKey: [id, hotelKeys.details()],
     queryFn: () => getHotelsAvailability(id, config),
   });
 }
@@ -99,6 +99,7 @@ async function getRoomDetails(
 export function useGetRoomDetails(hotelId: string, roomId: string) {
   return useQuery({
     queryFn: () => getRoomDetails(hotelId, roomId),
-    queryKey: roomKey.detail(roomId),
+    queryKey: ["hotels", hotelId, "room", roomKey.detail(roomId)],
+    enabled: Boolean(hotelId && roomId),
   });
 }

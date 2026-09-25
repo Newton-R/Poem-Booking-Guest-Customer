@@ -5,7 +5,6 @@ import { HomeNavbar } from "@/components/ui/home_nav";
 import { Footer } from "@/components/home/Footer";
 import { AccountSideBar } from "@/components/account/Sidebar";
 import { MobileDashboardNavigation } from "@/components/mobile/MobileDashboardNavigation";
-import { SessionExpirationModal } from "@/components/SessionExpirationModal";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -33,7 +32,6 @@ export default function RootLayout({
     <main>
       <div className="min-h-screen grid md:grid-cols-4 gap-6 mt-[calc(var(--nav-height))] container-x grid-cols-1">
         <AccountSideBar />
-        <SessionExpirationModal />
         <div className="col-span-3">{children}</div>
         <MobileDashboardNavigation />
       </div>

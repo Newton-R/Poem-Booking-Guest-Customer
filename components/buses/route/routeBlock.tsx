@@ -1,51 +1,24 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { BusDeparture, BusRoute } from "@/lib/types";
-import { busOperators, formatPrice } from "@/lib/data";
+
+import { formatPrice } from "@/lib/data";
 import {
-  ArrowDown,
-  ArrowLeft,
-  ArrowRight,
   ArrowTurnUpFreeIcons,
   BadgeCheck,
   Bus02FreeIcons,
   IceHockeyFreeIcons,
-  Pen,
   Wifi,
   Zap,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { MobileFilter } from "./MobileFilter";
-import { useGetRouteDetail } from "@/lib/public/useGetBus";
-import { VoyagesListSkeleton } from "@/components/loaders/bus/LoadingBusRouteDetails";
 import { EmptyBusRoutes } from "@/components/emptystuff";
 import { da } from "date-fns/locale";
-import { ScheduledTrips, TransportRouteDetail } from "@/lib/types/transport";
 import { formatDate } from "date-fns";
-import { useGetAgencyDetails } from "@/lib/public/useGetAgencies";
-import { label } from "motion/react-client";
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "@/components/ui/combobox";
-import {
-  AgencyBus,
-  AgencyDetail,
-  AgencyDetailResponse,
-  AgencyRegion,
-  AgencyRoute,
-  AgencyRouteTrip,
-  AgencyTrip,
-  Bus,
-} from "@/lib/types/agency";
+
+import { AgencyRegion, AgencyRoute, AgencyRouteTrip } from "@/lib/types/agency";
 import { AgencyDetailSkeleton } from "@/components/loaders/bus/AgencyDetailSkeleton";
 import { useAgencies } from "@/lib/useAgency";
 import { useGetCities } from "@/lib/public/useCitiesAmeneties";

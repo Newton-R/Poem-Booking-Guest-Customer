@@ -13,20 +13,13 @@ import {
 } from "@/components/ui/dialog";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Logout01FreeIcons } from "@hugeicons/core-free-icons";
-import { useState } from "react";
 import { useLogout } from "@/lib/public/useRegister";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { useUserStore } from "@/lib/useUserStore";
-import { useTokens } from "@/lib/useTokens";
 import { Loader } from "@/components/ui/Loader";
-import Cookies from "js-cookie";
+import { clearSession } from "@/lib/clearSession";
 
 export function LogoutDialog() {
   const { mutate, isPending } = useLogout();
-  const router = useRouter();
-  const { deleteUser } = useUserStore();
-  const { deleteTokens } = useTokens();
 
   return (
     <Dialog>
@@ -55,13 +48,13 @@ export function LogoutDialog() {
               mutate(null, {
                 onSuccess: (response) => {
                   toast.success(response.data.message);
-                  deleteUser();
-                  deleteTokens();
-                  Cookies.remove("token");
-                  window.location.replace("/");
                 },
                 onError: (e) => {
                   toast.error(e.message ?? "Unable to logout");
+                },
+                onSettled: () => {
+                  clearSession();
+                  window.location.replace("/");
                 },
               });
             }}
