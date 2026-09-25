@@ -77,7 +77,7 @@ export const AppartmentDetailsContent = ({
       if (data.data.available) {
         toast.success("Apartment available🎉 proceeding to checkout");
         router.push(
-          `${pathname}/checkout?checkIn=${checkOutData.checkIn}&checkOut=${checkOutData.checkOut}&price=${apartment.base_price_per_night}`,
+          `${pathname}/checkout?checkIn=${checkOutData.checkIn}&checkOut=${checkOutData.checkOut}`,
         );
       } else {
         toast.success("Apartment not available for desired dates");

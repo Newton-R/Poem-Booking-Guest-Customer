@@ -22,7 +22,7 @@ export const SessionExpirationModal = () => {
     return null;
   }
   return (
-    <div className="fixed top-0  left-0 z-90 w-full p-4 min-h-screen bg-black/50 backdrop-blur-xs flex items-center justify-center">
+    <div className="fixed top-0  left-0 z-90 w-full p-4 min-h-screen bg-black/60 backdrop-blur-xs flex items-center justify-center">
       <div className="flex flex-col gap-2 p-6 w-[95%] max-w-md rounded-xl bg-white items-center text-center justify-center">
         <div className="w-8 h-8 rounded-md flex flex-col items-center justify-center bg-destructive/20 text-destructive">
           <HugeiconsIcon icon={Logout02FreeIcons} />
