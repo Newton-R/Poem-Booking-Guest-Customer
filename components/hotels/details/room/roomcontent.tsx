@@ -148,7 +148,7 @@ export const RoomContent = ({
                 </span>
                 <span className="text-muted-foreground text-[9px]">
                   {/* days */}
-                  {days} {days > 1 ? "Days" : "Day"}
+                  {days} {days > 1 ? "Nights" : "Night"}
                 </span>
               </div>
             </div>
@@ -177,7 +177,7 @@ export const RoomContent = ({
               </div>
             </div>
             <Link
-              href={`${pathname}/checkout?checkIn=${searchParams.get("checkIn")}&checkOut=${searchParams.get("checkOut")}&adults=${userStayData.adults}&days=${days}&roomtype=${room.name}&per_price=${room.basePrice}`}
+              href={`${pathname}/checkout?checkIn=${searchParams.get("checkIn")}&checkOut=${searchParams.get("checkOut")}&adults=${userStayData.adults}`}
               className="w-full"
             >
               {" "}

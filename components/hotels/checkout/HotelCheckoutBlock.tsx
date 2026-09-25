@@ -1,4 +1,5 @@
 "use client";
+import { CompleteReservationSkeleton } from "@/components/loaders/ReservationSkeleton";
 import { PaymentMethodSelectionGrid } from "@/components/payments/MethodSelectionGrid";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +11,7 @@ import {
   useGuestBookingInfo,
   useInitiateHotelBooking,
 } from "@/lib/public/form/useHotelBooking";
+import { useGetRoomDetails } from "@/lib/public/useGetHotels";
 import { BookingItem, GuestHotelFormBookingData } from "@/lib/types/booking";
 import { cn } from "@/lib/utils";
 import {
@@ -20,7 +22,7 @@ import {
   Payment01FreeIcons,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { formatDate } from "date-fns";
+import { differenceInDays, formatDate } from "date-fns";
 import Cookies from "js-cookie";
 import { AnimatePresence, motion as m } from "motion/react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -30,17 +32,22 @@ import { toast } from "sonner";
 export const CheckoutFormBlock = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const params = useParams();
+  const params = useParams<{ room: string; hotel: string }>();
   const roomId = String(params.room);
   const userCookie = Cookies.get("token");
+  const { data: room, isLoading } = useGetRoomDetails(
+    params.hotel,
+    params.room,
+  );
 
   const bookingData = {
     entry: new Date(String(searchParams.get("checkIn"))),
     exit: new Date(String(searchParams.get("checkOut"))),
-    days: Number(searchParams.get("days")),
+    days: differenceInDays(
+      new Date(String(searchParams.get("checkOut"))),
+      new Date(String(searchParams.get("checkIn"))),
+    ),
     adults: Number(searchParams.get("adults")),
-    roomType: String(searchParams.get("roomtype")),
-    price: Number(searchParams.get("per_price")),
   };
 
   const [GuestInfo, setGuestInfo] = useState<GuestHotelFormBookingData>({
@@ -69,7 +76,7 @@ export const CheckoutFormBlock = () => {
       endDatetime: String(searchParams.get("checkOut")),
       startDatetime: String(searchParams.get("checkIn")),
       guests: [{ fullName: GuestInfo.fullName, passengerType: "adult" }],
-      quantity: Number(searchParams.get("adults")),
+      quantity: 1,
     };
 
     if (userCookie && !bookingAsGuest) {
@@ -80,7 +87,9 @@ export const CheckoutFormBlock = () => {
         },
         {
           onSuccess: (response) => {
-            toast.success("Hotel room booked successfully 🎉");
+            toast.success("Hotel room booked successfully 🎉", {
+              duration: 0.3,
+            });
             Cookies.set("bookingRef", response.data.bookingReference);
             router.push(
               `/payment/local?paymentMethod=${paymentMethod}&bookingId=${response.data.id}`,
@@ -104,7 +113,9 @@ export const CheckoutFormBlock = () => {
             },
             {
               onSuccess: (response) => {
-                toast.success("Hotel room booked successfully 🎉");
+                toast.success("Hotel room booked successfully 🎉", {
+                  duration: 0.3,
+                });
                 Cookies.set("bookingRef", response.data.bookingReference);
                 router.push(
                   `/payment/local?paymentMethod=${paymentMethod}&bookingId=${response.data.id}`,
@@ -132,6 +143,11 @@ export const CheckoutFormBlock = () => {
     setGuestInfo((prev) => ({ ...prev, [name]: value }));
   };
 
+  if (isLoading || !room) {
+    return <CompleteReservationSkeleton />;
+  }
+
+  const selectedRoom = room.data;
   return (
     <section className="lg:mt-[calc(var(--nav-height)+10px)] mt-(--mobile-nav-height) container-x flex flex-col gap-2">
       <h2>Complete your reservation</h2>
@@ -306,7 +322,7 @@ export const CheckoutFormBlock = () => {
                     TRAVELERS
                   </span>
                   <span className="font-bold">
-                    {bookingData.adults} Adults, {bookingData.roomType}
+                    {bookingData.adults} Adults, {selectedRoom.name}
                   </span>
                 </div>
               </div>
@@ -321,7 +337,7 @@ export const CheckoutFormBlock = () => {
                   </div>
                   <div className="flex justify-between w-full text-muted-foreground items-center">
                     <span>Price Per Night</span>
-                    <span>{formatPrice(bookingData.price)}</span>
+                    <span>{formatPrice(selectedRoom.basePrice)}</span>
                   </div>
 
                   {/* <div className="flex border-b-2 border-primary pb-3 justify-between w-full text-muted-foreground items-center">
@@ -332,7 +348,9 @@ export const CheckoutFormBlock = () => {
                     <span>Total payable</span>
                     <div className="flex flex-col text-end">
                       <span className="text-xl font-bold text-primary">
-                        {formatPrice(bookingData.days * bookingData.price)}
+                        {formatPrice(
+                          bookingData.days * Number(selectedRoom.basePrice),
+                        )}
                       </span>
                       <span className="text-[9px] text-muted-foreground">
                         All taxes included

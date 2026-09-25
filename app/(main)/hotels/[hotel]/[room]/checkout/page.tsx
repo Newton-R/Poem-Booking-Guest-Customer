@@ -1,8 +1,8 @@
-import { CheckoutSuspenseBlock } from "@/components/hotels/checkout/HotelCheckoutBlock";
+import { BookingCheckoutSuspense } from "@/components/hotels/checkout/BookingCheckoutComponent";
 import React from "react";
 
 const CheckoutPage = () => {
-  return <CheckoutSuspenseBlock />;
+  return <BookingCheckoutSuspense bookingType="hotel" />;
 };
 
 export default CheckoutPage;

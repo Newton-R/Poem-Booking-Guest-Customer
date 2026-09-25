@@ -1,5 +1,5 @@
-import Cookies from "js-cookie";
 import axios from "axios";
+import { clearSession } from "./clearSession";
 import { useTokens } from "./useTokens";
 import { useSessionModal } from "./useSessionModal";
 
@@ -28,6 +28,7 @@ apiClient.interceptors.response.use(
   (error) => {
     const { openModal } = useSessionModal.getState();
     if (axios.isAxiosError(error) && error.response?.status === 401) {
+      clearSession();
       openModal();
     }
     return Promise.reject(error);

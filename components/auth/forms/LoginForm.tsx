@@ -51,7 +51,6 @@ export const LoginForm = () => {
           }),
           {
             secure: true,
-            expires: 7,
             sameSite: "strict",
           },
         );
