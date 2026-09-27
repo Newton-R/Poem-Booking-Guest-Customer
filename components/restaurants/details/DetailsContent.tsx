@@ -1,12 +1,11 @@
 import { DishCardSkeleton } from "@/components/loaders/restaurant/LoadingDishCard";
-import { Button } from "@/components/ui/button";
+
 import { DishCard } from "@/components/ui/restaurantdishcard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Restaurant } from "@/lib/types";
+
+import { RestaurantDetails } from "@/lib/types/restaurant";
 import { Clock, Location, Phone, Plus, Star } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Image from "next/image";
-import React from "react";
 
 const TestimonialCard = () => {
   return (
@@ -42,7 +41,7 @@ const TestimonialCard = () => {
   );
 };
 
-const ReviewsBlock = ({ restau }: { restau: Restaurant }) => {
+const ReviewsBlock = ({ restau }: { restau: RestaurantDetails }) => {
   const ratings = [
     {
       rate: 5,
@@ -71,7 +70,7 @@ const ReviewsBlock = ({ restau }: { restau: Restaurant }) => {
         <div className="w-full gap-6 grid pb-4 border-b border-border grid-cols-3">
           <div className="flex items-center justify-center flex-col gap-2 p-6">
             <span className="text-6xl font-bold text-secondary-foreground">
-              {restau.rating}
+              {/* {restau.rating} */}
             </span>
             <div className="flex items-center gap-1">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -84,7 +83,7 @@ const ReviewsBlock = ({ restau }: { restau: Restaurant }) => {
               ))}
             </div>
             <p className="text-xs text-muted-foreground w-[80%] text-center">
-              Based on {restau.reviewCount} reviews
+              {/* Based on {restau.reviewCount} reviews */}
             </p>
           </div>
           <div className="border-l border-border pl-12 col-span-2 flex items-center justify-center flex-col gap-1.5">
@@ -124,7 +123,7 @@ const ReviewsBlock = ({ restau }: { restau: Restaurant }) => {
             />
             <div className="flex flex-col text-xs gap-0.5">
               <span className="text-secondary-foreground font-bold">
-                {restau.region}, {restau.city}
+                {restau.city}
               </span>
               <span className="text-muted-foreground">{restau.address}</span>
               <span className="text-primary">VIEW ON MAP</span>
@@ -171,13 +170,16 @@ const ReviewsBlock = ({ restau }: { restau: Restaurant }) => {
     </div>
   );
 };
+
 export const DetailsContent = ({
   restaurant,
   loading,
 }: {
-  restaurant: Restaurant;
+  restaurant: RestaurantDetails;
   loading: boolean;
 }) => {
+  const dishes = restaurant.menu.flatMap((menu) => menu.items);
+
   if (loading) {
     return (
       <div className="grid grid-cols-1 container-x md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -199,7 +201,7 @@ export const DetailsContent = ({
         <div className="w-full flex flex-col gap-4">
           <h2 className="text-3xl font-bold">Signature Starters</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-4">
-            {restaurant.dishes.map((dish, i) => (
+            {dishes.map((dish, i) => (
               <DishCard Dish={dish} key={i} />
             ))}
           </div>

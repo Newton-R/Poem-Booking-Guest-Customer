@@ -9,15 +9,14 @@ export default async function RestaurantDetails({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const restaurant = restaurants.find((res) => res.id === id);
 
-  if (!restaurant) {
-    return <EmptyRestaurants />;
-  }
+  // if (!restaurant) {
+  //   return <EmptyRestaurants />;
+  // }
 
   return (
     <div>
-      <RestaurantDetailsBlock restaurant={restaurant} />
+      <RestaurantDetailsBlock restaurant={id} />
     </div>
   );
 }

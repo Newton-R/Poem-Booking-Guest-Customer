@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { RestaurantsHomeHero } from "./HomeHero";
 import { RestaurantHomePageContent } from "./HomePageContent";
 import { restaurants } from "@/lib/data";
+import { useGetAllRestaurants } from "@/lib/public/useGetRestaurants";
 
 export const RestaurantHomeBlock = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -13,12 +14,8 @@ export const RestaurantHomeBlock = () => {
     delivery: "",
     openOnly: false,
   });
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 3000);
-  }, []);
-
+  const { data, isLoading, refetch, isError } = useGetAllRestaurants();
+  console.log({ restaurants: data });
   const cuisines = Array.from(
     new Set(restaurants.flatMap((restaurant) => restaurant.categories)),
   ).sort();
@@ -52,6 +49,10 @@ export const RestaurantHomeBlock = () => {
     });
   };
 
+  if (!data) {
+    return <>Sorry</>;
+  }
+
   return (
     <div className="flex flex-col gap-20">
       <RestaurantsHomeHero
@@ -63,8 +64,8 @@ export const RestaurantHomeBlock = () => {
         cuisines={cuisines}
       />
       <RestaurantHomePageContent
-        restaurants={filteredRestaurants}
-        isLoading={loading}
+        restaurants={data.data}
+        isLoading={isLoading}
       />
     </div>
   );

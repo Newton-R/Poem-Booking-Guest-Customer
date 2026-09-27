@@ -42,3 +42,13 @@ export const transportKeys = {
   detail: (id: string) => [...transportKeys.details(), id] as const,
   reviews: (id: string) => [...transportKeys.detail(id), "reviews"] as const,
 };
+
+export const restaurantKeys = {
+  all: ["restaurant"] as const,
+  lists: () => [...restaurantKeys.all, "list"] as const,
+  list: (filters: HotelFilters) =>
+    [...restaurantKeys.lists(), filters] as const,
+  details: () => [...restaurantKeys.all, "detail"] as const,
+  detail: (id: string) => [...restaurantKeys.details(), id] as const,
+  reviews: (id: string) => [...restaurantKeys.detail(id), "reviews"] as const,
+};
