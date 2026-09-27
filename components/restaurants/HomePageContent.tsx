@@ -12,8 +12,8 @@ import React from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Restaurant } from "@/lib/types";
 import { LoadingRestaurantCard } from "../loaders/restaurant/LoadingRestaurantCard";
+import { Restaurant } from "@/lib/types/restaurant";
 
 const RestaurantMainCard = ({ restaurant }: { restaurant: Restaurant }) => {
   const pathname = usePathname();
@@ -25,7 +25,7 @@ const RestaurantMainCard = ({ restaurant }: { restaurant: Restaurant }) => {
       <div className="flex-1 relative overflow-hidden">
         <div className="absolute inset-0 bg-black/20 flex flex-col p-4">
           <div className="flex justify-between w-full items-center">
-            {restaurant.isOpen ? (
+            {restaurant.isOpen && restaurant.openNow ? (
               <span className="p-1 px-2 flex items-center bg-white/80 rounded-full gap-1 ">
                 <span className="w-2 h-2 rounded-full bg-green-500" />
                 <span className="text-xs">Open</span>
@@ -42,7 +42,7 @@ const RestaurantMainCard = ({ restaurant }: { restaurant: Restaurant }) => {
                 size={12}
                 className="fill-yellow-500 text-yellow-500"
               />
-              <span className="text-xs">{restaurant.rating}</span>
+              <span className="text-xs">{restaurant.address}</span>
             </span>
           </div>
           <div className="mt-auto flex text-white gap-2">
@@ -52,13 +52,13 @@ const RestaurantMainCard = ({ restaurant }: { restaurant: Restaurant }) => {
             <div className="text-[10px] flex flex-col">
               <span className="font-bold text-[11px]">{restaurant.name}</span>
               <span>
-                {restaurant.tagline} • {restaurant.city}
+                {restaurant.description} • {restaurant.city}
               </span>
             </div>
           </div>
         </div>
         <Image
-          src={restaurant.image}
+          src={`${process.env.NEXT_PUBLIC_IMAGE_URL + restaurant.logoUrl}`}
           className="w-full h-full object-cover"
           width={500}
           height={500}
@@ -68,7 +68,7 @@ const RestaurantMainCard = ({ restaurant }: { restaurant: Restaurant }) => {
       <div className="p-4 flex flex-col gap-6">
         <div className="flex gap-3 items-center">
           <span className="text-[10px] bg-blue-50 uppercase rounded-full p-1 px-2">
-            {restaurant.region}
+            {restaurant.city}
           </span>
           <span className="text-[10px] bg-blue-50 rounded-full p-1 px-2">
             {restaurant.address}
@@ -78,7 +78,7 @@ const RestaurantMainCard = ({ restaurant }: { restaurant: Restaurant }) => {
           <div className="flex gap-4 items-center">
             <span className="text-muted-foreground items-center flex gap-1 text-[10px]">
               <HugeiconsIcon icon={Clock} className="text-primary" size={12} />
-              <span>{restaurant.deliveryMinutes} </span>
+              <span>{restaurant.deliveryRadiusKm} </span>
             </span>
             {/* <span className="text-muted-foreground items-center flex gap-1 text-[10px]">
               <HugeiconsIcon icon={Clock} className="text-primary" size={12} />

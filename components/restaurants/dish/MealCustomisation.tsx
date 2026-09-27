@@ -4,13 +4,22 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { formatPrice } from "@/lib/data";
 import { adon, Dish } from "@/lib/types";
-import { CartItem, useCartStore } from "@/lib/useCart";
+import { RestaurantMenuItem } from "@/lib/types/restaurant";
+import { useCartStore } from "@/lib/useCart";
 import { Minus, Plus } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
-export const MealCustomisation = ({ dish }: { dish: Dish }) => {
+export interface CartItem {
+  dish: RestaurantMenuItem;
+  quantity: number;
+  adons?: adon[] | null;
+  specifications?: string;
+  price: string;
+}
+
+export const MealCustomisation = ({ dish }: { dish: RestaurantMenuItem }) => {
   const [MealData, setMeal] = useState<CartItem>({
     dish: dish,
     quantity: 1,
@@ -25,25 +34,25 @@ export const MealCustomisation = ({ dish }: { dish: Dish }) => {
   );
 
   const MealPrice = totalAdonsPrice
-    ? MealData.dish.price + totalAdonsPrice
-    : MealData.dish.price;
+    ? MealData.dish.priceXaf + totalAdonsPrice
+    : MealData.dish.priceXaf;
 
   const { addItem } = useCartStore();
 
   const handleAddtoCart = () => {
     try {
-      if (MealData.quantity > 0) {
-        addItem(
-          MealData.dish,
-          String(MealPrice * MealData.quantity),
-          MealData.adons,
-          MealData.specifications,
-          MealData.quantity,
-        );
-        toast.success(`${MealData.dish.name} added to cart 🎉`);
-      } else {
-        toast.error("Quantity must be greater than 0");
-      }
+      // if (MealData.quantity > 0) {
+      //   addItem(
+      //     MealData.dish,
+      //     String(MealPrice * MealData.quantity),
+      //     MealData.adons,
+      //     MealData.specifications,
+      //     MealData.quantity,
+      //   );
+      //   toast.success(`${MealData.dish.name} added to cart 🎉`);
+      // } else {
+      //   toast.error("Quantity must be greater than 0");
+      // }
     } catch (e) {
       toast.error("Error adding item to cart");
     }
@@ -100,7 +109,7 @@ export const MealCustomisation = ({ dish }: { dish: Dish }) => {
             <span className="text-muted-foreground font-bold mb-2">
               Add Sides
             </span>
-            <div className="flex flex-col gap-2">
+            {/* <div className="flex flex-col gap-2">
               {dish.addOns.map((adon, i) => (
                 <div
                   key={i}
@@ -123,7 +132,7 @@ export const MealCustomisation = ({ dish }: { dish: Dish }) => {
                   <span className="text-primary">+{adon.price} XAF</span>
                 </div>
               ))}
-            </div>
+            </div> */}
           </div>
           <div className="flex flex-col">
             <span className="text-muted-foreground font-bold mb-2">

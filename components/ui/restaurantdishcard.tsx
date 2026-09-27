@@ -5,17 +5,21 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Plus } from "@hugeicons/core-free-icons";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { Dish } from "@/lib/types";
+import { RestaurantMenuItem } from "@/lib/types/restaurant";
+import { formatPrice } from "@/lib/data";
 
-export const DishCard = ({ Dish }: { Dish: Dish }) => {
+export const DishCard = ({ Dish }: { Dish: RestaurantMenuItem }) => {
   const pathname = usePathname();
   const router = useRouter();
+  const param = useParams<{ id: string }>();
+  const imgUrl = process.env.NEXT_PUBLIC_IMAGE_URL + Dish.imageUrl;
   return (
     <div className="w-full flex overflow-hidden h-80 flex-col gap-3">
       <div className="w-full flex flex-1 overflow-hidden rounded-2xl gap-2">
         <Image
-          src={Dish.image}
+          src={imgUrl}
           className="w-full h-full object-cover"
           width={500}
           height={500}
@@ -33,16 +37,15 @@ export const DishCard = ({ Dish }: { Dish: Dish }) => {
           <p>{Dish.description}</p>
         </div>
         <div className="w-full justify-between mt-2 flex items-center">
-          <span className="text-primary text-xs">{Dish.formattedPrice}</span>
-          <Button
-            onClick={() =>
-              router.push(`/restaurants/${Dish.restaurantId}/${Dish.id}`)
-            }
-            className={"text-xs p-1 px-3 rounded-md"}
-          >
-            <HugeiconsIcon icon={Plus} size={18} />
-            ADD TO CART
-          </Button>
+          <span className="text-primary text-xs">
+            {formatPrice(Dish.priceXaf)}
+          </span>
+          <Link href={`/restaurants/${param.id}/${Dish.id}`}>
+            <Button className={"text-xs p-1 px-3 rounded-md"}>
+              <HugeiconsIcon icon={Plus} size={18} />
+              ADD TO CART
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

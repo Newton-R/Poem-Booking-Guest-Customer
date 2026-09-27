@@ -1,5 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Restaurant } from "@/lib/types";
+import { RestaurantDetails } from "@/lib/types/restaurant";
 import { Bike, Clock, Star } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import React from "react";
@@ -8,7 +9,7 @@ export const RestaurantDetailsHero = ({
   restaurant,
   loading,
 }: {
-  restaurant: Restaurant;
+  restaurant: RestaurantDetails;
   loading: boolean;
 }) => {
   if (loading) {
@@ -17,7 +18,7 @@ export const RestaurantDetailsHero = ({
   return (
     <div
       style={{
-        backgroundImage: `url('${restaurant.image}')`,
+        backgroundImage: `url('${process.env.NEXT_PUBLIC_IMAGE_URL}${restaurant.coverUrl}')`,
       }}
       className="hero text-white bg-cover bg-center"
     >
@@ -35,10 +36,10 @@ export const RestaurantDetailsHero = ({
                     className="text-primary fill-primary"
                     size={12}
                   />
-                  <span>{restaurant.rating}</span>
+                  {/* <span>{restaurant.rating}</span> */}
                 </span>
                 <span className="opacity-70 px-1">
-                  ({restaurant.reviewCount} reviews)
+                  {/* ({restaurant.reviewCount} reviews) */}
                 </span>
               </span>
             </div>
