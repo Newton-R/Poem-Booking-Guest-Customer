@@ -103,9 +103,9 @@ export const RestaurantHomePageContent = ({
   restaurants,
 }: {
   isLoading: boolean;
-  restaurants: Restaurant[];
+  restaurants?: Restaurant[];
 }) => {
-  if (isLoading) {
+  if (isLoading || !restaurants) {
     return (
       <div className="grid grid-cols-1 container-x mt-4 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {Array.from({ length: 8 }).map((_, i) => (

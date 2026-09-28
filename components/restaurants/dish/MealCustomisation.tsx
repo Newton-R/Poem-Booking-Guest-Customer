@@ -47,11 +47,21 @@ export const MealCustomisation = ({
 
   const handleAddtoCart = () => {
     try {
-      if (MealData.quantity > 0) {
+      if (items.length > 0) {
         const prevRestaurantId = items[0].restaurantId;
         if (prevRestaurantId && restaurantId !== prevRestaurantId) {
           toast.error("Items in cart must be from thesame restaurants.");
         }
+        addItem(
+          MealData.dish,
+          String(MealPrice * MealData.quantity),
+          restaurantId,
+          MealData.adons,
+          MealData.specifications,
+          MealData.quantity,
+        );
+        toast.success(`${MealData.dish.name} added to cart 🎉`);
+      } else if (items.length === 0) {
         addItem(
           MealData.dish,
           String(MealPrice * MealData.quantity),

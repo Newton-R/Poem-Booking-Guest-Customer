@@ -23,6 +23,9 @@ import { PaymentMethodSelectionGrid } from "../payments/MethodSelectionGrid";
 import { formatPrice } from "@/lib/data";
 import { useParams } from "next/navigation";
 import { useCheckDeliveryData } from "@/lib/public/useGetRestaurants";
+import { useMakeOrder } from "@/lib/public/form/useRestaurantOrder";
+import { toast } from "sonner";
+import { Loader } from "../ui/Loader";
 
 const CartItem = ({ item }: { item: Item }) => {
   const { removeItem, increment, decrement } = useCartStore();
@@ -109,8 +112,15 @@ const InputField = ({
   );
 };
 
-// Reasons we can end up without a location — lets the UI (and you, via
-// console) know *why* instead of a single generic "unable to get location".
+interface OrderData {
+  fullname: string;
+  phone: string;
+  special_instruction: string;
+  city: string;
+  district: string;
+  street: string;
+}
+
 type LocationFailureReason =
   | "unsupported"
   | "insecure-context"
@@ -127,8 +137,18 @@ export const CartBlock = () => {
     longitude: string;
   } | null>(null);
   const [locationError, setLocationError] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("poem_pay");
   const [locationFailureReason, setLocationFailureReason] =
     useState<LocationFailureReason | null>(null);
+
+  const [orderFormData, setOrderFormData] = useState<OrderData>({
+    phone: "",
+    city: "",
+    district: "",
+    fullname: "",
+    special_instruction: "",
+    street: "",
+  });
 
   const itemsPrice = items.reduce((item, red) => item + Number(red.price), 0);
 
@@ -223,8 +243,52 @@ export const CartBlock = () => {
     location?.latitude ?? "",
     location?.longitude ?? "",
   );
+  const { mutate, isPending } = useMakeOrder();
 
-  const deliveryFee = 1000;
+  const handleOrderDetails = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setOrderFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleInitiateBooking = () => {
+    if (items.length > 0) {
+      mutate(
+        {
+          restaurantId: items[0].restaurantId,
+          deliveryAddress: {
+            label: "",
+            addressLine: `${orderFormData.district}, ${orderFormData.street}`,
+            city: orderFormData.city,
+            instructions: orderFormData.special_instruction,
+            latitude: Number(location?.latitude) ?? 0,
+            longitude: Number(location?.longitude) ?? 0,
+          },
+          fulfillmentType: "delivery",
+          items: items.map((item) => ({
+            quantity: item.quantity,
+            menuItemId: item.dish.id,
+          })),
+          specialInstructions: orderFormData.special_instruction,
+          guest: { name: orderFormData.fullname, phone: orderFormData.phone },
+        },
+        {
+          onSuccess: (response) => {
+            console.log(response);
+            toast.success("Order initiated successfully");
+          },
+          onError: (error) => {
+            console.log({ err: error });
+            toast.error(error.message);
+          },
+        },
+      );
+    } else {
+      toast.error("Can't order with an empty cart");
+    }
+  };
+
   const deliveryStatusLoading =
     checkingLocation || (hasLocation && checkingRestaurantOrderData);
   const poempayDiscount = () => {
@@ -272,6 +336,10 @@ export const CartBlock = () => {
             <div className="flex flex-col md:flex-row gap-4">
               <InputField label={"Full Name"}>
                 <Input
+                  onChange={handleOrderDetails}
+                  value={orderFormData.fullname}
+                  name="fullname"
+                  disabled={isPending}
                   placeholder="Enter your full name"
                   className="border p-4 bg-white h-10 px-4"
                 />
@@ -279,6 +347,10 @@ export const CartBlock = () => {
               <InputField label={"PHONE NUMBER"}>
                 <Input
                   placeholder="237"
+                  onChange={handleOrderDetails}
+                  value={orderFormData.phone}
+                  name="phone"
+                  disabled={isPending}
                   type="number"
                   className="border p-4 bg-white h-10 px-4"
                 />
@@ -319,11 +391,14 @@ export const CartBlock = () => {
                 <InputField label={"CITY"}>
                   <Input
                     placeholder="eg Douala"
+                    onChange={handleOrderDetails}
+                    name="city"
+                    value={orderFormData.city}
                     disabled={
                       deliveryStatusLoading ||
-                      !!deliveryData?.data.deliverable ||
                       isError ||
-                      !deliveryData
+                      !deliveryData ||
+                      isPending
                     }
                     className="border p-4 bg-white h-10 px-4"
                   />
@@ -331,11 +406,15 @@ export const CartBlock = () => {
                 <InputField label={"NEIGHBORHOOD / DISTRICT"}>
                   <Input
                     placeholder="eg Douala"
+                    onChange={handleOrderDetails}
+                    name="district"
+                    value={orderFormData.district}
                     disabled={
                       deliveryStatusLoading ||
-                      !!deliveryData?.data.deliverable ||
+                      // !deliveryData?.data.deliverable ||
                       isError ||
-                      !deliveryData
+                      !deliveryData ||
+                      isPending
                     }
                     className="border p-4 bg-white h-10 px-4"
                   />
@@ -344,10 +423,14 @@ export const CartBlock = () => {
                   <Input
                     disabled={
                       deliveryStatusLoading ||
-                      !!deliveryData?.data.deliverable ||
+                      // !deliveryData?.data.deliverable ||
                       isError ||
-                      !deliveryData
+                      !deliveryData ||
+                      isPending
                     }
+                    onChange={handleOrderDetails}
+                    value={orderFormData.street}
+                    name="street"
                     placeholder="Rue 124, near the bakery..."
                     className="border p-4 bg-white h-10 px-4"
                   />
@@ -365,7 +448,7 @@ export const CartBlock = () => {
                 </div>
               )}
             </div>
-            <div className="pt-4 border-t border-border flex flex-col pb-4 border-b gap-4">
+            {/* <div className="pt-4 border-t border-border flex flex-col pb-4 border-b gap-4">
               <div className="flex flex-col gap-4 text-xs">
                 <span className="text-xs font-bold">CONTACT PREFERENCES</span>
                 <div className="w-full grid gap-4 grid-cols-2 md:grid-cols-3">
@@ -392,13 +475,16 @@ export const CartBlock = () => {
                   />
                 </div>
               </div>
-            </div>
+            </div> */}
             {/* Special requests */}
             <div className="flex flex-col gap-2">
               <span className="text-xs font-bold">
                 SPECIAL REQUESTS (OPTIONAL)
               </span>
               <Textarea
+                onChange={handleOrderDetails}
+                value={orderFormData.special_instruction}
+                name="special_instruction"
                 className="h-14 bg-white"
                 placeholder="Anything else we should know about your order?"
               ></Textarea>
@@ -407,9 +493,12 @@ export const CartBlock = () => {
         </div>
 
         {/* paymentoptions */}
-        <div className="flex p-6 flex-col rounded-md shadow-md bg-white gap-4">
+        <div className="flex p-6 flex-col rounded-md shadow-md bg-white gap-1">
           <span className="font-bold">Payment Method</span>
-          {/* <PaymentMethodSelectionGrid /> */}
+          <PaymentMethodSelectionGrid
+            onChange={(val) => setPaymentMethod(val)}
+            value={paymentMethod}
+          />
         </div>
       </div>
       <div className="bg-white w-full md:col-span-2 p-6 flex flex-col h-fit rounded-2xl shadow-md">
@@ -421,7 +510,9 @@ export const CartBlock = () => {
           </div>
           <div className="flex items-center text-muted-foreground text-xs justify-between">
             <span>Delivery Fee</span>
-            <span>{formatPrice(Number(deliveryFee))}</span>
+            <span>
+              {formatPrice(Number(deliveryData?.data.deliveryFeeXaf))}
+            </span>
           </div>
           <div className="flex items-center text-green-500 text-xs justify-between">
             <span className="flex items-center gap-1">
@@ -436,7 +527,11 @@ export const CartBlock = () => {
           <span>Total</span>
           <div className="flex flex-col items-end text-end">
             <span className="text-primary text-xl">
-              {formatPrice(deliveryFee + itemsPrice - poempayDiscount())}
+              {formatPrice(
+                Number(deliveryData?.data.deliveryFeeXaf) +
+                  itemsPrice -
+                  poempayDiscount(),
+              )}
             </span>
             <span className="text-xs text-muted-foreground">
               TAXES INCLUDED
@@ -456,7 +551,13 @@ export const CartBlock = () => {
             <span className="text-primary">JOIN REWARDS PROGRAM</span>
           </div>
         </div>
-        <Button className={"p-6 text-[16px] mt-6"}>Place Order</Button>
+        <Button
+          onClick={handleInitiateBooking}
+          disabled={isPending}
+          className={"p-6 text-[16px] mt-6"}
+        >
+          {isPending ? <Loader /> : "Place Order"}
+        </Button>
         <span className="text-center mt-6 text-xs text-muted-foreground">
           Need help with your order?
         </span>

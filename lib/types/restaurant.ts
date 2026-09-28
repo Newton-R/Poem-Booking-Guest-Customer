@@ -99,7 +99,7 @@ export interface RestaurantDetailsResponse {
 export interface RestaurantGuestOrderPayload {
   restaurantId: string;
   fulfillmentType: "delivery";
-  items: [{ menuItemId: string; quantity: number }];
+  items: { menuItemId: string; quantity: number }[];
   deliveryAddress: {
     label: string;
     addressLine: string;
