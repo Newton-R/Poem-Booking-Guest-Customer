@@ -85,7 +85,7 @@ export const MealDetailsBlock = ({
             <span className="text-primary">{formatPrice(meal.priceXaf)}</span>
           </div>
           {/* Meal customisation block */}
-          <MealCustomisation dish={meal} />
+          <MealCustomisation restaurantId={restaurantId} dish={meal} />
         </div>
       </div>
 

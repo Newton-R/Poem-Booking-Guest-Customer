@@ -19,7 +19,13 @@ export interface CartItem {
   price: string;
 }
 
-export const MealCustomisation = ({ dish }: { dish: RestaurantMenuItem }) => {
+export const MealCustomisation = ({
+  dish,
+  restaurantId,
+}: {
+  dish: RestaurantMenuItem;
+  restaurantId: string;
+}) => {
   const [MealData, setMeal] = useState<CartItem>({
     dish: dish,
     quantity: 1,
@@ -37,22 +43,27 @@ export const MealCustomisation = ({ dish }: { dish: RestaurantMenuItem }) => {
     ? MealData.dish.priceXaf + totalAdonsPrice
     : MealData.dish.priceXaf;
 
-  const { addItem } = useCartStore();
+  const { addItem, items } = useCartStore();
 
   const handleAddtoCart = () => {
     try {
-      // if (MealData.quantity > 0) {
-      //   addItem(
-      //     MealData.dish,
-      //     String(MealPrice * MealData.quantity),
-      //     MealData.adons,
-      //     MealData.specifications,
-      //     MealData.quantity,
-      //   );
-      //   toast.success(`${MealData.dish.name} added to cart 🎉`);
-      // } else {
-      //   toast.error("Quantity must be greater than 0");
-      // }
+      if (MealData.quantity > 0) {
+        const prevRestaurantId = items[0].restaurantId;
+        if (prevRestaurantId && restaurantId !== prevRestaurantId) {
+          toast.error("Items in cart must be from thesame restaurants.");
+        }
+        addItem(
+          MealData.dish,
+          String(MealPrice * MealData.quantity),
+          restaurantId,
+          MealData.adons,
+          MealData.specifications,
+          MealData.quantity,
+        );
+        toast.success(`${MealData.dish.name} added to cart 🎉`);
+      } else {
+        toast.error("Quantity must be greater than 0");
+      }
     } catch (e) {
       toast.error("Error adding item to cart");
     }

@@ -80,7 +80,9 @@ export const TopBar = () => {
                     className="w-full flex items-center justify-between"
                   >
                     <Image
-                      src={item.dish.image}
+                      src={
+                        process.env.NEXT_PUBLIC_IMAGE_URL + item.dish.imageUrl
+                      }
                       className="w-10 h-10 rounded-md"
                       width={20}
                       height={20}

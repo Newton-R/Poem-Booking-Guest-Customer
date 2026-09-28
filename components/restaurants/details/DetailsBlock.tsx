@@ -9,10 +9,10 @@ export const RestaurantDetailsHero = ({
   restaurant,
   loading,
 }: {
-  restaurant: RestaurantDetails;
+  restaurant?: RestaurantDetails;
   loading: boolean;
 }) => {
-  if (loading) {
+  if (loading || !restaurant) {
     return <Skeleton className="w-full hero" />;
   }
   return (
@@ -36,10 +36,10 @@ export const RestaurantDetailsHero = ({
                     className="text-primary fill-primary"
                     size={12}
                   />
-                  {/* <span>{restaurant.rating}</span> */}
+                  <span>{restaurant.rating}</span>
                 </span>
                 <span className="opacity-70 px-1">
-                  {/* ({restaurant.reviewCount} reviews) */}
+                  ({restaurant.reviewCount} reviews)
                 </span>
               </span>
             </div>

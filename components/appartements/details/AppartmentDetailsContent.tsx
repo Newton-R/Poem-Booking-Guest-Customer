@@ -1,4 +1,5 @@
 "use client";
+import { GoogleMapsView } from "@/components/GoogleMapsView";
 import { LoadingRoomDetailsContent } from "@/components/loaders/hoteldetails/RoomDetailsContent";
 import MapView from "@/components/MapView";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,12 @@ import {
   ApartmentDetail,
   ApartmentReview,
 } from "@/lib/types/apartment";
-import { CircleCheck, Location, Star } from "@hugeicons/core-free-icons";
+import {
+  CircleCheck,
+  GoogleDocFreeIcons,
+  Location,
+  Star,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format } from "date-fns";
 import Image from "next/image";
@@ -217,11 +223,7 @@ export const AppartmentDetailsContent = ({
                   className={"h-fit min-w-[500px] flex flex-col mt-4"}
                 >
                   <div className="relative w-fit ">
-                    <MapView
-                      lat={Number(apartment.latitude)}
-                      lng={Number(apartment.longitude)}
-                      label={apartment.title}
-                    />
+                    <GoogleMapsView />
                   </div>
                 </DialogContent>
               </Dialog>

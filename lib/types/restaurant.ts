@@ -11,6 +11,7 @@ export interface Restaurant {
   isOpen: boolean;
   latitude: string;
   logoUrl: string;
+  rating: number;
   longitude: string;
   name: string;
   nextOpeningAt: string;
@@ -46,8 +47,38 @@ export interface RestaurantMenu {
   name: string;
 }
 
+export interface RestaurantReview {
+  authorName: string;
+  comment: string;
+  createdAt: string;
+  id: string;
+  orderNumber: string;
+  providerRespondedAt: string;
+  providerResponse: string;
+  rating: number;
+  reviewStatus: string;
+}
+
+export interface RestaurantWeeklySchedule {
+  closeTime: string;
+  day: string;
+  dayOfWeek: string;
+  isClosed: boolean;
+  openTime: string;
+  overnight: boolean;
+}
+
 export type RestaurantDetails = Restaurant & {
   menu: RestaurantMenu[];
+  reviewCount: number;
+  weeklyHours: RestaurantWeeklySchedule[];
+  ratingStats: {
+    distribution: {
+      stars: number;
+      count: number;
+    }[];
+  };
+  reviewsPreview: RestaurantReview[];
   todayHours: {
     closeTime: string;
     isClosed: boolean;
@@ -94,4 +125,27 @@ export interface RestaurantCustomerOrderPayload {
     instructions: string;
   };
   specialInstructions: string;
+}
+
+export interface DeliveryQuote {
+  restaurantId: string;
+  acceptingOrders: boolean;
+  unavailableReason: string;
+  nextOpeningAt: string;
+  deliveryRadiusKm: number;
+  restaurantLatitude: number;
+  restaurantLongitude: number;
+  distanceKm: number;
+  radiusVerified: boolean;
+  withinDeliveryRadius: boolean;
+  deliveryFeeXaf: number;
+  estimatedDriveMinutes: number;
+  deliverable: boolean;
+}
+
+export interface DeliveryQuoteResponse {
+  success: true;
+  statusCode: 200;
+  data: DeliveryQuote;
+  timestamp: "2026-09-26T15:02:29.924Z";
 }
