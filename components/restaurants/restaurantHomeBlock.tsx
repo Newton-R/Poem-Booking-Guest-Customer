@@ -48,10 +48,6 @@ export const RestaurantHomeBlock = () => {
     });
   };
 
-  if (!data) {
-    return <>Sorry</>;
-  }
-
   return (
     <div className="flex flex-col gap-20">
       <RestaurantsHomeHero
@@ -63,7 +59,7 @@ export const RestaurantHomeBlock = () => {
         cuisines={cuisines}
       />
       <RestaurantHomePageContent
-        restaurants={data.data}
+        restaurants={data?.data}
         isLoading={isLoading}
       />
     </div>
