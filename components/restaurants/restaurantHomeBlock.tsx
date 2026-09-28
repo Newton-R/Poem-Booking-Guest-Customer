@@ -6,7 +6,6 @@ import { restaurants } from "@/lib/data";
 import { useGetAllRestaurants } from "@/lib/public/useGetRestaurants";
 
 export const RestaurantHomeBlock = () => {
-  const [loading, setLoading] = useState<boolean>(true);
   const [query, setQuery] = useState("");
   const [filters, setFilters] = useState({
     cuisine: "",

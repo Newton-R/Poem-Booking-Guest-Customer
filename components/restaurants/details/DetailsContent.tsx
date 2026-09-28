@@ -1,24 +1,51 @@
 import { DishCardSkeleton } from "@/components/loaders/restaurant/LoadingDishCard";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 
 import { DishCard } from "@/components/ui/restaurantdishcard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { RestaurantDetails } from "@/lib/types/restaurant";
-import { Clock, Location, Phone, Plus, Star } from "@hugeicons/core-free-icons";
+import { RestaurantDetails, RestaurantReview } from "@/lib/types/restaurant";
+import { cn } from "@/lib/utils";
+import {
+  Clock,
+  FishFoodIcon,
+  Location,
+  Phone,
+  Plus,
+  Star,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { formatDate } from "date-fns";
+import { useState } from "react";
 
-const TestimonialCard = () => {
+const TestimonialCard = ({ review }: { review: RestaurantReview }) => {
   return (
     <div className="w-full flex flex-col gap-4 pb-4 border-b border-border mb-3">
       <div className="w-full flex justify-between items-start">
         <div className="flex gap-2 items-center">
           <div className="w-13 h-13 rounded-full flex items-center justify-center bg-secondary-foreground text-white font-bold text-2xl">
-            SM
+            {review.authorName.split(" ").map((n) => (
+              <span>{n[0]}</span>
+            ))}
           </div>
           <div className="flex flex-col gap-0.5">
-            <span>Samuel M</span>
+            <span>{review.authorName}</span>
             <span className="text-muted-foreground">
-              Gourmet Member • Oct 2023
+              {formatDate(review.createdAt, "EEE, MMM yyyy")}
             </span>
           </div>
         </div>
@@ -27,63 +54,53 @@ const TestimonialCard = () => {
             <HugeiconsIcon
               icon={Star}
               size={18}
-              className="fill-primary text-primary"
+              className={cn(
+                "text-primary",
+                i + 1 <= review.rating && "fill-primary",
+              )}
               key={i}
             />
           ))}
         </div>
       </div>
-      <p className="italic mt-3 text-muted-foreground">
-        "The Ndolé is easily the best I've had in Douala. The balance of flavors
-        is incredible. Delivery was prompt and the food arrived piping hot."
-      </p>
+      <p className="italic mt-3 text-muted-foreground">"{review.comment}"</p>
     </div>
   );
 };
 
 const ReviewsBlock = ({ restau }: { restau: RestaurantDetails }) => {
-  const ratings = [
-    {
-      rate: 5,
-      percentage: 92,
-    },
-    {
-      rate: 4,
-      percentage: 0.5,
-    },
-    {
-      rate: 3,
-      percentage: 10,
-    },
-    {
-      rate: 2,
-      percentage: 20,
-    },
-    {
-      rate: 1,
-      percentage: 15,
-    },
-  ];
+  const totalRatingCount = restau.ratingStats.distribution.reduce(
+    (r, b) => r + b.count,
+    0,
+  );
+
+  const ratings = restau.ratingStats.distribution.map((rat) => ({
+    rate: rat.stars,
+    percentage: (rat.count / totalRatingCount) * 100,
+  }));
   return (
     <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
       <div className="col-span-3 flex flex-col gap-4">
         <div className="w-full gap-6 grid pb-4 border-b border-border grid-cols-3">
           <div className="flex items-center justify-center flex-col gap-2 p-6">
             <span className="text-6xl font-bold text-secondary-foreground">
-              {/* {restau.rating} */}
+              {restau.rating.toFixed(1)}
             </span>
             <div className="flex items-center gap-1">
               {Array.from({ length: 5 }).map((_, i) => (
                 <HugeiconsIcon
                   icon={Star}
                   size={18}
-                  className="fill-primary text-primary"
+                  className={cn(
+                    " text-primary",
+                    i + 1 <= Number(restau.rating.toFixed(0)) && "fill-primary",
+                  )}
                   key={i}
                 />
               ))}
             </div>
             <p className="text-xs text-muted-foreground w-[80%] text-center">
-              {/* Based on {restau.reviewCount} reviews */}
+              Based on {restau.reviewCount} reviews
             </p>
           </div>
           <div className="border-l border-border pl-12 col-span-2 flex items-center justify-center flex-col gap-1.5">
@@ -107,9 +124,9 @@ const ReviewsBlock = ({ restau }: { restau: RestaurantDetails }) => {
           </div>
         </div>
         <div className="flex flex-col mt-12 gap-6">
-          <TestimonialCard />
-          <TestimonialCard />
-          <TestimonialCard />
+          {restau.reviewsPreview.map((review, i) => (
+            <TestimonialCard review={review} key={i} />
+          ))}
         </div>
       </div>
       <div className="flex gap-8 flex-col">
@@ -140,14 +157,14 @@ const ReviewsBlock = ({ restau }: { restau: RestaurantDetails }) => {
               <span className="text-secondary-foreground font-bold">
                 Opening Hours
               </span>
-              <div className="w-full flex justify-between items-center">
-                <span className="text-muted-foreground">Mon - Fri</span>
-                <span className="text-muted-foreground">11:00 - 23:00</span>
-              </div>
-              <div className="w-full flex justify-between items-center">
-                <span className="text-muted-foreground">Sat - Sun</span>
-                <span className="text-muted-foreground">10:00 - 00:00</span>
-              </div>
+              {restau.weeklyHours.map((day, i) => (
+                <div className="w-full flex justify-between items-center">
+                  <span className="text-muted-foreground">{day.day}</span>
+                  <span className="text-muted-foreground">
+                    {day.openTime} - {day.closeTime}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -171,16 +188,21 @@ const ReviewsBlock = ({ restau }: { restau: RestaurantDetails }) => {
   );
 };
 
+interface Category {
+  value: string;
+  label: string;
+}
+
 export const DetailsContent = ({
   restaurant,
   loading,
 }: {
-  restaurant: RestaurantDetails;
+  restaurant?: RestaurantDetails;
   loading: boolean;
 }) => {
-  const dishes = restaurant.menu.flatMap((menu) => menu.items);
+  const [categoryFilter, setCategoryFilter] = useState<string>("All");
 
-  if (loading) {
+  if (loading || !restaurant) {
     return (
       <div className="grid grid-cols-1 container-x md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
@@ -189,6 +211,23 @@ export const DetailsContent = ({
       </div>
     );
   }
+
+  const dishes = restaurant.menu.flatMap((menu) => menu.items);
+  const Meals =
+    categoryFilter !== "All"
+      ? dishes.filter((dish) => dish.categoryId === categoryFilter)
+      : dishes;
+  const categories: Category[] = [
+    { value: "All", label: "All" },
+    ...restaurant.categories.map((cat) => ({
+      value: cat.id,
+      label: cat.name,
+    })),
+  ];
+
+  const selectedCategory =
+    categories.find((cat) => cat.value === categoryFilter) ?? categories[0];
+
   return (
     <Tabs defaultValue="menu" className="flex flex-col container-x gap-4">
       <div className="w-full border-b border-border pb-4">
@@ -199,12 +238,57 @@ export const DetailsContent = ({
       </div>
       <TabsContent value="menu">
         <div className="w-full flex flex-col gap-4">
-          <h2 className="text-3xl font-bold">Signature Starters</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-4">
-            {dishes.map((dish, i) => (
-              <DishCard Dish={dish} key={i} />
-            ))}
+          <div className="w-full flex md:items-center flex-col md:flex-row items-start gap-2 justify-between">
+            <h2 className="text-3xl font-bold">Signature Starters</h2>
+            <div className="flex flex-col gap-2 md:flex-row md:items-end">
+              <span className="text-muted-foreground flex text-xs gap-1">
+                <span className="font-bold text-primary">{Meals.length} </span>
+                Dishes Available
+              </span>
+              <Combobox
+                items={categories}
+                value={selectedCategory}
+                onValueChange={(val) => setCategoryFilter(val?.value ?? "")}
+              >
+                <ComboboxInput
+                  className={"h-9"}
+                  placeholder="Select a meal type"
+                />
+                <ComboboxContent>
+                  <ComboboxEmpty>No items found.</ComboboxEmpty>
+                  <ComboboxList>
+                    {(framework) => (
+                      <ComboboxItem key={framework.value} value={framework}>
+                        {framework.label}
+                      </ComboboxItem>
+                    )}
+                  </ComboboxList>
+                </ComboboxContent>
+              </Combobox>
+            </div>
           </div>
+          {Meals.length !== 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-4">
+              {Meals.map((dish, i) => (
+                <DishCard Dish={dish} key={i} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-[20px]">
+              <Empty className="">
+                <EmptyHeader>
+                  <EmptyMedia variant="icon">
+                    <HugeiconsIcon icon={FishFoodIcon} size={40} />
+                  </EmptyMedia>
+                  <EmptyTitle>Dish isn't available</EmptyTitle>
+                  <EmptyDescription>
+                    There are no meal currently available in this category. Try
+                    something else please.
+                  </EmptyDescription>
+                </EmptyHeader>
+              </Empty>
+            </div>
+          )}
         </div>
       </TabsContent>
       <TabsContent value="review">

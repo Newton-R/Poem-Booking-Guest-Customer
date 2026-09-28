@@ -42,7 +42,7 @@ const RestaurantMainCard = ({ restaurant }: { restaurant: Restaurant }) => {
                 size={12}
                 className="fill-yellow-500 text-yellow-500"
               />
-              <span className="text-xs">{restaurant.address}</span>
+              <span className="text-xs">{restaurant.rating.toFixed(1)}</span>
             </span>
           </div>
           <div className="mt-auto flex text-white gap-2">

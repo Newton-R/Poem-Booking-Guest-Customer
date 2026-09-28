@@ -1,14 +1,19 @@
 "use client";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
+  AlertTriangle,
+  CircleCheck,
   CircleStar,
+  CircleX,
   Coupon01FreeIcons,
+  LoaderIcon,
   Minus,
   Plus,
   Trash,
+  X,
 } from "@hugeicons/core-free-icons";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -16,10 +21,12 @@ import { CartItem as Item, useCartStore } from "@/lib/useCart";
 import { EmptyCart } from "../emptystuff";
 import { PaymentMethodSelectionGrid } from "../payments/MethodSelectionGrid";
 import { formatPrice } from "@/lib/data";
+import { useParams } from "next/navigation";
+import { useCheckDeliveryData } from "@/lib/public/useGetRestaurants";
 
 const CartItem = ({ item }: { item: Item }) => {
   const { removeItem, increment, decrement } = useCartStore();
-
+  const imageUrl = process.env.NEXT_PUBLIC_IMAGE_URL + item.dish.imageUrl;
   return (
     <div className="py-4 border-b border-border flex flex-col gap-2 md:flex-row justify-between md:items-end">
       <div className="flex items-center gap-3">
@@ -29,7 +36,7 @@ const CartItem = ({ item }: { item: Item }) => {
             width={200}
             height={200}
             alt="image"
-            src={item.dish.image}
+            src={imageUrl}
           />
         </div>
         <div className="flex flex-col">
@@ -89,7 +96,7 @@ const InputField = ({
   label,
   children,
 }: {
-  label: String;
+  label: string;
   children: React.ReactNode;
 }) => {
   return (
@@ -102,16 +109,139 @@ const InputField = ({
   );
 };
 
+// Reasons we can end up without a location — lets the UI (and you, via
+// console) know *why* instead of a single generic "unable to get location".
+type LocationFailureReason =
+  | "unsupported"
+  | "insecure-context"
+  | "permission-denied"
+  | "position-unavailable"
+  | "timeout"
+  | "unknown";
+
 export const CartBlock = () => {
   const { items } = useCartStore();
+  const params = useParams<{ id: string }>();
+  const [location, setLocation] = useState<{
+    latitude: string;
+    longitude: string;
+  } | null>(null);
+  const [locationError, setLocationError] = useState(false);
+  const [locationFailureReason, setLocationFailureReason] =
+    useState<LocationFailureReason | null>(null);
+
   const itemsPrice = items.reduce((item, red) => item + Number(red.price), 0);
 
-  const deliveryFee = 1000;
+  const [checkingLocation, setCheckingLocation] = useState(true);
 
+  useEffect(() => {
+    let isActive = true;
+
+    const fail = (reason: LocationFailureReason, detail?: unknown) => {
+      if (!isActive) return;
+      if (detail) {
+        // eslint-disable-next-line no-console
+        console.warn(`Geolocation failed (${reason}):`, detail);
+      } else {
+        // eslint-disable-next-line no-console
+        console.warn(`Geolocation failed (${reason})`);
+      }
+      setCheckingLocation(false);
+      setLocationError(true);
+      setLocationFailureReason(reason);
+    };
+
+    // 1. Browser doesn't support the API at all.
+    if (!("geolocation" in navigator)) {
+      fail("unsupported");
+      return () => {
+        isActive = false;
+      };
+    }
+
+    // 2. Geolocation requires a secure context (https or localhost).
+    //    On plain http origins the call fails instantly with no prompt —
+    //    this is a very common silent cause of "location doesn't work".
+    if (
+      typeof window !== "undefined" &&
+      !window.isSecureContext &&
+      window.location.hostname !== "localhost"
+    ) {
+      fail("insecure-context");
+      return () => {
+        isActive = false;
+      };
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      fail("timeout");
+    }, 15000);
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        if (!isActive) return;
+        window.clearTimeout(timeoutId);
+        const { latitude, longitude } = pos.coords;
+        setCheckingLocation(false);
+        setLocationError(false);
+        setLocationFailureReason(null);
+        setLocation({
+          latitude: String(latitude),
+          longitude: String(longitude),
+        });
+      },
+      (err: GeolocationPositionError) => {
+        window.clearTimeout(timeoutId);
+        // err.code: 1 = PERMISSION_DENIED, 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT
+        const reason: LocationFailureReason =
+          err.code === err.PERMISSION_DENIED
+            ? "permission-denied"
+            : err.code === err.POSITION_UNAVAILABLE
+              ? "position-unavailable"
+              : err.code === err.TIMEOUT
+                ? "timeout"
+                : "unknown";
+        fail(reason, err);
+      },
+      { enableHighAccuracy: true, maximumAge: 300000, timeout: 10000 },
+    );
+
+    return () => {
+      isActive = false;
+      window.clearTimeout(timeoutId);
+    };
+  }, []);
+
+  const hasLocation = !!location?.latitude && !!location?.longitude;
+
+  const {
+    data: deliveryData,
+    isFetching: checkingRestaurantOrderData,
+    isError,
+  } = useCheckDeliveryData(
+    items[0]?.restaurantId ?? "",
+    location?.latitude ?? "",
+    location?.longitude ?? "",
+  );
+
+  const deliveryFee = 1000;
+  const deliveryStatusLoading =
+    checkingLocation || (hasLocation && checkingRestaurantOrderData);
   const poempayDiscount = () => {
     const calc = Number(itemsPrice) * (3 / 100);
     return calc;
   };
+
+  const locationErrorMessage =
+    locationFailureReason === "permission-denied"
+      ? "Location permission denied"
+      : locationFailureReason === "insecure-context"
+        ? "Location requires a secure (https) connection"
+        : locationFailureReason === "unsupported"
+          ? "Location isn't supported on this device/browser"
+          : locationFailureReason === "timeout"
+            ? "Location request timed out"
+            : "Unable to get location";
 
   return (
     <main className="container-x mt-(--mobile-nav-height) lg:mt-[calc(var(--nav-height)+10px)] gap-6 grid grid-cols-1 md:grid-cols-5">
@@ -139,13 +269,13 @@ export const CartBlock = () => {
         <div className="rounded-md shadow-md bg-white p-6">
           <span className="font-bold mb-4">Delivery Address</span>
           <form className="mt-4 flex flex-col gap-4">
-            <InputField label={"Full Name"}>
-              <Input
-                placeholder="Enter your full name"
-                className="border p-4 bg-white h-10 px-4"
-              />
-            </InputField>
             <div className="flex flex-col md:flex-row gap-4">
+              <InputField label={"Full Name"}>
+                <Input
+                  placeholder="Enter your full name"
+                  className="border p-4 bg-white h-10 px-4"
+                />
+              </InputField>
               <InputField label={"PHONE NUMBER"}>
                 <Input
                   placeholder="237"
@@ -153,26 +283,88 @@ export const CartBlock = () => {
                   className="border p-4 bg-white h-10 px-4"
                 />
               </InputField>
-              <InputField label={"CITY"}>
-                <Input
-                  placeholder="eg Douala"
-                  className="border p-4 bg-white h-10 px-4"
-                />
-              </InputField>
             </div>
-            <InputField label={"NEIGHBORHOOD / DISTRICT"}>
-              <Input
-                placeholder="eg Douala"
-                className="border p-4 bg-white h-10 px-4"
-              />
-            </InputField>
-            <InputField label={"DELIVERY INSTRUCTIONS (STREET/HOUSE)"}>
-              <Input
-                placeholder="Rue 124, near the bakery..."
-                className="border p-4 bg-white h-10 px-4"
-              />
-            </InputField>
-
+            <div className="flex pt-4 border-t border-border flex-col pb-4 gap-4">
+              <div className="flex justify-between flex-col gap-2 md:flex-row">
+                <span className="text-xs font-bold">DELIVERY INFO</span>
+                {deliveryStatusLoading ? (
+                  <span className="flex-nowrap rounded-full p-1 w-fit text-xs flex gap-1 bg-blue-500/20 px-2 text-blue-500 items-center">
+                    <HugeiconsIcon
+                      icon={LoaderIcon}
+                      size={14}
+                      className="animate-spin"
+                    />{" "}
+                    Checking delivery possibility
+                  </span>
+                ) : isError || locationError || !location || !deliveryData ? (
+                  <span className="flex-nowrap rounded-full w-fit p-1 text-xs flex gap-1 bg-destructive/20 px-2 text-destructive items-center">
+                    <HugeiconsIcon icon={CircleX} size={14} />{" "}
+                    {locationError
+                      ? locationErrorMessage
+                      : "Unable to get location"}
+                  </span>
+                ) : !deliveryData.data.deliverable ? (
+                  <span className="flex-nowrap p-1 w-fit rounded-full text-xs flex gap-1 bg-primary/20 px-2 text-primary items-center">
+                    <HugeiconsIcon icon={AlertTriangle} size={14} /> Delivery
+                    service not available
+                  </span>
+                ) : (
+                  <span className="flex-nowrap p-1 w-fit rounded-full text-xs flex gap-1 bg-green-500/20 px-2 text-green-500 items-center">
+                    <HugeiconsIcon icon={CircleCheck} size={14} /> Delivery is
+                    possible
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col gap-4">
+                <InputField label={"CITY"}>
+                  <Input
+                    placeholder="eg Douala"
+                    disabled={
+                      deliveryStatusLoading ||
+                      !!deliveryData?.data.deliverable ||
+                      isError ||
+                      !deliveryData
+                    }
+                    className="border p-4 bg-white h-10 px-4"
+                  />
+                </InputField>
+                <InputField label={"NEIGHBORHOOD / DISTRICT"}>
+                  <Input
+                    placeholder="eg Douala"
+                    disabled={
+                      deliveryStatusLoading ||
+                      !!deliveryData?.data.deliverable ||
+                      isError ||
+                      !deliveryData
+                    }
+                    className="border p-4 bg-white h-10 px-4"
+                  />
+                </InputField>
+                <InputField label={"DELIVERY INSTRUCTIONS (STREET/HOUSE)"}>
+                  <Input
+                    disabled={
+                      deliveryStatusLoading ||
+                      !!deliveryData?.data.deliverable ||
+                      isError ||
+                      !deliveryData
+                    }
+                    placeholder="Rue 124, near the bakery..."
+                    className="border p-4 bg-white h-10 px-4"
+                  />
+                </InputField>
+              </div>
+              {locationError && (
+                <div className="rounded-md bg-destructive/10 p-3 text-xs text-destructive flex flex-col gap-1">
+                  <span>{locationErrorMessage}</span>
+                  {locationFailureReason === "permission-denied" && (
+                    <span className="text-muted-foreground">
+                      Enable location access for this site in your browser
+                      settings, then reload the page.
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
             <div className="pt-4 border-t border-border flex flex-col pb-4 border-b gap-4">
               <div className="flex flex-col gap-4 text-xs">
                 <span className="text-xs font-bold">CONTACT PREFERENCES</span>

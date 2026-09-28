@@ -1,10 +1,13 @@
+import { restaurants } from "./data";
 // lib/stores/useCartStore.ts
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { adon, Dish } from "@/lib/types";
+import { adon } from "@/lib/types";
+import { RestaurantMenuItem } from "./types/restaurant";
 
 export interface CartItem {
-  dish: Dish;
+  dish: RestaurantMenuItem;
+  restaurantId: string;
   quantity: number;
   adons?: adon[] | null;
   specifications?: string;
@@ -14,8 +17,9 @@ export interface CartItem {
 interface CartState {
   items: CartItem[];
   addItem: (
-    dish: Dish,
+    dish: RestaurantMenuItem,
     price: string,
+    restaurantId: string,
     adons?: adon[] | null,
     specification?: string,
     quantity?: number,
@@ -33,7 +37,7 @@ interface CartState {
 function getUnitPrice(item: CartItem): number {
   const addonsTotal =
     item.adons?.reduce((sum, addon) => sum + Number(addon.price), 0) ?? 0;
-  return item.dish.price + addonsTotal;
+  return item.dish.priceXaf + addonsTotal;
 }
 
 export const useCartStore = create<CartState>()(
@@ -41,7 +45,14 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
 
-      addItem: (dish, price, adons = null, specification, quantity = 1) => {
+      addItem: (
+        dish,
+        price,
+        restaurantId,
+        adons = null,
+        specification,
+        quantity = 1,
+      ) => {
         set((state) => {
           const existing = state.items.find((item) => item.dish.id === dish.id);
 
@@ -58,6 +69,7 @@ export const useCartStore = create<CartState>()(
                       specifications: specification,
                       quantity: newQuantity,
                       price: String(unitPrice * newQuantity),
+                      restaurantId,
                     }
                   : item,
               ),
@@ -69,6 +81,7 @@ export const useCartStore = create<CartState>()(
               ...state.items,
               {
                 dish,
+                restaurantId,
                 quantity,
                 price,
                 adons,
@@ -147,7 +160,7 @@ export const useCartStore = create<CartState>()(
 
       totalPrice: () =>
         get().items.reduce(
-          (sum, item) => sum + item.dish.price * item.quantity,
+          (sum, item) => sum + item.dish.priceXaf * item.quantity,
           0,
         ),
     }),

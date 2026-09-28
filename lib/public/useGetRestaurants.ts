@@ -4,6 +4,7 @@ import { publicClient } from "../api";
 import { useQuery } from "@tanstack/react-query";
 import { restaurantKeys } from "../query-keys/user";
 import {
+  DeliveryQuoteResponse,
   RestaurantDetailsResponse,
   RestaurantsResponse,
 } from "../types/restaurant";
@@ -32,9 +33,9 @@ async function checkDeliverability(
   restaurantId: string,
   latitude: string,
   longitude: string,
-) {
+): Promise<DeliveryQuoteResponse> {
   try {
-    const { data } = await publicClient.get(
+    const { data } = await publicClient.get<DeliveryQuoteResponse>(
       `/restaurants/${restaurantId}/delivery-quote?latitude=${latitude}&longitude=${longitude}`,
     );
     return data;
@@ -49,8 +50,9 @@ export function useCheckDeliveryData(
   longitude: string,
 ) {
   return useQuery({
-    queryKey: ["delivery_data", `restaurant_${restaurantId}`],
+    queryKey: ["delivery_data", restaurantId, latitude, longitude],
     queryFn: () => checkDeliverability(restaurantId, latitude, longitude),
+    enabled: Boolean(restaurantId && latitude && longitude),
   });
 }
 
