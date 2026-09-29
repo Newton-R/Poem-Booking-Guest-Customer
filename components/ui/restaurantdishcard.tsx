@@ -18,7 +18,7 @@ export const DishCard = ({ Dish }: { Dish: RestaurantMenuItem }) => {
   return (
     <div className="w-full flex overflow-hidden h-80 flex-col gap-3">
       <div className="w-full flex flex-1 overflow-hidden rounded-2xl gap-2">
-        <Image
+        <img
           src={imgUrl}
           className="w-full h-full object-cover"
           width={500}

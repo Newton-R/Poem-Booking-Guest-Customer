@@ -1,5 +1,4 @@
 "use client";
-import { GoogleMapsView } from "@/components/GoogleMapsView";
 import { LoadingRoomDetailsContent } from "@/components/loaders/hoteldetails/RoomDetailsContent";
 import MapView from "@/components/MapView";
 import { Button } from "@/components/ui/button";
@@ -63,7 +62,7 @@ export const AppartmentDetailsContent = ({
   loading,
   apartment,
 }: {
-  loading: Boolean;
+  loading: boolean;
   apartment: ApartmentDetail;
 }) => {
   const [checkOutData, setCheckData] = useState<DateProps>({
@@ -102,6 +101,16 @@ export const AppartmentDetailsContent = ({
   if (loading) {
     return <LoadingRoomDetailsContent />;
   }
+
+  const latitude = Number(apartment.latitude);
+  const longitude = Number(apartment.longitude);
+  const hasMapCoordinates =
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude) &&
+    latitude >= -90 &&
+    latitude <= 90 &&
+    longitude >= -180 &&
+    longitude <= 180;
 
   return (
     <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -219,12 +228,18 @@ export const AppartmentDetailsContent = ({
                     </Button>
                   }
                 />
-                <DialogContent
-                  className={"h-fit min-w-[500px] flex flex-col mt-4"}
-                >
-                  <div className="relative w-fit ">
-                    <GoogleMapsView />
-                  </div>
+                <DialogContent className="h-[min(70vh,32rem)] w-[min(90vw,50rem)] max-w-none overflow-hidden p-0">
+                  {hasMapCoordinates ? (
+                    <MapView
+                      lat={latitude}
+                      lng={longitude}
+                      label={apartment.title}
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                      Map coordinates are unavailable.
+                    </div>
+                  )}
                 </DialogContent>
               </Dialog>
             </div>
