@@ -5,7 +5,6 @@ import { useOtp, useOtpResend } from "@/lib/public/useRegister";
 import { OTPPayload, OTPResendPayload } from "@/lib/types/auth";
 import { Lock } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Link from "next/link";
 import React, { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useSearchParams, useRouter } from "next/navigation";

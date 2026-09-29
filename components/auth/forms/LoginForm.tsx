@@ -13,6 +13,8 @@ import React, { Suspense, useState } from "react";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
 import { useSessionModal } from "@/lib/useSessionModal";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Eye, EyeClosedIcon } from "@hugeicons/core-free-icons";
 
 const InitialData: LoginPayload = {
   phoneNumber: "",
@@ -23,6 +25,7 @@ export const LoginForm = () => {
   const queryClient = useQueryClient();
   const { mutate, isPending } = useLogin();
   const [formData, setFormData] = useState<LoginPayload>(InitialData);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl");
@@ -105,15 +108,29 @@ export const LoginForm = () => {
           </div>
           <div className="flex flex-col gap-1">
             <label className="text-xs text-muted-foreground">Password</label>
-            <Input
-              disabled={isPending}
-              onChange={handleInputChange}
-              value={formData.password}
-              name="password"
-              placeholder="Password"
-              type="password"
-              className="p-5 px-4"
-            />
+            <div className="w-full flex items-center justify-center relative">
+              <Input
+                disabled={isPending}
+                onChange={handleInputChange}
+                value={formData.password}
+                name="password"
+                placeholder="Password"
+                type={showPassword ? "text" : "password"}
+                className="p-5 px-4"
+              />
+              <Button
+                size={"icon-sm"}
+                onClick={() => setShowPassword(!showPassword)}
+                variant={"ghost"}
+                className="absolute cursor-pointer rounded-full text-primary hover:text-primary right-1 "
+              >
+                {showPassword ? (
+                  <HugeiconsIcon icon={Eye} size={14} />
+                ) : (
+                  <HugeiconsIcon icon={EyeClosedIcon} size={14} />
+                )}
+              </Button>
+            </div>
           </div>
           <div className="w-full flex justify-between my-4 items-center">
             <span className="flex items-center gap-2">

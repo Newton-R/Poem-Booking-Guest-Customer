@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Loader } from "@/components/ui/Loader";
 import { useRegister } from "@/lib/public/useRegister";
 import { RegistrationPayload } from "@/lib/types/auth";
+import { Eye, EyeClosedIcon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -19,6 +21,7 @@ const InitialData: RegistrationPayload = {
 
 export const RegistrationForm = () => {
   const [formData, setFormData] = useState<RegistrationPayload>(InitialData);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const { mutate, isPending } = useRegister();
   const router = useRouter();
 
@@ -108,15 +111,29 @@ export const RegistrationForm = () => {
           </div>
           <div className="flex flex-col gap-1">
             <label className="text-xs text-muted-foreground">Password</label>
-            <Input
-              disabled={isPending}
-              placeholder="Password"
-              value={formData.password}
-              name="password"
-              onChange={handleInputChange}
-              type="password"
-              className="p-5 px-4"
-            />
+            <div className="w-full relative flex items-center justify-center">
+              <Input
+                disabled={isPending}
+                placeholder="Password"
+                value={formData.password}
+                name="password"
+                onChange={handleInputChange}
+                type={showPassword ? "text" : "password"}
+                className="p-5 px-4"
+              />
+              <Button
+                size={"icon-sm"}
+                onClick={() => setShowPassword(!showPassword)}
+                variant={"ghost"}
+                className="absolute cursor-pointer rounded-full text-primary hover:text-primary right-1 "
+              >
+                {showPassword ? (
+                  <HugeiconsIcon icon={Eye} size={14} />
+                ) : (
+                  <HugeiconsIcon icon={EyeClosedIcon} size={14} />
+                )}
+              </Button>
+            </div>
           </div>
 
           <Button

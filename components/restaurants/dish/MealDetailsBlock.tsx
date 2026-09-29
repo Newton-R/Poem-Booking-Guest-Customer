@@ -53,7 +53,7 @@ export const MealDetailsBlock = ({
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6 ">
         <div className="md:col-span-3 flex flex-col gap-5">
           <div className=" h-100">
-            <Image
+            <img
               src={imgUrl}
               width={400}
               height={400}

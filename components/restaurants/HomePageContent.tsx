@@ -42,7 +42,7 @@ const RestaurantMainCard = ({ restaurant }: { restaurant: Restaurant }) => {
                 size={12}
                 className="fill-yellow-500 text-yellow-500"
               />
-              <span className="text-xs">{restaurant.rating.toFixed(1)}</span>
+              <span className="text-xs">{restaurant.rating ?? 0}</span>
             </span>
           </div>
           <div className="mt-auto flex text-white gap-2">
@@ -57,7 +57,7 @@ const RestaurantMainCard = ({ restaurant }: { restaurant: Restaurant }) => {
             </div>
           </div>
         </div>
-        <Image
+        <img
           src={`${process.env.NEXT_PUBLIC_IMAGE_URL + restaurant.logoUrl}`}
           className="w-full h-full object-cover"
           width={500}

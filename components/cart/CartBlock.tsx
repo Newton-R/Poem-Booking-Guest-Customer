@@ -34,7 +34,7 @@ const CartItem = ({ item }: { item: Item }) => {
     <div className="py-4 border-b border-border flex flex-col gap-2 md:flex-row justify-between md:items-end">
       <div className="flex items-center gap-3">
         <div className="size-16 shrink-0 rounded-md overflow-hidden">
-          <Image
+          <img
             className="w-full h-full object-cover"
             width={200}
             height={200}

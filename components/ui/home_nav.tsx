@@ -67,7 +67,7 @@ export const HomeNavbar = () => {
       <div className="container-x h-(--nav-height) flex justify-between gap-2">
         <div className="flex gap-8 items-center">
           <div className="flex gap-2 items-center">
-            <Image src="/logo.png" alt="Poem Booking" width={40} height={40} />
+            <img src="/logo.png" alt="Poem Booking" width={40} height={40} />
             <span className="font-bold">Poem Booking</span>
           </div>
           <div className="flex items-center text-[14px] gap-6">
@@ -136,7 +136,7 @@ export const HomeNavbar = () => {
                       key={i}
                       className="w-full flex items-center justify-between"
                     >
-                      <Image
+                      <img
                         src={
                           process.env.NEXT_PUBLIC_IMAGE_URL + item.dish.imageUrl
                         }
