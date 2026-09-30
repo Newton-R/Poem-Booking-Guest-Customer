@@ -1,6 +1,6 @@
 import { ChevronRight, Location, Star } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import React from "react";
 import { Button } from "./button";
 // import { Hotel } from "@/lib/types";
@@ -17,7 +17,7 @@ export const HotelCard = ({ hotel }: { hotel: Hotel }) => {
       className="border border-border rounded-xl flex overflow-hidden bg-white flex-col h-90"
     >
       <div className="w-full relative flex-1 overflow-hidden">
-        <Image
+        <SafeImage
           alt="demo Image"
           src={url ?? ""}
           width={400}
@@ -64,7 +64,7 @@ export const HotelInfoPlus = ({ hotel }: { hotel: Hotel }) => {
   return (
     <div className="border border-border rounded-xl flex overflow-hidden bg-white flex-col h-90">
       <div className="w-full relative flex-1 overflow-hidden">
-        <Image
+        <SafeImage
           alt="demo Image"
           src={url ?? ""}
           width={400}

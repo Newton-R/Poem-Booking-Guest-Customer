@@ -1,3 +1,4 @@
+import { data } from "motion/react-client";
 export interface Restaurant {
   acceptingOrders: string;
   address: string;
@@ -115,7 +116,7 @@ export interface RestaurantGuestOrderPayload {
 export interface RestaurantCustomerOrderPayload {
   restaurantId: string;
   fulfillmentType: "delivery";
-  items: [{ menuItemId: string; quantity: number }];
+  items: { menuItemId: string; quantity: number }[];
   deliveryAddress: {
     label: string;
     addressLine: string;
@@ -125,6 +126,43 @@ export interface RestaurantCustomerOrderPayload {
     instructions: string;
   };
   specialInstructions: string;
+}
+
+export interface OrderInitiationData {
+  availability: {
+    acceptingOrders: boolean;
+    nextOpeningAt: string;
+    openNow: boolean;
+    unavailableReason: string;
+  };
+  delivery: {
+    addressLine: string;
+    city: string;
+    deliveryRadiusKm: number;
+    distanceKm: number;
+    estimatedDriveMinutes: number;
+    feeXaf: number;
+    instructions: string;
+    label: string;
+    radiusVerified: boolean;
+    withinDeliveryRadius: boolean;
+  };
+  deliveryFeeXaf: number;
+  discountXaf: number;
+  estimatedPrepMinutes: number;
+  estimatedReadyAt: string;
+  fulfillmentType: string;
+  id: string;
+  orderNumber: string;
+  restaurantId: string;
+  restaurantName: string;
+  status: string;
+  subtotalXaf: number;
+  totalXaf: number;
+}
+
+export interface OrderInitiationDataResponse {
+  data: OrderInitiationData;
 }
 
 export interface DeliveryQuote {
@@ -148,4 +186,54 @@ export interface DeliveryQuoteResponse {
   statusCode: 200;
   data: DeliveryQuote;
   timestamp: "2026-09-26T15:02:29.924Z";
+}
+
+export type orderStates =
+  | "payment_pending"
+  | "paid"
+  | "restaurant_accepted"
+  | "preparing"
+  | "ready_for_pickup"
+  | "rider_assigned"
+  | "picked_up"
+  | "on_the_way"
+  | "delivered"
+  | "restaurant_rejected"
+  | "cancelled"
+  | "refund_pending"
+  | "refunded";
+
+export interface OrderDetails {
+  orderNumber: string;
+  restaurantId: string;
+  restaurantName: string;
+  status: orderStates;
+  fulfillmentType: "delivery";
+  currency: string;
+  subtotalXaf: number;
+  deliveryFeeXaf: number;
+  discountXaf: number;
+  totalXaf: number;
+  specialInstructions: string;
+  customer: { name: string; phone: string };
+  items: {
+    name: string;
+    unitPriceXaf: number;
+    quantity: number;
+    lineTotalXaf: number;
+  }[];
+  trackUrl: string;
+  deliveryAddress: {
+    label: string;
+    addressLine: string;
+    city: string;
+    instructions: string;
+    distanceKm: string;
+  };
+  delivery: string;
+  timeline: { status: orderStates; note: string; changedAt: string }[];
+}
+
+export interface OrderDetailsResponse {
+  data: OrderDetails;
 }

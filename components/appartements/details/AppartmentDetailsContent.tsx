@@ -23,7 +23,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { format } from "date-fns";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
@@ -245,7 +245,7 @@ export const AppartmentDetailsContent = ({
             </div>
           </div>
 
-          <Image
+          <SafeImage
             alt="map"
             width={200}
             height={200}

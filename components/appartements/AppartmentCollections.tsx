@@ -4,7 +4,7 @@ import Link from "next/link";
 import React from "react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 
 const CollectionsCard = ({ index }: { index: number }) => {
   return (
@@ -33,7 +33,7 @@ const CollectionsCard = ({ index }: { index: number }) => {
           </p>
         </div>
       </div>
-      <Image
+      <SafeImage
         src={"/default.png"}
         alt=""
         width={200}

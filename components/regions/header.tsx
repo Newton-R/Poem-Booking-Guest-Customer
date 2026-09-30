@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import React from "react";
 import { Button } from "../ui/button";
 
@@ -75,8 +75,8 @@ export const HeaderContent = () => {
                 )}
               </div>
             </div>
-            <Image
-              alt="Img"
+            <SafeImage
+              alt={`${location.capital}, ${location.region}`}
               src={location.img}
               key={i}
               width={400}

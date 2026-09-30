@@ -1,5 +1,5 @@
 "use client";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import React from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
@@ -28,7 +28,7 @@ export const TopBar = () => {
   return (
     <div className="fixed h-[calc(var(--mobile-nav-height))]  bg-background flex z-40 justify-between items-center p-2 lg:hidden top-0 w-full border-b border-border">
       <div className="flex gap-1 items-center">
-        <Image src="/logo.png" alt="Poem Booking" width={50} height={50} />
+        <SafeImage src="/logo.png" alt="Poem Booking" width={50} height={50} />
 
         {/* <span className="font-bold">Poem Booking</span> */}
       </div>
@@ -79,7 +79,7 @@ export const TopBar = () => {
                     key={i}
                     className="w-full flex items-center justify-between"
                   >
-                    <Image
+                    <SafeImage
                       src={
                         process.env.NEXT_PUBLIC_IMAGE_URL + item.dish.imageUrl
                       }

@@ -8,7 +8,7 @@ import {
   FieldTitle,
 } from "@/components/ui/field";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Card } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
@@ -46,7 +46,7 @@ export function PaymentMethodSelectionGrid({
           )}
           orientation={"horizontal"}
         >
-          <Image
+          <SafeImage
             src={"/icon/poem_lg.jpg"}
             className={cn("h-10 w-10 rounded-md", isMini && "h-7 w-7")}
             width={100}
@@ -77,7 +77,7 @@ export function PaymentMethodSelectionGrid({
             isMini ? "flex flex-col gap-1 items-center justify-center" : "",
           )}
         >
-          <Image
+          <SafeImage
             src={"/icon/mtn_lg.jpg"}
             className={cn("h-10 w-10 rounded-md", isMini && "h-7 w-7")}
             width={100}
@@ -109,7 +109,7 @@ export function PaymentMethodSelectionGrid({
             isMini ? "flex flex-col gap-1 items-center justify-center" : "",
           )}
         >
-          <Image
+          <SafeImage
             src={"/icon/orange_lg.jpg"}
             className={cn("h-10 w-10 rounded-md", isMini && "h-7 w-7")}
             width={100}

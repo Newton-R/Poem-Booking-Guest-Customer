@@ -7,7 +7,6 @@ import { Restaurants } from "@/components/home/restaurants";
 import { TopRated } from "@/components/home/TopRated";
 import { HomeNavbar } from "@/components/ui/home_nav";
 import { HotelCard } from "@/components/ui/hotelcard";
-import Image from "next/image";
 
 export default function Home() {
   return (

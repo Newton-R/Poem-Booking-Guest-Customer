@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight01FreeIcons, Star } from "@hugeicons/core-free-icons";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import { Restaurant } from "@/lib/types";
 import { restaurants } from "@/lib/data";
 import Link from "next/link";
@@ -11,7 +11,7 @@ const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
   return (
     <div className="flex flex-col h-110 overflow-hidden rounded-2xl border border-border">
       <div className="flex overflow-hidden flex-1">
-        <Image
+        <SafeImage
           src={restaurant.image}
           alt=""
           width={300}

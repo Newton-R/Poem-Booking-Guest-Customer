@@ -130,6 +130,7 @@ export const RouteDetailsBlock = () => {
         onSuccess: (response) => {
           toast.success("Ticket booking successful.");
           Cookies.set("bookingRef", response.data.bookingReference);
+          Cookies.set("bookingType", "transport");
           router.push(
             `/payment/local?paymentMethod=${paymentMethod}&bookingId=${response.data.id}`,
           );

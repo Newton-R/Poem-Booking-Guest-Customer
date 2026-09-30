@@ -111,6 +111,7 @@ export const BookingCheckoutComponent = ({
     data: { bookingReference: string; id: string };
   }) => {
     Cookies.set("bookingRef", response.data.bookingReference);
+    Cookies.set("bookingType", "residence");
     router.push(
       `/payment/local?paymentMethod=${paymentMethod}&bookingId=${response.data.id}`,
     );

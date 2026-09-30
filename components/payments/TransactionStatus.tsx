@@ -75,6 +75,8 @@ export const SuccessfullState = ({
 }: StatesProp) => {
   const bookingRef = Cookies.get("bookingRef");
   const user = Cookies.get("token");
+  const bookingType = Cookies.get("bookingType");
+  const orderNumber = Cookies.get("orderNumber");
   return (
     <div className="p-6 rounded-2xl border max-w-md mx-auto bg-white border-border w-[95%] flex flex-col items-center justify-center gap-6">
       {/* <ReviewModal /> */}
@@ -117,7 +119,11 @@ export const SuccessfullState = ({
         </div>
       </div>
       <Link
-        href={`/guest-booking/${bookingRef}?num=${number}`}
+        href={
+          bookingType !== "restaurant"
+            ? `/guest-booking/${bookingRef}?num=${number}`
+            : `/orders/${orderNumber}`
+        }
         className="w-full"
       >
         <Button variant={"outline"} className={"w-full min-w-40 h-10"}>
@@ -126,7 +132,7 @@ export const SuccessfullState = ({
         </Button>
       </Link>
 
-      {user && (
+      {user && bookingType !== "restaurant" && (
         <Link href={`/account/booking`} className="w-full">
           <Button variant={"outline"} className={"w-full min-w-40 h-10"}>
             Dashboard

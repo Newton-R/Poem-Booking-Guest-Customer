@@ -1,17 +1,17 @@
 import { data } from "motion/react-client";
 import {
   OrderInitiationDataResponse,
-  RestaurantGuestOrderPayload,
+  RestaurantCustomerOrderPayload,
 } from "@/lib/types/restaurant";
-import { publicClient } from "@/lib/api";
+import { apiClient } from "@/lib/api";
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 
 export async function makeOrder(
-  payload: RestaurantGuestOrderPayload,
+  payload: RestaurantCustomerOrderPayload,
 ): Promise<OrderInitiationDataResponse> {
   try {
-    const { data } = await publicClient.post<OrderInitiationDataResponse>(
+    const { data } = await apiClient.post<OrderInitiationDataResponse>(
       "/orders",
       payload,
     );
@@ -24,9 +24,9 @@ export async function makeOrder(
   }
 }
 
-export function useMakeOrder() {
+export function useMakeCustomerOrder() {
   return useMutation({
     mutationFn: makeOrder,
-    mutationKey: ["restaurant_order"],
+    mutationKey: ["customer_restaurant_order"],
   });
 }

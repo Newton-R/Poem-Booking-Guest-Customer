@@ -25,7 +25,7 @@ import {
   Star,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
@@ -73,7 +73,7 @@ const RoomAccommodationCard = ({
       )}
     >
       <div className="w-full md:w-60 lg:w-80 h-full relative overflow-hidden">
-        <Image
+        <SafeImage
           src={imagePaths}
           alt={room.name}
           className="w-full h-full object-cover"

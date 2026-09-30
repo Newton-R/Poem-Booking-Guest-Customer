@@ -1,6 +1,6 @@
 import { hotelCollections } from "@/lib/data";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import React from "react";
 
 export const Destinations = () => {
@@ -31,9 +31,11 @@ export const Destinations = () => {
               <span className="text-[16px] font-bold">{collection.name}</span>
               <p className="opacity-90">{collection.description}</p>
             </div>
-            <img
+            <SafeImage
               src={collection.image}
-              alt={`room image ${index + 1}`}
+              width={500}
+              height={500}
+              alt=""
               className="w-full h-full object-cover"
             />
           </div>
@@ -41,39 +43,39 @@ export const Destinations = () => {
       </div>
       {/* <div className="w-full grid gap-6 grid-cols-2">
         <div className="min-h-40 row-span-2 rounded-2xl overflow-hidden">
-          <Image
+          <SafeImage
             src={"/default.png"}
             height={300}
             width={400}
-            alt="Just an Image"
+            alt=""
             className="h-full w-full object-cover"
           />
         </div>
         <div className="h-95 rounded-2xl overflow-hidden">
-          <Image
+          <SafeImage
             src={"/default.png"}
             height={300}
             width={400}
-            alt="Just an Image"
+            alt=""
             className="h-full w-full object-cover"
           />
         </div>
         <div className="flex gap-6">
           <div className="min-h-40 flex-1 rounded-2xl overflow-hidden">
-            <Image
+            <SafeImage
               src={"/default.png"}
               height={300}
               width={400}
-              alt="Just an Image"
+              alt=""
               className="h-full w-full object-cover"
             />
           </div>
           <div className="min-h-40 flex-1 rounded-2xl overflow-hidden">
-            <Image
+            <SafeImage
               src={"/default.png"}
               height={300}
               width={400}
-              alt="Just an Image"
+              alt=""
               className="h-full w-full object-cover"
             />
           </div>

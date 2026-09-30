@@ -7,16 +7,26 @@ import {
   Star,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Image from "next/image";
-import React from "react";
+import SafeImage from "@/components/ui/safe-image";
+import React, { useState } from "react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LoadingRestaurantCard } from "../loaders/restaurant/LoadingRestaurantCard";
 import { Restaurant } from "@/lib/types/restaurant";
+import { FallbackImage } from "@/lib/utils";
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "../ui/combobox";
 
 const RestaurantMainCard = ({ restaurant }: { restaurant: Restaurant }) => {
   const pathname = usePathname();
+  const imgUrl = process.env.NEXT_PUBLIC_IMAGE_URL + restaurant.logoUrl;
   return (
     <Link
       href={`${pathname}/${restaurant.id}`}
@@ -57,12 +67,12 @@ const RestaurantMainCard = ({ restaurant }: { restaurant: Restaurant }) => {
             </div>
           </div>
         </div>
-        <img
-          src={`${process.env.NEXT_PUBLIC_IMAGE_URL + restaurant.logoUrl}`}
+        <SafeImage
+          src={imgUrl || FallbackImage}
           className="w-full h-full object-cover"
           width={500}
           height={500}
-          alt="image"
+          alt={restaurant.name}
         />
       </div>
       <div className="p-4 flex flex-col gap-6">
@@ -105,6 +115,8 @@ export const RestaurantHomePageContent = ({
   isLoading: boolean;
   restaurants?: Restaurant[];
 }) => {
+  const [selectedCity, setSelectedCity] = useState<string | null>("");
+
   if (isLoading || !restaurants) {
     return (
       <div className="grid grid-cols-1 container-x mt-4 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -114,6 +126,12 @@ export const RestaurantHomePageContent = ({
       </div>
     );
   }
+
+  const cities = restaurants.map((restau) => restau.city);
+  const viewingRestaurants = selectedCity
+    ? restaurants.filter((restaurant) => restaurant.city === selectedCity)
+    : restaurants;
+
   return (
     <section className="container-x flex flex-col gap-2">
       <div className="w-full flex flex-col gap-2 md:flex-row items-start md:items-center justify-between">
@@ -121,16 +139,38 @@ export const RestaurantHomePageContent = ({
           <HugeiconsIcon icon={Location} className="text-primary" size={20} />
           <span>Regional specialties found near Your location</span>
         </div>
-        <div>
-          <span className="text-muted-foreground">
-            {restaurants.length} restaurant{restaurants.length === 1 ? "" : "s"}{" "}
-            found
-          </span>
+        <div className="flex gap-2 items-center">
+          {selectedCity && (
+            <Button
+              onClick={() => setSelectedCity(null)}
+              variant={"outline"}
+              className={"h-9"}
+            >
+              Show all
+            </Button>
+          )}
+          <Combobox
+            value={selectedCity}
+            onValueChange={(val) => setSelectedCity(val)}
+            items={cities}
+          >
+            <ComboboxInput placeholder="Select a City" className={"h-9"} />
+            <ComboboxContent>
+              <ComboboxEmpty>No items found.</ComboboxEmpty>
+              <ComboboxList>
+                {(item) => (
+                  <ComboboxItem key={item} value={item}>
+                    {item}
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
         </div>
       </div>
       <div className="grid grid-cols-1 mt-4 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {restaurants.length > 0 ? (
-          restaurants.map((restaurant) => (
+        {viewingRestaurants.length > 0 ? (
+          viewingRestaurants.map((restaurant) => (
             <RestaurantMainCard restaurant={restaurant} key={restaurant.id} />
           ))
         ) : (

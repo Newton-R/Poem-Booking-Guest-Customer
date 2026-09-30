@@ -9,12 +9,11 @@ import { useInitiateHotelPayment } from "@/lib/public/form/useHotelBooking";
 import { Lock } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Cookies from "js-cookie";
-import { router } from "next/client";
-
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { Suspense, useState } from "react";
+import { Suspense, useState } from "react";
 import { toast } from "sonner";
+import { HotelPaymentIntiationPayload } from "@/lib/types/payments";
 
 interface paymentBlockProp {
   onFormSubit: () => void;
@@ -34,7 +33,7 @@ const MTNBlock = ({
       <div className="w-full border border-border shadow-md bg-white overflow-hidden rounded-2xl">
         <div className="w-full h-60 flex gap-4 flex-col items-center justify-center text-white p-4 bg-secondary-foreground">
           <div className="w-15 h-15 bg-white overflow-hidden rounded-full p-0.5">
-            <Image
+            <SafeImage
               src={"/icon/lmomo.png"}
               width={200}
               height={200}
@@ -99,7 +98,7 @@ const OrangeBlock = ({
       <div className="w-full border border-border shadow-md bg-white overflow-hidden rounded-2xl">
         <div className="w-full h-60 flex gap-4 flex-col items-center justify-center text-white p-4 bg-secondary-foreground">
           <div className="w-15 h-15 bg-white overflow-hidden rounded-full p-0.5">
-            <Image
+            <SafeImage
               src={"/icon/lom.png"}
               width={200}
               height={200}
@@ -164,7 +163,7 @@ const PoemPayBlock = ({
       <div className="w-full border border-border shadow-md bg-white overflow-hidden rounded-2xl">
         <div className="w-full h-60 flex gap-4 flex-col items-center justify-center text-white p-4 bg-secondary-foreground">
           <div className="w-15 h-15 bg-white overflow-hidden rounded-full p-0.5">
-            <Image
+            <SafeImage
               src={"/icon/poem_lg.jpg"}
               width={200}
               height={200}
@@ -224,6 +223,7 @@ export const PaymentinfoBlock = () => {
   const [number, setNumber] = useState("");
   const router = useRouter();
   const userCookie = Cookies.get("token");
+  const bookingType = Cookies.get("bookingType");
   const { mutate, isPending } = useInitiateHotelPayment();
   const { mutate: CustomerPayment, isPending: customerpaying } =
     useInitiateCustomerBookingPayment();
@@ -239,45 +239,43 @@ export const PaymentinfoBlock = () => {
         ? "Orange Money"
         : "Poem Pay";
 
+  const payload: HotelPaymentIntiationPayload =
+    bookingType === "restaurant"
+      ? {
+          orderId: info.bookingId,
+          paymentMethod: info.paymentMethod,
+          phoneNumber: "237" + number,
+        }
+      : {
+          paymentMethod: info.paymentMethod,
+          bookingId: info.bookingId,
+          phoneNumber: "237" + number,
+        };
   const handleFormSubmit = () => {
     if (userCookie) {
-      CustomerPayment(
-        {
-          paymentMethod: info.paymentMethod,
-          bookingId: info.bookingId,
-          phoneNumber: "237" + number,
+      CustomerPayment(payload, {
+        onSuccess: (response) => {
+          toast.success("Payment Initiated Successfully");
+          router.push(
+            `/payment/waiting/${response.data.paymentReference}?num=${"237" + number}&amt=${response.data.amount}&method=${method}`,
+          );
         },
-        {
-          onSuccess: (response) => {
-            toast.success("Payment Initiated Successfully");
-            router.push(
-              `/payment/waiting/${response.data.paymentReference}?num=${"237" + number}&amt=${response.data.amount}&method=${method}`,
-            );
-          },
-          onError: (e) => {
-            toast.error(e.message);
-          },
+        onError: (e) => {
+          toast.error(e.message ?? "Something went wrong.");
         },
-      );
+      });
     } else {
-      mutate(
-        {
-          paymentMethod: info.paymentMethod,
-          bookingId: info.bookingId,
-          phoneNumber: "237" + number,
+      mutate(payload, {
+        onSuccess: (response) => {
+          toast.success("Payment Initiated Successfully");
+          router.push(
+            `/payment/waiting/${response.data.paymentReference}?num=${"237" + number}&amt=${response.data.amount}&method=${method}`,
+          );
         },
-        {
-          onSuccess: (response) => {
-            toast.success("Payment Initiated Successfully");
-            router.push(
-              `/payment/waiting/${response.data.paymentReference}?num=${"237" + number}&amt=${response.data.amount}&method=${method}`,
-            );
-          },
-          onError: (e) => {
-            toast.error(e.message);
-          },
+        onError: (e) => {
+          toast.error(e.message ?? "Something went wrong");
         },
-      );
+      });
     }
   };
 

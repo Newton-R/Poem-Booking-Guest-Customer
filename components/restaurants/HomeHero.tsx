@@ -73,7 +73,7 @@ export const RestaurantsHomeHero = ({
             Find Food
           </Button>
         </form>
-        <div className="grid grid-cols-2 w-full md:grid-cols-3 mx-auto gap-4 mt-2 items-center justify-center">
+        {/* <div className="grid grid-cols-2 w-full md:grid-cols-3 mx-auto gap-4 mt-2 items-center justify-center">
           <Combobox
             value={filters.cuisine}
             onValueChange={(value) => onFilterChange("cuisine", value ?? "")}
@@ -152,7 +152,7 @@ export const RestaurantsHomeHero = ({
           >
             Clear filters
           </Button>
-        </div>
+        </div> */}
       </div>
     </div>
   );

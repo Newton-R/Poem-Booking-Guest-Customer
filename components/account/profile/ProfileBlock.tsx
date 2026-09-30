@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Pen } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import React from "react";
 
 export function SecurityAccountCard() {
@@ -149,7 +149,7 @@ export const ProfileBlock = () => {
             </div>
             <div className="p-3 rounded-md bg-bg-mute flex items-center gap-2">
               <div className="w-8 h-8 rounded-md overflow-hidden bg-secondary-foreground">
-                <Image
+                <SafeImage
                   src={"/icon/mtn.png"}
                   width={20}
                   height={20}

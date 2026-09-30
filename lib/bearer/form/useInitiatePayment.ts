@@ -17,7 +17,7 @@ async function initiateHotelBookingPayment(
     return data;
   } catch (e) {
     if (isAxiosError(e)) {
-      throw new Error(e.response?.data.message);
+      throw new Error(e.response?.data.message ?? "Something went wrong");
     }
     throw e;
   }

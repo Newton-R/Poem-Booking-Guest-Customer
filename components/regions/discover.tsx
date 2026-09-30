@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import Link from "next/link";
 import React from "react";
 
@@ -71,8 +71,8 @@ export const DiscoverMore = () => {
                 <p className="text-gray-200">{location.description}</p>
               </div>
             </div>
-            <Image
-              alt="Img"
+            <SafeImage
+              alt={`${location.capital}, ${location.region}`}
               src={location.img}
               key={i}
               width={400}

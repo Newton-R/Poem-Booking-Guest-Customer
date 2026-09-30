@@ -1,4 +1,5 @@
 "use client";
+import SafeImage from "@/components/ui/safe-image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DishCard } from "@/components/ui/restaurantdishcard";
@@ -11,7 +12,6 @@ import {
   Plus,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -53,12 +53,12 @@ export const MealDetailsBlock = ({
       <div className="grid grid-cols-1 md:grid-cols-5 gap-6 ">
         <div className="md:col-span-3 flex flex-col gap-5">
           <div className=" h-100">
-            <img
+            <SafeImage
               src={imgUrl}
               width={400}
               height={400}
               className="w-full rounded-2xl h-full object-cover"
-              alt="Meal Picture"
+              alt={meal.name}
             />
           </div>
           <div className="flex flex-col gap-3">

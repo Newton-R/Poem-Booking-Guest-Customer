@@ -1,5 +1,6 @@
 "use client";
-import Image from "next/image";
+
+import SafeImage from "@/components/ui/safe-image";
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -21,11 +22,13 @@ import { CartItem as Item, useCartStore } from "@/lib/useCart";
 import { EmptyCart } from "../emptystuff";
 import { PaymentMethodSelectionGrid } from "../payments/MethodSelectionGrid";
 import { formatPrice } from "@/lib/data";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useCheckDeliveryData } from "@/lib/public/useGetRestaurants";
 import { useMakeOrder } from "@/lib/public/form/useRestaurantOrder";
 import { toast } from "sonner";
 import { Loader } from "../ui/Loader";
+import Cookies from "js-cookie";
+import { useMakeCustomerOrder } from "@/lib/bearer/form/useRestaurantOrder";
 
 const CartItem = ({ item }: { item: Item }) => {
   const { removeItem, increment, decrement } = useCartStore();
@@ -34,11 +37,11 @@ const CartItem = ({ item }: { item: Item }) => {
     <div className="py-4 border-b border-border flex flex-col gap-2 md:flex-row justify-between md:items-end">
       <div className="flex items-center gap-3">
         <div className="size-16 shrink-0 rounded-md overflow-hidden">
-          <img
+          <SafeImage
             className="w-full h-full object-cover"
             width={200}
             height={200}
-            alt="image"
+            alt={item.dish.name}
             src={imageUrl}
           />
         </div>
@@ -132,6 +135,7 @@ type LocationFailureReason =
 export const CartBlock = () => {
   const { items } = useCartStore();
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const [location, setLocation] = useState<{
     latitude: string;
     longitude: string;
@@ -140,7 +144,7 @@ export const CartBlock = () => {
   const [paymentMethod, setPaymentMethod] = useState("poem_pay");
   const [locationFailureReason, setLocationFailureReason] =
     useState<LocationFailureReason | null>(null);
-
+  const userToken = Cookies.get("token");
   const [orderFormData, setOrderFormData] = useState<OrderData>({
     phone: "",
     city: "",
@@ -244,6 +248,8 @@ export const CartBlock = () => {
     location?.longitude ?? "",
   );
   const { mutate, isPending } = useMakeOrder();
+  const { mutate: CustomerOrder, isPending: customerOrdering } =
+    useMakeCustomerOrder();
 
   const handleOrderDetails = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -252,8 +258,51 @@ export const CartBlock = () => {
     setOrderFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const paymentRedirect = (orderNumber: string, orderId: string) => {
+    Cookies.set("bookingType", "restaurant");
+    Cookies.set("orderNumber", orderNumber);
+    router.push(
+      `/payment/local?paymentMethod=${paymentMethod}&bookingId=${orderId}`,
+    );
+  };
+
   const handleInitiateBooking = () => {
-    if (items.length > 0) {
+    if (items.length <= 0) {
+      toast.error("Cart is empty");
+      return;
+    }
+    if (userToken) {
+      CustomerOrder(
+        {
+          restaurantId: items[0].restaurantId,
+          deliveryAddress: {
+            label: "",
+            addressLine: `${orderFormData.district}, ${orderFormData.street}`,
+            city: orderFormData.city,
+            instructions: orderFormData.special_instruction,
+            latitude: Number(location?.latitude) ?? 0,
+            longitude: Number(location?.longitude) ?? 0,
+          },
+          fulfillmentType: "delivery",
+          items: items.map((item) => ({
+            quantity: item.quantity,
+            menuItemId: item.dish.id,
+          })),
+          specialInstructions: orderFormData.special_instruction,
+        },
+        {
+          onSuccess: (response) => {
+            console.log({ res: response });
+            paymentRedirect(response.data.orderNumber, response.data.id);
+            toast.success("Order initiated successfully");
+          },
+          onError: (error) => {
+            console.log({ err: error });
+            toast.error(error.message);
+          },
+        },
+      );
+    } else {
       mutate(
         {
           restaurantId: items[0].restaurantId,
@@ -275,7 +324,8 @@ export const CartBlock = () => {
         },
         {
           onSuccess: (response) => {
-            console.log(response);
+            console.log({ my_response: response });
+            paymentRedirect(response.data.orderNumber, response.data.id);
             toast.success("Order initiated successfully");
           },
           onError: (error) => {
@@ -284,8 +334,6 @@ export const CartBlock = () => {
           },
         },
       );
-    } else {
-      toast.error("Can't order with an empty cart");
     }
   };
 
@@ -511,7 +559,7 @@ export const CartBlock = () => {
           <div className="flex items-center text-muted-foreground text-xs justify-between">
             <span>Delivery Fee</span>
             <span>
-              {formatPrice(Number(deliveryData?.data.deliveryFeeXaf))}
+              {formatPrice(Number(deliveryData?.data.deliveryFeeXaf ?? 0))}
             </span>
           </div>
           <div className="flex items-center text-green-500 text-xs justify-between">
@@ -528,10 +576,10 @@ export const CartBlock = () => {
           <div className="flex flex-col items-end text-end">
             <span className="text-primary text-xl">
               {formatPrice(
-                Number(deliveryData?.data.deliveryFeeXaf) +
+                Number(deliveryData?.data.deliveryFeeXaf ?? 0) +
                   itemsPrice -
                   poempayDiscount(),
-              )}
+              ) ?? 0}
             </span>
             <span className="text-xs text-muted-foreground">
               TAXES INCLUDED
@@ -553,7 +601,7 @@ export const CartBlock = () => {
         </div>
         <Button
           onClick={handleInitiateBooking}
-          disabled={isPending}
+          disabled={isPending || items.length === 0 || customerOrdering}
           className={"p-6 text-[16px] mt-6"}
         >
           {isPending ? <Loader /> : "Place Order"}

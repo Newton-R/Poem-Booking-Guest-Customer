@@ -11,3 +11,5 @@ export function formatDuration(minutes: number) {
 
   return `${hours}hr ${mins}min`;
 }
+
+export const FallbackImage = "/fallback.png";

@@ -1,5 +1,11 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { formatPrice } from "@/lib/data";
@@ -8,6 +14,7 @@ import { RestaurantMenuItem } from "@/lib/types/restaurant";
 import { useCartStore } from "@/lib/useCart";
 import { Minus, Plus } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import Link from "next/link";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
@@ -39,28 +46,31 @@ export const MealCustomisation = ({
     0,
   );
 
+  const [errorDialog, setErrorDialog] = useState<boolean>(false);
+
   const MealPrice = totalAdonsPrice
     ? MealData.dish.priceXaf + totalAdonsPrice
     : MealData.dish.priceXaf;
 
-  const { addItem, items } = useCartStore();
+  const { addItem, items, clearCart } = useCartStore();
 
   const handleAddtoCart = () => {
     try {
       if (items.length > 0) {
         const prevRestaurantId = items[0].restaurantId;
         if (prevRestaurantId && restaurantId !== prevRestaurantId) {
-          toast.error("Items in cart must be from thesame restaurants.");
+          setErrorDialog(true);
+        } else {
+          addItem(
+            MealData.dish,
+            String(MealPrice * MealData.quantity),
+            restaurantId,
+            MealData.adons,
+            MealData.specifications,
+            MealData.quantity,
+          );
+          toast.success(`${MealData.dish.name} added to cart 🎉`);
         }
-        addItem(
-          MealData.dish,
-          String(MealPrice * MealData.quantity),
-          restaurantId,
-          MealData.adons,
-          MealData.specifications,
-          MealData.quantity,
-        );
-        toast.success(`${MealData.dish.name} added to cart 🎉`);
       } else if (items.length === 0) {
         addItem(
           MealData.dish,
@@ -126,6 +136,43 @@ export const MealCustomisation = ({
               </div>
             </div>
           </div> */}
+          <Dialog open={errorDialog}>
+            <DialogContent showCloseButton={false}>
+              <DialogHeader>
+                <span className="text-xl font-bold">Cart Error</span>
+              </DialogHeader>
+              <p>
+                You currently have dishes from{" "}
+                <span>
+                  <Link
+                    className="text-primary font-bold hover:underline"
+                    href={`/restaurants/${items.length > 0 ? items[0].restaurantId : ""}`}
+                  >
+                    another restaurant
+                  </Link>
+                </span>{" "}
+                . You can't have dishes from different restaurants.
+              </p>
+              <DialogFooter className="flex gap-2 items-center">
+                <Button
+                  variant={"destructive"}
+                  onClick={() => {
+                    clearCart();
+                    setErrorDialog(false);
+                  }}
+                >
+                  Empty Cart
+                </Button>
+                <Button
+                  variant={"outline"}
+                  onClick={() => setErrorDialog(false)}
+                >
+                  Cancel
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
           <div className="flex flex-col">
             <span className="text-muted-foreground font-bold mb-2">
               Add Sides

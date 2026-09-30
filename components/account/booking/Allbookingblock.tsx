@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { DashIntro } from "../DashIntro";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Box,
@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/empty";
 import { TransportBookingCard } from "./transportBookingCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
+import { cn, FallbackImage } from "@/lib/utils";
 
 export const BookingCardSkeleton = () => {
   return (
@@ -77,16 +77,15 @@ const BookingHistoryCard = ({
 }: {
   booking: GuestBookingDetailsResponseData;
 }) => {
+  const imgUrl: string | null =
+    process.env.NEXT_PUBLIC_IMAGE_URL + booking.items[0].service.imageUrl;
   if (booking.bookingType === "hotel") {
     return (
       <div className="p-6 rounded-xl border bg-white border-border grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Image */}
         <div className="rounded-xl overflow-hidden h-40 relative">
-          <img
-            src={
-              process.env.NEXT_PUBLIC_IMAGE_URL +
-              booking.items[0].service.imageUrl
-            }
+          <SafeImage
+            src={imgUrl ?? FallbackImage}
             width={400}
             height={400}
             alt={booking.id}
@@ -214,7 +213,7 @@ const BookingHistoryCard = ({
       <div className="p-6 rounded-xl border bg-white border-border grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Image */}
         <div className="rounded-xl overflow-hidden h-40 relative">
-          <img
+          <SafeImage
             src={
               process.env.NEXT_PUBLIC_IMAGE_URL +
               booking.items[0].service.imageUrl

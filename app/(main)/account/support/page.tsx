@@ -14,7 +14,7 @@ import {
   Send,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import Link from "next/link";
 import React from "react";
 
@@ -94,7 +94,7 @@ const SupportPage = () => {
           <div className="w-full p-6 bg-white flex justify-between items-center">
             <div className="flex gap-2 items-center">
               <div className="w-10 h-10 rounded-full overflow-hidden">
-                <Image
+                <SafeImage
                   src={"/default.png"}
                   width={200}
                   height={200}

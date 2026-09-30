@@ -1,5 +1,6 @@
 export interface HotelPaymentIntiationPayload {
-  bookingId: string;
+  bookingId?: string;
+  orderId?: string;
   paymentMethod: string;
   phoneNumber: string;
 }
