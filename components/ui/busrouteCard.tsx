@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import React, { useState } from "react";
 import { Button } from "./button";
 import Link from "next/link";
@@ -40,12 +40,12 @@ export const BusRouteCard = ({
       className="flex flex-col gap-4 h-80"
     >
       <div className="flex-1 relative rounded-2xl overflow-hidden">
-        <Image
+        <SafeImage
           src={imgUrl}
           className="w-full h-full object-cover"
           width={300}
           height={300}
-          alt="Img"
+          alt={`Bus route from ${originCity?.name ?? ""} to ${destinationCity?.name ?? ""}`}
         />
         <span className="absolute top-4 left-4 p-1 px-2 bg-white/70 rounded-full text-xs">
           {formatDuration(Number(Busroute.estimatedDurationMinutes))}
@@ -78,12 +78,12 @@ export const AgencyCard = ({ agency }: { agency: Agency }) => {
   return (
     <div className="flex flex-col bg-bg-mute h-120 overflow-hidden rounded-2xl">
       <div className="overflow-hidden flex-1 relative">
-        <img
+        <SafeImage
           className="w-full h-full object-cover"
           width={200}
           height={200}
           src={imgUrl}
-          alt="Image"
+          alt={`${agency.name} bus agency`}
         />
       </div>
       <div className="p-6 flex flex-col">

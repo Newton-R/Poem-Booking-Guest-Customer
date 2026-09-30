@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { restaurantKeys } from "../query-keys/user";
 import {
   DeliveryQuoteResponse,
+  OrderDetailsResponse,
   RestaurantDetailsResponse,
   RestaurantsResponse,
 } from "../types/restaurant";
@@ -115,5 +116,28 @@ export function useGetRestaurantDetails(restaurantId: string) {
   return useQuery({
     queryKey: restaurantKeys.detail(restaurantId),
     queryFn: () => getRestaurantDetails(restaurantId),
+  });
+}
+
+async function getOrderDetails(
+  orderRef: string,
+): Promise<OrderDetailsResponse> {
+  try {
+    const { data } = await publicClient.get<OrderDetailsResponse>(
+      `/orders/${orderRef}`,
+    );
+    return data;
+  } catch (e) {
+    if (isAxiosError(e)) {
+      throw new Error(e.response?.data.message);
+    }
+    throw e;
+  }
+}
+
+export function useGetOrderDetails(orderRef: string) {
+  return useQuery({
+    queryFn: () => getOrderDetails(orderRef),
+    queryKey: [orderRef, "order_details"],
   });
 }

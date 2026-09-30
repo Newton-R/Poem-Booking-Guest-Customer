@@ -4,7 +4,7 @@ import React from "react";
 import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight } from "@hugeicons/core-free-icons";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import { formatPrice } from "@/lib/data";
 import { useGetApartments } from "@/lib/public/useGetApartments";
 import { Apartment } from "@/lib/types/apartment";
@@ -21,7 +21,7 @@ const FeaturedAppartmentCard = ({ apartment }: { apartment: Apartment }) => {
         {/* <span className="absolute top-2 right-2 text-xs text-primary font-bold p-1 px-2 rounded-full bg-white/50 w-fit">
           New
         </span> */}
-        <Image
+        <SafeImage
           src={ImageSrc}
           className="h-full w-full object-cover"
           width={300}

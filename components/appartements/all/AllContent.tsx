@@ -13,9 +13,10 @@ import {
 import { formatPrice } from "@/lib/data";
 
 import { Apartment } from "@/lib/types/apartment";
+import { FallbackImage } from "@/lib/utils";
 import { CloudAlertIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -27,8 +28,8 @@ const AppartmentCard = ({ apartment }: { apartment: Apartment }) => {
   return (
     <div className="h-100 md:h-90 flex flex-col border border-border rounded-2xl overflow-hidden">
       <div className="flex-1 overflow-hidden">
-        <img
-          src={imageUrl}
+        <SafeImage
+          src={imageUrl ?? FallbackImage}
           width={400}
           height={400}
           alt=""

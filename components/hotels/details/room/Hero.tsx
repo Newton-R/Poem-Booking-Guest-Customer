@@ -1,3 +1,4 @@
+import SafeImage from "@/components/ui/safe-image";
 import React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -40,9 +41,11 @@ export const RoomDetailsHero = ({
                     : "",
           )}
         >
-          <img
+          <SafeImage
             src={image}
-            alt={`room image ${index + 1}`}
+            width={500}
+            height={500}
+            alt={`Hotel room photo ${index + 1}`}
             className="w-full h-full object-cover"
           />
         </div>

@@ -3,7 +3,7 @@ import { ArrowRight, Bus, Heart, Ticket } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import React from "react";
 import { HotelCard } from "../ui/hotelcard";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { busRoutes, hotels } from "@/lib/data";
@@ -90,7 +90,7 @@ export const TopRated = () => {
           </p>
         </div>
         <div className=" rounded-2xl overflow-hidden">
-          <Image
+          <SafeImage
             src={"/default.png"}
             alt="demo"
             width={400}
@@ -100,7 +100,7 @@ export const TopRated = () => {
         </div>
         <div className=" flex flex-col  gap-6">
           <div className=" rounded-2xl h-44 overflow-hidden">
-            <Image
+            <SafeImage
               src={"/default.png"}
               alt="demo"
               width={400}
@@ -109,7 +109,7 @@ export const TopRated = () => {
             />
           </div>
           <div className=" h-44 rounded-2xl overflow-hidden">
-            <Image
+            <SafeImage
               src={"/default.png"}
               alt="demo"
               width={400}

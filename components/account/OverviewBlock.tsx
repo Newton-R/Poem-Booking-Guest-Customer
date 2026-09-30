@@ -4,7 +4,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import React, { useEffect } from "react";
 import { Button } from "../ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import { useUserStore } from "@/lib/useUserStore";
 import { useGetUserData } from "@/lib/bearer/useUser";
 import { useSessionModal } from "@/lib/useSessionModal";
@@ -25,12 +25,12 @@ const HotelBookingsCard = () => {
             </span>
           </div>
         </div>
-        <Image
+        <SafeImage
           src={"/default.png"}
           width={500}
           height={500}
           className="w-full h-full object-cover"
-          alt="Image"
+          alt=""
         />
       </div>
       <div className="flex flex-col p-6 py-4">

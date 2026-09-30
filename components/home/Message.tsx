@@ -7,7 +7,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import React from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 
 export const Message = () => {
   const stats = [
@@ -104,7 +104,7 @@ export const Message = () => {
               key={i}
               className="p-2 text-muted-foreground bg-white text-[14px] rounded-md border border-border flex gap-2 items-center"
             >
-              <Image
+              <SafeImage
                 src={method.icon}
                 width={24}
                 height={24}

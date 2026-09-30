@@ -1,3 +1,4 @@
+import SafeImage from "@/components/ui/safe-image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -26,7 +27,6 @@ import { toast } from "sonner";
 import { Loader } from "../ui/Loader";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { TransportBookingInfoCard } from "../buses/transportBookingInfoCard";
 interface BookingSuccessCardProps {
   booking: GuestBookingDetailsResponseData;
@@ -99,7 +99,7 @@ export function BookingInfoCard({ booking }: BookingSuccessCardProps) {
         {/* Hotel/Property info */}
         <div className="flex items-center gap-3 rounded-xl border border-border p-3">
           <div className="size-16 rounded-lg overflow-hidden shrink-0">
-            <img
+            <SafeImage
               src={
                 process.env.NEXT_PUBLIC_IMAGE_URL +
                 booking.items[0].serviceImageUrl

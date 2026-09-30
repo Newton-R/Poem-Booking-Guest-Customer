@@ -6,7 +6,6 @@ import {
   X,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Image from "next/image";
 import React, { Suspense } from "react";
 import { Button } from "../ui/button";
 import { useParams, useSearchParams } from "next/navigation";
@@ -17,7 +16,7 @@ export const PaymentProcessingCard = () => {
   return (
     <div className="bg-white p-6 max-w-md mx-auto w-full gap-6 items-center justify-center rounded-2xl border border-border flex flex-col">
       {/* <div className="w-15 h-15 bg-white overflow-hidden rounded-full p-0.5">
-        <Image src={"/icon/lom.png"} width={200} height={200} alt="Momo logo" />
+        <SafeImage src={"/icon/lom.png"} width={200} height={200} alt="Momo logo" />
       </div> */}
       <div className="w-15 h-15 rounded-full flex items-center justify-center">
         <HugeiconsIcon

@@ -1,8 +1,9 @@
 import { LoadingGridHero } from "@/components/loaders/hoteldetails/GridHero";
 import { Apartment } from "@/lib/types";
 import { ApartmentDetail } from "@/lib/types/apartment";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
+import { cn, FallbackImage } from "@/lib/utils";
+import { Fallback } from "next/dist/client/components/segment-cache/cache-map";
+import SafeImage from "@/components/ui/safe-image";
 import React from "react";
 
 export const AppartmentDetailsHero = ({
@@ -43,10 +44,10 @@ export const AppartmentDetailsHero = ({
                     : "",
           )}
         >
-          <Image
+          <SafeImage
             width={200}
             height={200}
-            src={image}
+            src={image ?? FallbackImage}
             alt={`room image ${index + 1}`}
             className="w-full h-full object-cover"
           />

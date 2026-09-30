@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Money, Star } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import Link from "next/link";
 import React from "react";
 import { AllHistory } from "./HistoryBlock";
@@ -10,7 +10,7 @@ const PointsRedeemCard = () => {
   return (
     <div className="flex flex-col h-70 bg-white rounded-2xl overflow-hidden">
       <div className="flex flex-1 overflow-hidden">
-        <Image
+        <SafeImage
           src={"/default.png"}
           alt="i"
           className="w-full h-full object-cover "

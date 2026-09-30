@@ -1,3 +1,4 @@
+import SafeImage from "@/components/ui/safe-image";
 import { LoadingGridHero } from "@/components/loaders/hoteldetails/GridHero";
 import { Button } from "@/components/ui/button";
 import {
@@ -88,8 +89,10 @@ export const DetailsHero = ({
                     : "",
           )}
         >
-          <img
+          <SafeImage
             src={image}
+            width={500}
+            height={500}
             alt={`Hotel ${index + 1}`}
             className="w-full h-full object-cover"
           />

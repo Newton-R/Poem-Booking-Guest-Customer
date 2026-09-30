@@ -1,6 +1,6 @@
 import { BadgeCheck, Money, Star } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import React from "react";
 
 export const WhyPoem = () => {
@@ -48,12 +48,12 @@ export const WhyPoem = () => {
         </div>
       </div>
       <div className="flex flex-1 h-112.5 rounded-2xl items-center justify-center relative">
-        <Image
+        <SafeImage
           src={"/restau.jpg"}
           width={500}
           height={500}
           className="w-full h-full object-cover rounded-2xl"
-          alt="image"
+          alt=""
         />
         <div className="absolute p-4 border text-[14px] flex w-60 flex-col text-black gap-2 rounded-2xl -bottom-10 -md:left-10 border-white bg-white/40 backdrop-blur-[3px]">
           <div className="flex gap-2">

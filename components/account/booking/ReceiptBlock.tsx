@@ -17,7 +17,7 @@ import {
   TransportBookingData,
 } from "@/lib/types/booking_data";
 import { useUserStore } from "@/lib/useUserStore";
-import { cn } from "@/lib/utils";
+import { cn, FallbackImage } from "@/lib/utils";
 import {
   ArrowLeft,
   ArrowRight,
@@ -34,7 +34,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { differenceInDays, formatDate } from "date-fns";
 import { da } from "date-fns/locale";
-import Image from "next/image";
+import SafeImage from "@/components/ui/safe-image";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
 
@@ -381,7 +381,7 @@ const HotelReciept = ({
         <div className="flex flex-col gap-1 p-4 md:p-6 border-l border-border">
           <span className="text-muted-foreground text-xs">PAYMENT METHOD</span>
           <div className="flex gap-2 items-center">
-            {/* <Image/> */}
+            {/* <SafeImage/> */}
             <div className="flex text-xs flex-col gap-0.5">
               <span className="font-bold">MTN Mobile Money</span>
               <span className="text-muted-foreground">
@@ -397,13 +397,15 @@ const HotelReciept = ({
             RESERVATION DETAILS
           </span>
           <div className="flex p-6 w-full bg-primary/10 rounded-2xl flex-col gap-4 md:flex-row">
-            <img
+            <SafeImage
               className="rounded-2xl"
               src={
-                process.env.NEXT_PUBLIC_IMAGE_URL +
-                booking.items[0].service.imageUrl
+                booking.items[0].service.imageUrl !== null
+                  ? process.env.NEXT_PUBLIC_IMAGE_URL +
+                    booking.items[0].service.imageUrl
+                  : FallbackImage
               }
-              alt="img"
+              alt={`${booking.hotelName}_image`}
               width={100}
               height={100}
             />
