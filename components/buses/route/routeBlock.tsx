@@ -6,6 +6,7 @@ import {
   ArrowTurnUpFreeIcons,
   BadgeCheck,
   Bus02FreeIcons,
+  CircleCheck,
   IceHockeyFreeIcons,
   Wifi,
   Zap,
@@ -23,6 +24,7 @@ import { AgencyDetailSkeleton } from "@/components/loaders/bus/AgencyDetailSkele
 import { useAgencies } from "@/lib/useAgency";
 import { useGetCities } from "@/lib/public/useCitiesAmeneties";
 import { BusRouteCard } from "@/components/ui/busrouteCard";
+import { amenityIcons } from "@/lib/icons";
 
 interface Voyages {
   index: number;
@@ -64,9 +66,9 @@ const VoyagesBlock = ({
             strokeWidth={1.8}
           />
         </div>
-        <div className="flex flex-col gap-1 text-center">
+        <div className="flex flex-col gap-1 items-start md:items-center md:text-center">
           <span className="font-bold">{originCity}</span>
-          <span className="text-xs w-fit mx-auto uppercase md:bg-primary/10 font-bold text-primary md:p-1 md:px-2 md:rounded-full">
+          <span className="text-xs w-fit uppercase md:bg-primary/10 font-bold text-primary md:p-1 md:px-2 md:rounded-full">
             {bus.bus.busType}
           </span>
         </div>
@@ -75,7 +77,7 @@ const VoyagesBlock = ({
       <div className="flex-1 md:pl-6 border-b md:border-b-0 md:border-l-2 border-border flex col-span-3 flex-col gap-6">
         <div className="grid grid-cols-3 gap-6 md:grid-cols-4">
           <div className="flex flex-col">
-            <span className="text-xl font-bold">
+            <span className="text-xl whitespace-nowrap font-bold">
               {formatDate(new Date(bus.departureTime), "hh:mm a")}
             </span>
             <div className="flex flex-col gap-0.5">
@@ -86,15 +88,14 @@ const VoyagesBlock = ({
             </div>
           </div>
           <div className="flex flex-col justify-center items-center text-center gap-1 text-xs">
-            <span>{}</span>
-            <div className="flex h-0.5 relative bg-gray-400 w-40 items-center">
+            <div className="flex h-0.5 relative bg-gray-400 w-25 md:w-40 items-center">
               <div className="size-2 rounded-full border border-gray-400 bg-background absolute -left-1" />
               <div className="size-2 rounded-full border bg-primary border-gray-400 absolute -right-1" />
             </div>
             <span className="text-xs text-primary">Non stop</span>
           </div>
           <div className="text-end flex flex-col">
-            <span className="text-xl font-bold">
+            <span className="text-xl whitespace-nowrap font-bold">
               {formatDate(new Date(bus.arrivalTime), "hh:mm a")}
             </span>
             <span className="text-muted-foreground">{destinationCity}</span>
@@ -111,18 +112,18 @@ const VoyagesBlock = ({
         <div className="w-full flex border-t border-border pt-4 md:pt-0 md:border-none justify-between mt-auto items-center flex-col md:flex-row gap-4">
           <div className="w-full flex items-center justify-between">
             <div className="flex gap-4 items-center">
-              {ammenities.map((ammenity, i) => (
+              {bus.bus.amenities.map((ammenity, i) => (
                 <span
                   key={i}
                   className="flex gap-1 items-center text-xs font-bold md:font-normal md:text-[14px] text-muted-foreground"
                 >
                   <HugeiconsIcon
-                    icon={ammenity.icon}
+                    icon={amenityIcons[ammenity] ?? CircleCheck}
                     size={18}
                     className="font-bold"
                     strokeWidth={2}
                   />
-                  <span>{ammenity.label}</span>
+                  {/* <span>{ammenity}</span> */}
                 </span>
               ))}
             </div>

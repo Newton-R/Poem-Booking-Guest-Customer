@@ -52,17 +52,20 @@ const RestaurantMainCard = ({ restaurant }: { restaurant: Restaurant }) => {
                 size={12}
                 className="fill-yellow-500 text-yellow-500"
               />
-              <span className="text-xs">{restaurant.rating ?? 0}</span>
+              <span className="text-xs">
+                {restaurant.rating.toFixed(1) ?? 0}
+              </span>
             </span>
           </div>
           <div className="mt-auto flex text-white gap-2">
-            <div className="w-8 h-8 rounded-md font-bold text-center flex items-center justify-center bg-secondary-foreground border-2 border-white">
+            <div className="w-8 h-8 shrink-0 rounded-md font-bold text-center flex items-center justify-center bg-secondary-foreground border-2 border-white">
               {restaurant.name[0]}
             </div>
             <div className="text-[10px] flex flex-col">
               <span className="font-bold text-[11px]">{restaurant.name}</span>
               <span>
-                {restaurant.description} • {restaurant.city}
+                <span className="line-clamp-1">{restaurant.description}</span> •{" "}
+                {restaurant.city}
               </span>
             </div>
           </div>

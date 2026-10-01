@@ -57,7 +57,7 @@ export const BusFilter = () => {
             onInputValueChange={(val) => UpdateFilter("origin", val)}
             items={cities}
           >
-            <ComboboxInput className={"h-10"} placeholder="Select an Origin" />
+            <ComboboxInput className={"h-10"} placeholder="Select an origin" />
             <ComboboxContent>
               <ComboboxEmpty>No items found.</ComboboxEmpty>
               <ComboboxList>
@@ -76,22 +76,30 @@ export const BusFilter = () => {
           <HugeiconsIcon icon={Location} size={12} />
           Destination
         </span>
-        <Combobox
-          onInputValueChange={(val) => UpdateFilter("destination", val)}
-          items={regions}
-        >
-          <ComboboxInput className={"h-10"} placeholder="Select destination" />
-          <ComboboxContent>
-            <ComboboxEmpty>No items found.</ComboboxEmpty>
-            <ComboboxList>
-              {(item) => (
-                <ComboboxItem key={item} value={item}>
-                  {item}
-                </ComboboxItem>
-              )}
-            </ComboboxList>
-          </ComboboxContent>
-        </Combobox>
+        {citiesLoading ? (
+          <Skeleton className="h-9 w-full" />
+        ) : (
+          <Combobox
+            disabled={citiesLoading}
+            onInputValueChange={(val) => UpdateFilter("destination", val)}
+            items={cities}
+          >
+            <ComboboxInput
+              className={"h-10"}
+              placeholder="Select an destination"
+            />
+            <ComboboxContent>
+              <ComboboxEmpty>No items found.</ComboboxEmpty>
+              <ComboboxList>
+                {(item) => (
+                  <ComboboxItem key={item.value} value={item}>
+                    {item.label}
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+            </ComboboxContent>
+          </Combobox>
+        )}
       </div>
       <div className="flex flex-col gap-1">
         <span className="font-bold flex gap-1 items-center">
