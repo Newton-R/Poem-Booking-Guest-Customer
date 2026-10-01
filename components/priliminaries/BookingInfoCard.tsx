@@ -1,5 +1,11 @@
 import SafeImage from "@/components/ui/safe-image";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -28,6 +34,7 @@ import { Loader } from "../ui/Loader";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TransportBookingInfoCard } from "../buses/transportBookingInfoCard";
+import { DownloadGuestReceipt } from "../receiptTemplates/downloadTriggers/guestReceiptApartment";
 interface BookingSuccessCardProps {
   booking: GuestBookingDetailsResponseData;
 }
@@ -221,6 +228,15 @@ export function BookingInfoCard({ booking }: BookingSuccessCardProps) {
                 Are you sure you want to cancel? This action can't be undone.
               </DialogDescription>
               <DialogFooter>
+                <Button
+                  onClick={handleCancel}
+                  type="button"
+                  disabled={isPending}
+                  variant={"destructive"}
+                  className={"h-9 min-w-30"}
+                >
+                  {isPending ? <Loader /> : "Cancel"}
+                </Button>
                 <DialogClose>
                   <Button
                     type="button"
@@ -228,22 +244,17 @@ export function BookingInfoCard({ booking }: BookingSuccessCardProps) {
                     className={"p-2 w-full h-9"}
                     variant={"outline"}
                   >
-                    Cancel
+                    Keep Going
                   </Button>
                 </DialogClose>
-                <Button
-                  onClick={handleCancel}
-                  type="button"
-                  disabled={isPending}
-                  className={"h-9 min-w-30"}
-                >
-                  {isPending ? <Loader /> : "Keep Going"}
-                </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
       </CardContent>
+      <CardFooter>
+        <DownloadGuestReceipt booking={booking} />
+      </CardFooter>
     </Card>
   );
 }

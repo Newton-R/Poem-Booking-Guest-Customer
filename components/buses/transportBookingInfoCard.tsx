@@ -1,4 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -26,6 +32,7 @@ import { Loader } from "../ui/Loader";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TransportBookingData } from "@/lib/types/booking_data";
+import { DownloadTransportGuestReceipt } from "../receiptTemplates/downloadTriggers/guestTransportDownload";
 
 interface TransportBookingInfoCardProps {
   booking: TransportBookingData;
@@ -287,6 +294,9 @@ export function TransportBookingInfoCard({
           </Dialog>
         </div>
       </CardContent>
+      <CardFooter>
+        <DownloadTransportGuestReceipt booking={booking} />
+      </CardFooter>
     </Card>
   );
 }
