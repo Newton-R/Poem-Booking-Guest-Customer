@@ -1,18 +1,21 @@
+"use client";
 import React from "react";
 import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight01FreeIcons, Star } from "@hugeicons/core-free-icons";
 import SafeImage from "@/components/ui/safe-image";
-import { Restaurant } from "@/lib/types";
-import { restaurants } from "@/lib/data";
 import Link from "next/link";
+import { useGetAllRestaurants } from "@/lib/public/useGetRestaurants";
+import { PopularRestaurantsSkeleton } from "../loaders/restaurant/PopularDishLoading";
+import { Restaurant } from "@/lib/types/restaurant";
 
 const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
+  const coverUrl = process.env.NEXT_PUBLIC_IMAGE_URL + restaurant.logoUrl;
   return (
     <div className="flex flex-col h-110 overflow-hidden rounded-2xl border border-border">
       <div className="flex overflow-hidden flex-1">
         <SafeImage
-          src={restaurant.image}
+          src={coverUrl}
           alt=""
           width={300}
           height={300}
@@ -24,10 +27,12 @@ const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
           <span>{restaurant.name}</span>
           <span className="text-primary flex items-center gap-1">
             <HugeiconsIcon icon={Star} size={12} className="fill-primary" />{" "}
-            {restaurant.rating}
+            {restaurant.rating.toFixed(1)}
           </span>
         </div>
-        <p>{restaurant.description}</p>
+        <p className="line-clamp-2 text-xs text-muted-foreground">
+          {restaurant.description}
+        </p>
         <Link href={`/restaurants/${restaurant.id}`} className="w-full">
           <Button
             className={"w-full p-6 rounded-md border-primary text-primary"}
@@ -42,6 +47,10 @@ const RestaurantCard = ({ restaurant }: { restaurant: Restaurant }) => {
 };
 
 export const Restaurants = () => {
+  const { data: restaurants, isLoading } = useGetAllRestaurants();
+  if (isLoading || !restaurants) {
+    return <PopularRestaurantsSkeleton />;
+  }
   return (
     <section className=" flex flex-col container-x gap-4">
       <div className="flex  justify-between items-center">
@@ -62,7 +71,7 @@ export const Restaurants = () => {
         </div>
       </div>
       <div className="grid-cols-1 grid md:grid-cols-2 lg:grid-cols-3 gap-6 ">
-        {restaurants.slice(0, 3).map((restaurant, i) => (
+        {restaurants.data.slice(0, 3).map((restaurant, i) => (
           <RestaurantCard restaurant={restaurant} key={i} />
         ))}
       </div>

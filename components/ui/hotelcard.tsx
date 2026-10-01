@@ -19,7 +19,7 @@ export const HotelCard = ({ hotel }: { hotel: Hotel }) => {
       <div className="w-full relative flex-1 overflow-hidden">
         <SafeImage
           alt="demo Image"
-          src={url ?? ""}
+          src={url}
           width={400}
           height={400}
           className="w-full h-full object-cover"

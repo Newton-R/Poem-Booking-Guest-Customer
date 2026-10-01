@@ -1,6 +1,8 @@
 import {
   Briefcase,
+  BulbIcon,
   CarParking01FreeIcons,
+  ChairBarberIcon,
   Dumbbell,
   EngineFreeIcons,
   Laundry,
@@ -11,6 +13,7 @@ import {
   UtensilsCrossed,
   Waves,
   Wifi01FreeIcons,
+  ZapIcon,
 } from "@hugeicons/core-free-icons";
 import { IconSvgElement } from "@hugeicons/react";
 
@@ -26,6 +29,11 @@ export const amenityIcons: Record<string, IconSvgElement> = {
   parking: CarParking01FreeIcons,
   laundry: Laundry,
   ac: Snowflake,
+  "Air conditioning": Snowflake,
+  "USB charging": ZapIcon,
+  "Wi-Fi": Wifi01FreeIcons,
+  "Reading lights": BulbIcon,
+  "Reclining seats": ChairBarberIcon,
   generator: EngineFreeIcons,
   tv: Tv,
 };
