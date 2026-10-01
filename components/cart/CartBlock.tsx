@@ -144,6 +144,7 @@ export const CartBlock = () => {
   const [paymentMethod, setPaymentMethod] = useState("poem_pay");
   const [locationFailureReason, setLocationFailureReason] =
     useState<LocationFailureReason | null>(null);
+
   const userToken = Cookies.get("token");
   const [orderFormData, setOrderFormData] = useState<OrderData>({
     phone: "",
@@ -292,7 +293,7 @@ export const CartBlock = () => {
         },
         {
           onSuccess: (response) => {
-            console.log({ res: response });
+            console.log({ rcustomer_res: response });
             paymentRedirect(response.data.orderNumber, response.data.id);
             toast.success("Order initiated successfully");
           },
@@ -324,7 +325,7 @@ export const CartBlock = () => {
         },
         {
           onSuccess: (response) => {
-            console.log({ my_response: response });
+            console.log({ guest_response: response });
             paymentRedirect(response.data.orderNumber, response.data.id);
             toast.success("Order initiated successfully");
           },
@@ -381,29 +382,31 @@ export const CartBlock = () => {
         <div className="rounded-md shadow-md bg-white p-6">
           <span className="font-bold mb-4">Delivery Address</span>
           <form className="mt-4 flex flex-col gap-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <InputField label={"Full Name"}>
-                <Input
-                  onChange={handleOrderDetails}
-                  value={orderFormData.fullname}
-                  name="fullname"
-                  disabled={isPending}
-                  placeholder="Enter your full name"
-                  className="border p-4 bg-white h-10 px-4"
-                />
-              </InputField>
-              <InputField label={"PHONE NUMBER"}>
-                <Input
-                  placeholder="237"
-                  onChange={handleOrderDetails}
-                  value={orderFormData.phone}
-                  name="phone"
-                  disabled={isPending}
-                  type="number"
-                  className="border p-4 bg-white h-10 px-4"
-                />
-              </InputField>
-            </div>
+            {!userToken && (
+              <div className="flex flex-col md:flex-row gap-4">
+                <InputField label={"Full Name"}>
+                  <Input
+                    onChange={handleOrderDetails}
+                    value={orderFormData.fullname}
+                    name="fullname"
+                    disabled={isPending}
+                    placeholder="Enter your full name"
+                    className="border p-4 bg-white h-10 px-4"
+                  />
+                </InputField>
+                <InputField label={"PHONE NUMBER"}>
+                  <Input
+                    placeholder="237"
+                    onChange={handleOrderDetails}
+                    value={orderFormData.phone}
+                    name="phone"
+                    disabled={isPending}
+                    type="number"
+                    className="border p-4 bg-white h-10 px-4"
+                  />
+                </InputField>
+              </div>
+            )}
             <div className="flex pt-4 border-t border-border flex-col pb-4 gap-4">
               <div className="flex justify-between flex-col gap-2 md:flex-row">
                 <span className="text-xs font-bold">DELIVERY INFO</span>
@@ -453,7 +456,7 @@ export const CartBlock = () => {
                 </InputField>
                 <InputField label={"NEIGHBORHOOD / DISTRICT"}>
                   <Input
-                    placeholder="eg Douala"
+                    placeholder="eg Bonaberi"
                     onChange={handleOrderDetails}
                     name="district"
                     value={orderFormData.district}
@@ -604,7 +607,7 @@ export const CartBlock = () => {
           disabled={isPending || items.length === 0 || customerOrdering}
           className={"p-6 text-[16px] mt-6"}
         >
-          {isPending ? <Loader /> : "Place Order"}
+          {isPending || customerOrdering ? <Loader /> : "Place Order"}
         </Button>
         <span className="text-center mt-6 text-xs text-muted-foreground">
           Need help with your order?
