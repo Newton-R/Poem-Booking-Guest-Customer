@@ -7,7 +7,7 @@ import { generateQrPngDataUrl } from "@/lib/qr-style";
 import type { TransportBookingData } from "@/lib/types/booking_data";
 import { Button } from "@/components/ui/button";
 
-const PLATFORM_NAME = "POEM"; // <- your platform name
+const PLATFORM_NAME = "POEM Booking"; // <- your platform name
 const PLATFORM_LOGO = "/logo.png"; // <- PNG or JPG in /public
 
 export function DownloadTransportGuestReceipt({
