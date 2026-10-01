@@ -104,7 +104,7 @@ interface TransportItemService {
   };
 }
 
-type HotelBookingItem = {
+export type HotelBookingItem = {
   bookingId: string;
   createdAt: string;
   endDatetime: string;
@@ -168,7 +168,7 @@ type ApartmentBookingItem = {
   serviceType: string;
 };
 
-type TransportBookingItem = {
+export type TransportBookingItem = {
   bookingId: string;
   createdAt: string;
   endDatetime: string;

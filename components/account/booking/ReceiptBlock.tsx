@@ -37,6 +37,8 @@ import { da } from "date-fns/locale";
 import SafeImage from "@/components/ui/safe-image";
 import { useParams, useRouter } from "next/navigation";
 import React from "react";
+import { DownloadBookingReceipt } from "@/components/receiptTemplates/downloadTriggers/hotelApartmentTrigger";
+import { DownloadBusReceipt } from "@/components/receiptTemplates/downloadTriggers/busReciept";
 
 const MealReciept = () => {
   return (
@@ -169,6 +171,25 @@ const BusReceipt = ({ booking }: BusReceiptProps) => {
       <div className="border shadow-md border-border bg-white text-[14px] gap-6 w-full flex flex-col p-8 rounded-xl">
         <div className="flex justify-between items-end">
           <div className="flex flex-col gap-1">
+            <span
+              className={cn(
+                "text-xs flex gap-1 w-fit flex-nowrap items-center p-1 px-2 rounded-full h-fit",
+                booking.bookingStatus === "confirmed"
+                  ? " text-green-500 bg-green-500/20"
+                  : booking.bookingStatus === "pending"
+                    ? "bg-yellow-500/20 text-yellow-500"
+                    : booking.bookingStatus === "completed"
+                      ? "bg-purple-500/20 text-purple-500"
+                      : "bg-destructive/20 text-destructive",
+              )}
+            >
+              <HugeiconsIcon
+                icon={CircleCheck}
+                size={12}
+                className="fill-white"
+              />
+              <span className="uppercase">{bookingStatus}</span>
+            </span>
             <span className="text-2xl font-bold">
               Electronic Booking Receipt
             </span>
@@ -176,25 +197,9 @@ const BusReceipt = ({ booking }: BusReceiptProps) => {
               Thank you for travelling with POEM
             </p>
           </div>
-          <span
-            className={cn(
-              "text-xs flex gap-1 w-fit flex-nowrap items-center p-1 px-2 rounded-full h-fit",
-              booking.bookingStatus === "confirmed"
-                ? " text-green-500 bg-green-500/20"
-                : booking.bookingStatus === "pending"
-                  ? "bg-yellow-500/20 text-yellow-500"
-                  : booking.bookingStatus === "completed"
-                    ? "bg-purple-500/20 text-purple-500"
-                    : "bg-destructive/20 text-destructive",
-            )}
-          >
-            <HugeiconsIcon
-              icon={CircleCheck}
-              size={12}
-              className="fill-white"
-            />
-            <span className="uppercase">{bookingStatus}</span>
-          </span>
+          <div className="flex flex-col md:items-end gap-2.5">
+            <BookingQRCode size={100} data={booking.qrToken} initials="PB" />
+          </div>
         </div>
 
         <div className="gap-6 grid grid-cols-1 pb-6 border-b border-border md:grid-cols-2">
@@ -304,14 +309,15 @@ const BusReceipt = ({ booking }: BusReceiptProps) => {
         </div>
 
         <div className="mt-2 flex flex-col md:flex-row gap-4">
-          <Button className={"p-6 rounded-md flex-1"}>
+          <DownloadBusReceipt booking={booking} />
+          {/* <Button className={"p-6 rounded-md flex-1"}>
             <HugeiconsIcon icon={Download} size={16} />
             Download PDF
-          </Button>
-          <Button variant={"outline"} className={"p-6 rounded-md flex-1"}>
+          </Button> */}
+          {/* <Button variant={"outline"} className={"p-6 rounded-md flex-1"}>
             <HugeiconsIcon icon={Printer} size={16} />
             Print Receipt
-          </Button>
+          </Button> */}
         </div>
       </div>
       <p className="text-[12px] text-center text-muted-foreground w-[90%] md:w-[75%]">
@@ -330,32 +336,38 @@ const HotelReciept = ({
   const { user } = useUserStore();
   return (
     <div className="flex items-center overflow-hidden w-full text-[14px] justify-center bg-white shadow-md rounded-2xl flex-col ">
-      <div className="flex justify-between flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 w-full p-4 md:p-6">
+      <div className="flex justify-between flex-col md:flex-row items-start gap-4 md:gap-6 w-full p-4 md:p-6">
         <div className="flex flex-col gap-0.5">
-          <span className="text-xl font-bold">Payment Receipt</span>
+          <span className="text-xl flex flex-nowrap gap-2 font-bold">
+            Payment Receipt{" "}
+            <span
+              className={cn(
+                "text-xs flex gap-1 w-fit flex-nowrap  first-letter:uppercase items-center p-1 px-2 rounded-full h-fit",
+                booking.bookingStatus === "confirmed"
+                  ? " text-green-500 bg-green-500/20"
+                  : booking.bookingStatus === "pending"
+                    ? "bg-yellow-500/20 text-yellow-500"
+                    : booking.bookingStatus === "completed"
+                      ? "bg-purple-500/20 text-purple-500"
+                      : "bg-destructive/20 text-destructive",
+              )}
+            >
+              {booking.bookingStatus}
+            </span>
+          </span>
           <p className="text-muted-foreground text-xs">
             Thank you for choosing POEM Booking for your stay at Kribi.
           </p>
-        </div>
-        <div className="flex flex-col md:items-end gap-2.5">
-          <span
-            className={cn(
-              "text-xs flex gap-1 w-fit flex-nowrap items-center p-1 px-2 rounded-full h-fit",
-              booking.bookingStatus === "confirmed"
-                ? " text-green-500 bg-green-500/20"
-                : booking.bookingStatus === "pending"
-                  ? "bg-yellow-500/20 text-yellow-500"
-                  : booking.bookingStatus === "completed"
-                    ? "bg-purple-500/20 text-purple-500"
-                    : "bg-destructive/20 text-destructive",
-            )}
-          >
-            {booking.bookingStatus}
-          </span>
-          <div className="flex flex-col md:items-end">
-            <span className="text-xs text-muted-foreground">RECEIPT NO</span>
+          <div className="flex flex-row gap-1 items-center">
+            <span className="text-xs font-bold text-muted-foreground">
+              RECEIPT NO:
+            </span>
             <span className="font-bold">{booking.bookingReference}</span>
           </div>
+        </div>
+
+        <div className="flex flex-col md:items-end gap-2.5">
+          <BookingQRCode size={100} data={booking.qrToken} initials="PB" />
         </div>
       </div>
       <div className="grid md:grid-cols-3 bg-bg-mute/30 border-y border-border w-full gap-2 md:gap-6 grid-cols-1">
@@ -369,16 +381,8 @@ const HotelReciept = ({
           <span className="text-xs text-muted-foreground">OTP</span>
           <span className="font-bold">{booking.checkinOtp}</span>
         </div>
-        <div className="flex flex-col gap-2 p-4 md:p-4">
-          <span className="text-xs text-muted-foreground">CUSTOMER</span>
-          <div className="flex flex-col gap-0.5">
-            <span className="font-bold">
-              {user?.data.firstName} {user?.data.lastName}
-            </span>
-            <span className="text-muted-foreground">{user?.data.email}</span>
-          </div>
-        </div>
-        <div className="flex flex-col gap-1 p-4 md:p-6 border-l border-border">
+
+        <div className="flex flex-col gap-1 p-4 ">
           <span className="text-muted-foreground text-xs">PAYMENT METHOD</span>
           <div className="flex gap-2 items-center">
             {/* <SafeImage/> */}
@@ -400,10 +404,8 @@ const HotelReciept = ({
             <SafeImage
               className="rounded-2xl"
               src={
-                booking.items[0].service.imageUrl !== null
-                  ? process.env.NEXT_PUBLIC_IMAGE_URL +
-                    booking.items[0].service.imageUrl
-                  : FallbackImage
+                process.env.NEXT_PUBLIC_IMAGE_URL +
+                booking.items[0].service.imageUrl
               }
               alt={`${booking.hotelName}_image`}
               width={100}
@@ -481,16 +483,16 @@ const HotelReciept = ({
           </div>
         </div>
       </div>
-      <div className="p-6 w-full">
+      {/* <div className="p-6 w-full">
         <div className="flex flex-col w-full gap-4">
           <div className="flex flex-col">
             <span className="small-mute">OR CODE</span>
           </div>
           <div className="w-full flex items-center justify-center">
-            <BookingQRCode data={booking.qrToken} initials="PB" />
+            <BookingQRCode size={200} data={booking.qrToken} initials="PB" />
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="w-full text-white flex-col-reverse md:flex-row gap-4 text-center bg-secondary-foreground p-6 flex justify-between">
         <div className="text-[10px] flex flex-col md:text-start gap-0.5">
@@ -498,13 +500,20 @@ const HotelReciept = ({
           <span className="opacity-60">Contact POEM Support 24/7</span>
         </div>
         <div className="flex gap-4">
-          <Button className={"p-4 flex-1"}>
+          <DownloadBookingReceipt
+            booking={booking}
+            customer={{
+              name: `${user?.data.firstName} ${user?.data.lastName}`,
+              email: `${user?.data.email}`,
+            }}
+          />
+          {/* <Button className={"p-4 flex-1"}>
             <HugeiconsIcon icon={Download} size={18} />
             Download PDF
           </Button>
           <Button size={"icon-lg"} variant={"outline"}>
             <HugeiconsIcon icon={Printer} size={20} />
-          </Button>
+          </Button> */}
         </div>
       </div>
     </div>

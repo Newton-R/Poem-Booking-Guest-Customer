@@ -8,7 +8,7 @@ import {
   Star,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
 import { Input } from "../ui/input";
@@ -16,6 +16,7 @@ import Cookies from "js-cookie";
 import Link from "next/link";
 import { formatPrice } from "@/lib/data";
 import { useRouter } from "next/navigation";
+import { useCartStore } from "@/lib/useCart";
 
 const ReviewModal = () => {
   return (
@@ -77,6 +78,14 @@ export const SuccessfullState = ({
   const user = Cookies.get("token");
   const bookingType = Cookies.get("bookingType");
   const orderNumber = Cookies.get("orderNumber");
+  const { clearCart } = useCartStore();
+
+  useEffect(() => {
+    if (bookingType === "restaurant") {
+      clearCart();
+    }
+  }, []);
+
   return (
     <div className="p-6 rounded-2xl border max-w-md mx-auto bg-white border-border w-[95%] flex flex-col items-center justify-center gap-6">
       {/* <ReviewModal /> */}

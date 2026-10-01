@@ -148,7 +148,6 @@ export function OrderStatusPage() {
 
   const order = data.data;
 
-  // Sort once so "first" and "last" mean what they say
   const timeline = [...order.timeline].sort(
     (a, b) => new Date(a.changedAt).getTime() - new Date(b.changedAt).getTime(),
   );
@@ -204,7 +203,7 @@ export function OrderStatusPage() {
               )}
             </div>
 
-            <div className="text-right">
+            <div className="text-start md:text-end">
               <p className="text-xs text-muted-foreground tracking-wide">
                 ORDER ID
               </p>
@@ -346,7 +345,7 @@ export function OrderStatusPage() {
         <Card className="p-6 rounded-2xl h-fit">
           <h2 className="text-lg font-bold">Order Summary</h2>
           <p className="text-sm text-muted-foreground mt-0.5 mb-4">
-            from{" "}
+            From{" "}
             <span className="font-medium text-foreground">
               {order.restaurantName}
             </span>

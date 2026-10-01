@@ -6,11 +6,15 @@ export function useTrackPayment(ref: string) {
   const { data: sseData, connectionError } = usePaymentEvents(ref);
 
   // only poll if SSE isn't connected/working — avoids double-fetching normally
-  const { data: pollData, isLoading } = usePaymentStatus(ref, {
+  const {
+    data: pollData,
+    isLoading,
+    refetch,
+  } = usePaymentStatus(ref, {
     enabled: connectionError,
   });
 
   const status = sseData ?? pollData?.data ?? null;
 
-  return { status, isLoading: !status && isLoading };
+  return { status, isLoading: !status && isLoading, refetch };
 }
