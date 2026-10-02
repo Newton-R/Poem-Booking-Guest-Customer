@@ -17,14 +17,18 @@ import { useLogout } from "@/lib/public/useRegister";
 import { toast } from "sonner";
 import { Loader } from "@/components/ui/Loader";
 import { clearSession } from "@/lib/clearSession";
+import { cn } from "@/lib/utils";
 
-export function LogoutDialog() {
+export function LogoutDialog({ btnStyle }: { btnStyle?: string }) {
   const { mutate, isPending } = useLogout();
 
   return (
     <Dialog>
       <DialogTrigger className={"w-full"}>
-        <Button className={"p-4 flex-1 mt-2 w-full"} variant={"destructive"}>
+        <Button
+          className={cn("p-4 flex-1 mt-2 w-full", btnStyle && btnStyle)}
+          variant={"destructive"}
+        >
           <HugeiconsIcon icon={Logout01FreeIcons} />
           Logout
         </Button>

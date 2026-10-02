@@ -15,3 +15,10 @@ export interface UserResponseData {
     createdAt: string;
   };
 }
+
+export interface ProfileFormValues {
+  firstName: string;
+  lastName: string;
+  email: string;
+  preferredLanguage: string;
+}
