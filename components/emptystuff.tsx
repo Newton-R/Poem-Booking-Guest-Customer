@@ -7,7 +7,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "./ui/empty";
-import { HugeiconsIcon } from "@hugeicons/react";
+import { HugeiconsIcon, IconSvgElement } from "@hugeicons/react";
 import {
   AlertTriangle,
   Bed,
@@ -17,6 +17,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export const EmptyHotelsRooms = () => {
   return (
@@ -67,6 +68,45 @@ export const EmptyApartments = () => {
             There are no available apartments routes with your defined
             specification.
           </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    </div>
+  );
+};
+
+export const EmptyBlock = ({
+  title,
+  description,
+  refetch,
+  icon,
+  variant = "ghost",
+}: {
+  title: string;
+  description: string;
+  refetch?: () => void;
+  icon: IconSvgElement;
+  variant?: "ghost" | "destructive";
+}) => {
+  return (
+    <div className="mt-[20px]">
+      <Empty>
+        <EmptyHeader>
+          <EmptyMedia
+            variant="icon"
+            className={cn(
+              "",
+              variant === "destructive" && "bg-destructive/20 text-destructive",
+            )}
+          >
+            <HugeiconsIcon icon={icon} size={40} />
+          </EmptyMedia>
+          <EmptyTitle>{title}</EmptyTitle>
+          <EmptyDescription>{description}</EmptyDescription>
+          {refetch && (
+            <Button variant={"outline"} className={"h-9 w-30"}>
+              Try Again
+            </Button>
+          )}
         </EmptyHeader>
       </Empty>
     </div>

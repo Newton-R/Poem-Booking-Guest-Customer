@@ -3,10 +3,20 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Pen } from "@hugeicons/core-free-icons";
+import { Pen, UserAccountFreeIcons } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import SafeImage from "@/components/ui/safe-image";
 import React from "react";
+import { useGetUserData } from "@/lib/bearer/useUser";
+import { ProfilePageSkeleton } from "@/components/loaders/account/profilePage";
+import { EmptyBlock } from "@/components/emptystuff";
+import { formatDate } from "date-fns";
+import { LogoutDialog } from "@/components/auth/forms/LogoutBlock";
+import { ProfileUpdateDialog } from "./UserUpdateForm";
+import { useProfileUpdate } from "@/lib/bearer/form/useProfileUpdate";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
+import { authKeys } from "@/lib/query-keys/user";
 
 export function SecurityAccountCard() {
   return (
@@ -65,42 +75,86 @@ export function SecurityAccountCard() {
 }
 
 export const ProfileBlock = () => {
+  const { data, isLoading, isError, refetch } = useGetUserData();
+  const { mutate, isPending } = useProfileUpdate();
+  const queryClient = useQueryClient();
+  if (isLoading) {
+    return <ProfilePageSkeleton />;
+  }
+
+  if (!data || isError) {
+    return (
+      <EmptyBlock
+        refetch={() => refetch()}
+        icon={UserAccountFreeIcons}
+        title="Error getting info"
+        description="Check your network connectivity and try again."
+      />
+    );
+  }
+
+  const user = data.data;
+
   return (
     <div className="flex flex-col gap-6">
       <div className="w-full flex flex-col gap-2 md:flex-row justify-between md:items-center">
         <div className="flex gap-2 items-center">
           <Avatar className={"size-14"}>
-            <AvatarFallback>PP</AvatarFallback>
+            <AvatarFallback>
+              {user.firstName[0]}
+              {user.lastName[0]}
+            </AvatarFallback>
           </Avatar>
           <div className="flex gap-1 flex-col">
             <div className="flex gap-2 flex-col md:flex-row md:items-center">
-              <span className="text-xl font-bold">Amadou Aboubakar</span>
+              <span className="text-xl font-bold">
+                {user.firstName} {user.lastName}
+              </span>
               <div className="text-[10px] bg-bg-mute w-fit p-1 px-2 flex gap-1 text-muted-foreground rounded-full items-center">
                 <div className="w-2 h-2 rounded-full bg-green-500" />
                 ACCOUNT ACTIVE
               </div>
             </div>
-            <span className="text-xs">Member since January 2023</span>
+            <span className="text-xs">
+              Member since {formatDate(user.createdAt, "MMMM d, yyyy")}
+            </span>
           </div>
         </div>
-        <Button className={"p-4 h-10 w-fit md:min-w-30"}>Edit Profile</Button>
+        <ProfileUpdateDialog
+          defaultValues={{
+            firstName: user.firstName ?? "",
+            lastName: user.lastName ?? "",
+            email: user.email ?? "",
+            preferredLanguage: user.preferredLanguage ?? "",
+          }}
+          onSubmit={async (values) => {
+            mutate(values, {
+              onSuccess: () => {
+                queryClient.invalidateQueries({
+                  queryKey: authKeys.currentUser(),
+                });
+              },
+              onError: (error) => {
+                throw error;
+              },
+            });
+          }}
+        />
       </div>
       <div className="bg-white p-6 rounded-2xl col-span-2 flex flex-col gap-6">
         <div className="flex justify-between items-center gap-4">
           <span className="text-xl font-bold">Personal Details</span>
-          <span className="flex gap-1 items-center text-xs text-primary">
-            <HugeiconsIcon icon={Pen} size={18} />
-            EDIT INFO
-          </span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col">
             <span className="text-xs font-light">Full Name</span>
-            <span className="font-bold">Amadou Aboubakar</span>
+            <span className="font-bold">
+              {user.firstName} {user.lastName}
+            </span>
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-light">Email Address</span>
-            <span className="font-bold">amadou.travels@domain.cm</span>
+            <span className="font-bold">{user.email}</span>
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-light">Nationality</span>
@@ -108,7 +162,7 @@ export const ProfileBlock = () => {
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-light">Phone Number</span>
-            <span className="font-bold">677 889 001</span>
+            <span className="font-bold">{user.phoneNumber}</span>
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-light">Date of Birth</span>
@@ -120,7 +174,11 @@ export const ProfileBlock = () => {
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-light">Pref. Language</span>
-            <span className="font-bold">French (FR)</span>
+            {user.preferredLanguage === "fr" ? (
+              <span className="font-bold">French (FR)</span>
+            ) : (
+              <span className="font-bold">English (EN)</span>
+            )}
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-light">Address</span>
@@ -130,7 +188,19 @@ export const ProfileBlock = () => {
           </div>
         </div>
       </div>
-      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <div className="p-6 flex flex-col bg-white rounded-2xl gap-2">
+          <span className="text-muted-foreground text-xs">User Actions</span>
+          <div className="w-fit">
+            <LogoutDialog btnStyle="w-fit min-w-30 h-9" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+{
+  /* <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="p-6 bg-white border border-border rounded-2xl">
           <span className="text-xl font-bold">Saved Payment Methods</span>
 
@@ -170,7 +240,5 @@ export const ProfileBlock = () => {
           </div>
         </div>
         <SecurityAccountCard />
-      </div>
-    </div>
-  );
-};
+      </div> */
+}
