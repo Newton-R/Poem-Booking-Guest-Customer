@@ -119,7 +119,7 @@ export type HotelBookingItem = {
     seatNumber: string;
   }[];
   id: string;
-  hotelName: String;
+  hotelName: string;
   itemId: string;
   itemType: "hotel_room";
   providerId: string;
@@ -151,7 +151,7 @@ type ApartmentBookingItem = {
     seatNumber: string;
   }[];
   id: string;
-  hotelName: String;
+  hotelName: string;
   itemId: string;
   itemType: "hotel_room";
   providerId: string;
