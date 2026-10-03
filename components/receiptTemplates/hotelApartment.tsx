@@ -231,7 +231,7 @@ export function BookingReceiptPdf({
             </View>
             <Text style={s.thanks}>
               Thank you for choosing {platform.name} for your stay at{" "}
-              {booking.hotelName}.
+              {booking.items[0].hotelName}.
             </Text>
             <View style={s.receiptNoRow}>
               <Text style={[s.label, { marginBottom: 0, marginRight: 4 }]}>
@@ -256,16 +256,7 @@ export function BookingReceiptPdf({
             <Text style={s.bold}>{booking.checkinOtp}</Text>
           </View>
 
-          <View
-            style={[
-              s.infoCell,
-              {
-                borderTopWidth: 1,
-                borderTopColor: colors.border,
-                borderRightWidth: 0,
-              },
-            ]}
-          >
+          <View style={[s.infoCell]}>
             <Text style={s.label}>PAYMENT METHOD</Text>
             <Text style={s.bold}>{paymentMethod}</Text>
             <Text style={s.muted}>{booking.customerPhoneNumber}</Text>

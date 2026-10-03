@@ -407,7 +407,7 @@ const HotelReciept = ({
                 process.env.NEXT_PUBLIC_IMAGE_URL +
                 booking.items[0].service.imageUrl
               }
-              alt={`${booking.hotelName}_image`}
+              alt={`${booking.items[0].hotelName}_image`}
               width={100}
               height={100}
             />
@@ -540,7 +540,7 @@ export const ReceiptBlock = () => {
   const bookingId = params.bookingId;
   const { data, isLoading, isError, refetch } =
     useGetCustomerBookingDetails(bookingId);
-
+  console.log({ details: data?.data });
   return (
     <div className="flex flex-col gap-6 w-full items-start max-w-xl mx-auto">
       <Button
