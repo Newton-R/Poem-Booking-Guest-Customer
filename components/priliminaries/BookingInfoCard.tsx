@@ -113,7 +113,7 @@ export function BookingInfoCard({ booking }: BookingSuccessCardProps) {
               }
               width={100}
               height={100}
-              alt={booking.hotelName}
+              alt={booking.items[0].hotelName}
               className="w-full h-full object-cover"
             />
           </div>
