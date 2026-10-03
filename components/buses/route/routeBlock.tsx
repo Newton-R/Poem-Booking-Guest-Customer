@@ -25,6 +25,7 @@ import { useAgencies } from "@/lib/useAgency";
 import { useGetCities } from "@/lib/public/useCitiesAmeneties";
 import { BusRouteCard } from "@/components/ui/busrouteCard";
 import { amenityIcons } from "@/lib/icons";
+import SafeImage from "@/components/ui/safe-image";
 
 interface Voyages {
   index: number;
@@ -55,15 +56,17 @@ const VoyagesBlock = ({
       icon: IceHockeyFreeIcons,
     },
   ];
+  const imUrl = process.env.NEXT_PUBLIC_IMAGE_URL + bus.bus.imageUrl;
   return (
     <div className="p-6 md:p-8 rounded-xl border-2 h-fit md:h-60 border-border grid grid-cols-1 md:grid-cols-4 gap-6 md:flex-row">
       <div className="w-full flex items-center md:justify-center md:flex-col gap-4">
-        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-          <HugeiconsIcon
-            icon={Bus02FreeIcons}
-            size={28}
-            className="text-primary"
-            strokeWidth={1.8}
+        <div className="w-14 h-14 overflow-hidden md:w-16 md:h-16 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+          <SafeImage
+            src={imUrl}
+            alt={`${bus.routeId}`}
+            width={200}
+            height={200}
+            className="w-full h-full object-cover object-center"
           />
         </div>
         <div className="flex flex-col gap-1 items-start md:items-center md:text-center">

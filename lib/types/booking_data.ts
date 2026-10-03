@@ -218,7 +218,6 @@ type BaseBookingData = {
   finalAmount: string;
   guestCustomer: GuestData;
   guestCustomerId: string;
-  hotelName: string;
   id: string;
   qrToken: string;
   totalAmount: string;
