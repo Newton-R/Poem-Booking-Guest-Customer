@@ -15,6 +15,7 @@ import {
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { LogoutDialog } from "../auth/forms/LogoutBlock";
 
 const panelTransition = {
   type: "spring" as const,
@@ -138,6 +139,9 @@ export const MobileDashboardNavigation = () => {
                   </m.div>
                 </Link>
               ))}
+              <m.div variants={listItemVariants}>
+                <LogoutDialog />
+              </m.div>
             </m.div>
           </m.div>
         )}

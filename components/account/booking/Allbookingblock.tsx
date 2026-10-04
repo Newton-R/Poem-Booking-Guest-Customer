@@ -540,7 +540,14 @@ export const AllBookingBlock = () => {
                     href={"/appartment"}
                     className="hover:underline underline-offset-2 text-primary"
                   >
-                    Hotels
+                    Apartments
+                  </Link>
+                  ,{" "}
+                  <Link
+                    href={"/buses"}
+                    className="hover:underline underline-offset-2 text-primary"
+                  >
+                    Travel Agencies
                   </Link>
                 </EmptyDescription>
               </EmptyHeader>
