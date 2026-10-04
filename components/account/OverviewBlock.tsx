@@ -10,6 +10,7 @@ import { useGetUserData } from "@/lib/bearer/useUser";
 import { useSessionModal } from "@/lib/useSessionModal";
 import { PersonalDetailsSkeleton } from "../loaders/account/personaldetails";
 import { Skeleton } from "../ui/skeleton";
+import Link from "next/link";
 
 const HotelBookingsCard = () => {
   return (
@@ -98,10 +99,15 @@ export const AccountOverviewBlock = () => {
           <div className="bg-white p-6 rounded-2xl md:col-span-2 flex flex-col gap-6">
             <div className="flex justify-between items-center gap-4">
               <span className="text-xl font-bold">Personal Details</span>
-              <span className="flex gap-1 items-center text-xs text-primary">
-                <HugeiconsIcon icon={Pen} size={18} />
-                EDIT INFO
-              </span>
+              <Link href={"/account/profile"}>
+                <Button
+                  variant={"link"}
+                  className="flex gap-1 items-center text-xs text-primary"
+                >
+                  <HugeiconsIcon icon={Pen} size={18} />
+                  Edit Info
+                </Button>
+              </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col">

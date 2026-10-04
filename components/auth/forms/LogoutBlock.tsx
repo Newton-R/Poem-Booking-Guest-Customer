@@ -40,7 +40,7 @@ export function LogoutDialog({ btnStyle }: { btnStyle?: string }) {
             You&apos;ll need to sign in again to access your account.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="flex flex-row justify-end gap-2">
           <DialogClose>
             <Button variant="outline" disabled={isPending}>
               Cancel
@@ -48,6 +48,7 @@ export function LogoutDialog({ btnStyle }: { btnStyle?: string }) {
           </DialogClose>
           <Button
             variant="destructive"
+            className={"w-30"}
             onClick={() => {
               mutate(null, {
                 onSuccess: (response) => {

@@ -53,7 +53,7 @@ export const LoginForm = () => {
             accessToken: response.data.accessToken,
           }),
           {
-            secure: true,
+            secure: window.location.protocol === "https:",
             sameSite: "strict",
           },
         );
