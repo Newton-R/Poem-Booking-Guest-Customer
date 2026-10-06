@@ -47,15 +47,11 @@ export const LoginForm = () => {
           accessToken: response.data.accessToken,
         });
         Cookies.set(
-          "token",
-          JSON.stringify({
-            refreshToken: response.data.refreshToken,
-            accessToken: response.data.accessToken,
-          }),
+          "token", response.data.accessToken.slice(0, 10),
           {
             secure: window.location.protocol === "https:",
             sameSite: "strict",
-          },
+          }
         );
         closeModal();
 
@@ -102,7 +98,6 @@ export const LoginForm = () => {
               value={formData.phoneNumber}
               name="phoneNumber"
               placeholder="Number"
-              type="number"
               className="p-5 px-4"
             />
           </div>

@@ -120,26 +120,27 @@ export const BookingCheckoutComponent = ({
   const initiateBooking = () => {
     const item: BookingItem | ApartmentBookingItem = isHotel
       ? {
-          itemType: "hotel_room",
-          itemId: resourceId,
-          endDatetime: String(searchParams.get("checkOut")),
-          startDatetime: String(searchParams.get("checkIn")),
-          guests: [{ fullName: guestInfo.fullName, passengerType: "adult" }],
-          quantity: 1,
-        }
+        itemType: "hotel_room",
+        itemId: resourceId,
+        endDatetime: String(searchParams.get("checkOut")),
+        startDatetime: String(searchParams.get("checkIn")),
+        guests: [{ fullName: guestInfo.fullName, passengerType: "adult" }],
+        quantity: 1,
+      }
       : {
-          itemType: "apartment",
-          itemId: resourceId,
-          endDatetime: String(searchParams.get("checkOut")),
-          startDatetime: String(searchParams.get("checkIn")),
-          quantity: 1,
-        };
+        itemType: "apartment",
+        itemId: resourceId,
+        endDatetime: String(searchParams.get("checkOut")),
+        startDatetime: String(searchParams.get("checkIn")),
+        quantity: 1,
+      };
 
     if (userCookie && !bookingAsGuest) {
       const onSuccess = (response: {
         data: { bookingReference: string; id: string };
       }) => {
         toast.success("Booking initiated. Proceed to payment.");
+        Cookies.remove("bookingAsGuest");
         goToPayment(response);
       };
       const onError = (error: Error) => toast.error(error.message);
@@ -162,6 +163,7 @@ export const BookingCheckoutComponent = ({
         data: { bookingReference: string; id: string };
       }) => {
         toast.success("Booking request successful.");
+        Cookies.set("bookingAsGuest", "true");
         goToPayment(response);
       };
       const onError = (error: Error) => toast.error(error.message);

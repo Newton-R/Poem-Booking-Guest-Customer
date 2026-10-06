@@ -1,5 +1,6 @@
 import Link from "next/link";
 import React from "react";
+import { PlatformReviewsFormModal } from "../ReviewsFormModal";
 
 export const Footer = () => {
   const links = [

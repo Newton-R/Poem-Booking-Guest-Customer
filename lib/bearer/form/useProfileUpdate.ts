@@ -5,7 +5,7 @@ import { isAxiosError } from "axios";
 
 async function updateProfile(payload: ProfileFormValues): Promise<void> {
   try {
-    const { data } = await apiClient.put("auth/me", payload);
+    const { data } = await apiClient.put("/auth/me", payload);
     return data;
   } catch (e) {
     if (isAxiosError(e)) {

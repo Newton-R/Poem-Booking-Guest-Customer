@@ -2,17 +2,24 @@ import { number } from "motion";
 import { publicClient } from "@/lib/api";
 import { useMutation } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
+import { BookingCancellationResponse } from "@/lib/types/payments";
 
-interface CancelProps {
+export interface CancelProps {
   ref: string;
   number: string;
 }
 
-async function cancelBooking({ ref, number }: CancelProps): Promise<any> {
+async function cancelBooking({
+  ref,
+  number,
+}: CancelProps): Promise<BookingCancellationResponse> {
   try {
-    const { data } = await publicClient.post(`/bookings/${ref}/cancel`, {
-      phoneNumber: number,
-    });
+    const { data } = await publicClient.post<BookingCancellationResponse>(
+      `/bookings/${ref}/cancel`,
+      {
+        phoneNumber: number,
+      },
+    );
     return data;
   } catch (e) {
     if (isAxiosError(e)) {
@@ -22,7 +29,7 @@ async function cancelBooking({ ref, number }: CancelProps): Promise<any> {
   }
 }
 
-export function useCancelBooking(ref: string, number: string) {
+export function useCancelBooking() {
   return useMutation({
     mutationKey: ["Cancel_booking"],
     mutationFn: cancelBooking,

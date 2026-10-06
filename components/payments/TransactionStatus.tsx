@@ -78,6 +78,7 @@ export const SuccessfullState = ({
   const user = Cookies.get("token");
   const bookingType = Cookies.get("bookingType");
   const orderNumber = Cookies.get("orderNumber");
+  const bookingAsGuest = Cookies.get("bookingAsGuest");
   const { clearCart } = useCartStore();
 
   useEffect(() => {
@@ -127,21 +128,27 @@ export const SuccessfullState = ({
           <span className="text-xs text-muted-foreground">{number}</span>
         </div>
       </div>
-      <Link
-        href={
-          bookingType !== "restaurant"
-            ? `/guest-booking/${bookingRef}?num=${number}`
-            : `/orders/${orderNumber}`
-        }
-        className="w-full"
-      >
-        <Button variant={"outline"} className={"w-full min-w-40 h-10"}>
-          <HugeiconsIcon icon={QrCodeScanFreeIcons} />
-          Booking Details
-        </Button>
-      </Link>
 
-      {user && bookingType !== "restaurant" && (
+
+      {bookingAsGuest && (
+        <Link href={`/guest-booking/${bookingRef}?num=${number}`} className="w-full">
+          <Button variant={"outline"} className={"w-full min-w-40 h-10"}>
+            Booking Details
+          </Button>
+        </Link>
+      )}
+
+      {
+        bookingType === "restaurant" && (
+          <Link href={`/orders/${orderNumber}`} className="w-full">
+            <Button variant={"outline"} className={"w-full min-w-40 h-10"}>
+              Order Details
+            </Button>
+          </Link>
+        )
+      }
+
+      {user && bookingType !== "restaurant" && !bookingAsGuest && (
         <Link href={`/account/booking`} className="w-full">
           <Button variant={"outline"} className={"w-full min-w-40 h-10"}>
             Dashboard

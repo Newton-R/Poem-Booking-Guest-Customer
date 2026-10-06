@@ -189,6 +189,7 @@ export const PaymentProcessingBlock = () => {
   };
   const bookingRef = String(params.bookingRef);
   const { status, isLoading, refetch } = useTrackPayment(bookingRef);
+  console.log({ status: status });
 
   if (!isLoading && status?.paymentStatus === "successful") {
     return (

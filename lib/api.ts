@@ -28,7 +28,7 @@ apiClient.interceptors.response.use(
   (error) => {
     const { openModal } = useSessionModal.getState();
     if (axios.isAxiosError(error) && error.response?.status === 401) {
-      clearSession();
+      // clearSession();
       openModal();
     }
     return Promise.reject(error);

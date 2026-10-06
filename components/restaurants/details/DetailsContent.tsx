@@ -1,4 +1,5 @@
 import { DishCardSkeleton } from "@/components/loaders/restaurant/LoadingDishCard";
+import { PlatformReviewsFormModal } from "@/components/ReviewsFormModal";
 import {
   Combobox,
   ComboboxContent,
@@ -102,6 +103,10 @@ const ReviewsBlock = ({ restau }: { restau: RestaurantDetails }) => {
             <p className="text-xs text-muted-foreground w-[80%] text-center">
               Based on {restau.reviewCount} reviews
             </p>
+            <PlatformReviewsFormModal
+              targetId={restau.id}
+              service="restaurant"
+            />
           </div>
           <div className="border-l border-border pl-12 col-span-2 flex items-center justify-center flex-col gap-1.5">
             {ratings.map((rating, i) => (
@@ -117,7 +122,7 @@ const ReviewsBlock = ({ restau }: { restau: RestaurantDetails }) => {
                   />
                 </div>
                 <span className="text-muted-foreground">
-                  {rating.percentage}%
+                  {rating.percentage.toFixed(0)}%
                 </span>
               </div>
             ))}

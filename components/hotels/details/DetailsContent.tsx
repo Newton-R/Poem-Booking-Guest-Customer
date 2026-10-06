@@ -50,6 +50,7 @@ import { isAxiosError } from "axios";
 import { ErrorType } from "@/lib/defined_types";
 import { Loader } from "@/components/ui/Loader";
 import { RegistrationReminderBlock } from "@/components/ui/registrationReminderblock";
+import { PlatformReviewsFormModal } from "@/components/ReviewsFormModal";
 
 const RoomAccommodationCard = ({
   room,
@@ -280,6 +281,9 @@ export const DetailsContent = ({
             Hotel Details
           </h3>
           <p>{hotel?.description}</p>
+
+          {/* Review dialog */}
+          <PlatformReviewsFormModal service="hotel" targetId={id} />
         </div>
 
         {/* Amenities section */}
@@ -450,6 +454,7 @@ export const DetailsContent = ({
               <label className="text-[10px]">GUESTS</label>
               <Input
                 placeholder=""
+                min={1}
                 type="number"
                 value={roomFilters.adults}
                 onChange={(e) => updateFilter("adults", e.target.value)}

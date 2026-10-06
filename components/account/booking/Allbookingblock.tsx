@@ -363,19 +363,19 @@ const BookingHistoryBlock = ({
     (booking) => booking.bookingStatus === "completed",
   );
   return (
-    <Tabs defaultValue={"all"} className={"w-full"}>
-      <TabsList variant={"line"} className={"mb-4"}>
+    <Tabs defaultValue={"all"} className={"w-full "}>
+      <TabsList variant={"line"} className={"md:mb-4 mb-8 grid grid-cols-3 md:flex gap-2"}>
         <TabsTrigger value={"all"}>All ({bookings.length})</TabsTrigger>
         <TabsTrigger value={"Confirmed"}>
-          <div className="w-2 h-2 rounded-full bg-green-500" /> Confirmed (
+          <div className="w-2 h-2 rounded-full shrink-0 bg-green-500" /> Confirmed (
           {Confirmed.length})
         </TabsTrigger>
         <TabsTrigger value={"Complete"}>
-          <div className="w-2 h-2 rounded-full bg-purple-500" /> Completed (
+          <div className="w-2 h-2 rounded-full shrink-0 bg-purple-500" /> Completed (
           {Completed.length})
         </TabsTrigger>
         <TabsTrigger value={"Failed"}>
-          <div className="w-2 h-2 rounded-full bg-red-500" /> Failed (
+          <div className="w-2 h-2 rounded-full shrink-0 bg-red-500" /> Failed (
           {Failed.length})
         </TabsTrigger>
         {/* <TabsTrigger value={"Pending"}>

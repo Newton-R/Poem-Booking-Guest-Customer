@@ -39,6 +39,7 @@ import { useParams, useRouter } from "next/navigation";
 import React from "react";
 import { DownloadBookingReceipt } from "@/components/receiptTemplates/downloadTriggers/hotelApartmentTrigger";
 import { DownloadBusReceipt } from "@/components/receiptTemplates/downloadTriggers/busReciept";
+import { CancelBookingModal } from "@/components/CancelBookingModal";
 
 const MealReciept = () => {
   return (
@@ -342,7 +343,7 @@ const HotelReciept = ({
             Payment Receipt{" "}
             <span
               className={cn(
-                "text-xs flex gap-1 w-fit flex-nowrap  first-letter:uppercase items-center p-1 px-2 rounded-full h-fit",
+                "text-xs flex gap-1 w-fit flex-nowrap first-letter:uppercase items-center p-1 px-2 rounded-full h-fit",
                 booking.bookingStatus === "confirmed"
                   ? " text-green-500 bg-green-500/20"
                   : booking.bookingStatus === "pending"
@@ -356,7 +357,7 @@ const HotelReciept = ({
             </span>
           </span>
           <p className="text-muted-foreground text-xs">
-            Thank you for choosing POEM Booking for your stay at Kribi.
+            Thank you for choosing POEM Booking for your stay at {booking.items[0].service.name}.
           </p>
           <div className="flex flex-row gap-1 items-center">
             <span className="text-xs font-bold text-muted-foreground">
@@ -500,6 +501,7 @@ const HotelReciept = ({
           <span className="opacity-60">Contact POEM Support 24/7</span>
         </div>
         <div className="flex gap-4">
+          <CancelBookingModal userRole="customer" bookingReference={booking.bookingReference} phoneNumber={String(booking.customerPhoneNumber)} redirectTo={"/account/bookings"} />
           <DownloadBookingReceipt
             booking={booking}
             customer={{
@@ -553,7 +555,7 @@ export const ReceiptBlock = () => {
       </Button>
 
       {isError && (
-        <div className="mt-[20px]">
+        <div className="mt-5">
           <Empty>
             <EmptyHeader>
               <EmptyMedia

@@ -26,6 +26,7 @@ import { useGetCities } from "@/lib/public/useCitiesAmeneties";
 import { BusRouteCard } from "@/components/ui/busrouteCard";
 import { amenityIcons } from "@/lib/icons";
 import SafeImage from "@/components/ui/safe-image";
+import { PlatformReviewsFormModal } from "@/components/ReviewsFormModal";
 
 interface Voyages {
   index: number;
@@ -240,6 +241,7 @@ export const RouteBlock = ({ routeId }: { routeId: string }) => {
             Route(s) Available
           </p>
         </div>
+        <PlatformReviewsFormModal service="bus" targetId={agency.id} />
         {/* <div className="flex flex-col gap-2">
           <Combobox items={available_regions}>
             <ComboboxInput

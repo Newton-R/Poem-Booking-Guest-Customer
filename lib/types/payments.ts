@@ -46,3 +46,17 @@ export interface PaymentStatusResponse {
   data: PaymentStatusData;
   timestamp: string;
 }
+
+export interface BookingCancellationResponse {
+  success: true;
+  statusCode: 201;
+  data: {
+    message: string;
+    bookingId: string;
+    bookingStatus: string;
+    cancellationFee: number;
+    refundId: string;
+    refundAmount: number;
+  };
+  timestamp: string;
+}
