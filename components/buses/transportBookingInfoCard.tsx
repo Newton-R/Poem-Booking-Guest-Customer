@@ -33,6 +33,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TransportBookingData } from "@/lib/types/booking_data";
 import { DownloadTransportGuestReceipt } from "../receiptTemplates/downloadTriggers/guestTransportDownload";
+import { CancelBookingModal } from "../CancelBookingModal";
 
 interface TransportBookingInfoCardProps {
   booking: TransportBookingData;
@@ -75,25 +76,7 @@ export function TransportBookingInfoCard({
     navigator.clipboard.writeText(value);
   };
 
-  const { mutate, isPending } = useCancelBooking(
-    bookingReference,
-    String(customerPhoneNumber),
-  );
 
-  const handleCancel = () => {
-    mutate(
-      { ref: bookingReference, number: String(customerPhoneNumber) },
-      {
-        onSuccess: () => {
-          toast.success("Booking cancelled successfully..");
-          router.push("/");
-        },
-        onError: (e) => {
-          toast.error(e.message ?? "Something went wrong");
-        },
-      },
-    );
-  };
 
   return (
     <Card className="w-full max-w-md rounded-[11px]">
@@ -281,14 +264,7 @@ export function TransportBookingInfoCard({
                     Cancel
                   </Button>
                 </DialogClose>
-                <Button
-                  onClick={handleCancel}
-                  type="button"
-                  disabled={isPending}
-                  className={"h-9 min-w-30"}
-                >
-                  {isPending ? <Loader /> : "Keep Going"}
-                </Button>
+                <CancelBookingModal userRole="guest" bookingReference={booking.bookingReference} phoneNumber={String(customerPhoneNumber)} />
               </DialogFooter>
             </DialogContent>
           </Dialog>

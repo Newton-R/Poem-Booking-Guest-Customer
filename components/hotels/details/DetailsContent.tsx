@@ -404,6 +404,8 @@ export const DetailsContent = ({
             </div>
           </div>
         </div>
+
+
       </div>
       <div className="flex flex-col w-full md:max-w-90 gap-4">
         <div className="flex flex-col border border-secondary-foreground rounded-2xl overflow-hidden">
