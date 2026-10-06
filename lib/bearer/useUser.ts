@@ -3,6 +3,7 @@ import { apiClient } from "../api";
 import { UserResponseData } from "../types/user";
 import { isAxiosError } from "axios";
 import { authKeys } from "../query-keys/user";
+import { useTokens } from "../useTokens";
 
 async function fetchCurrentUser(): Promise<UserResponseData> {
   try {
@@ -19,9 +20,12 @@ async function fetchCurrentUser(): Promise<UserResponseData> {
 }
 
 export function useGetUserData() {
+  const tokens = useTokens((state) => state.tokens);
+
   return useQuery({
     queryFn: fetchCurrentUser,
     queryKey: authKeys.currentUser(),
+    enabled: Boolean(tokens?.accessToken),
     retry: false,
     staleTime: 5 * 60 * 1000,
   });

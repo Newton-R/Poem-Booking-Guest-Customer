@@ -27,6 +27,7 @@ import SafeImage from "@/components/ui/safe-image";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
+import { PlatformReviewsFormModal } from "@/components/ReviewsFormModal";
 
 interface DateProps {
   checkIn: string;
@@ -136,6 +137,10 @@ export const AppartmentDetailsContent = ({
           <p className="text-muted-foreground text-[14px]">
             {apartment.description}
           </p>
+          <PlatformReviewsFormModal
+            targetId={apartment.id}
+            service="apartment"
+          />
         </div>
         <div className="flex flex-col gap-4 pb-6 border-b border-border">
           <span className="text-2xl font-bold">What this place offers</span>

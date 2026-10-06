@@ -35,7 +35,7 @@ const GuestBookingDetailsQrDisplay = () => {
   console.log({ detais: data });
   if (isError) {
     return (
-      <div className="mt-[20px] max-w-md mx-auto">
+      <div className="mt-5 max-w-md mx-auto">
         <Empty>
           <EmptyHeader>
             <EmptyMedia

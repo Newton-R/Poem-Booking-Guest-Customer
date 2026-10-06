@@ -175,7 +175,7 @@ export function ProfileUpdateDialog({
                 handleChange("preferredLanguage", value ?? "")
               }
             >
-              <SelectTrigger className="w-full h-9" id="preferredLanguage">
+              <SelectTrigger className="w-full min-h-9" id="preferredLanguage">
                 <SelectValue
                   className={"h-9"}
                   placeholder="Select a language"
@@ -193,7 +193,7 @@ export function ProfileUpdateDialog({
             )}
           </div>
 
-          <DialogFooter className="mt-2 gap-2">
+          <DialogFooter className="mt-2 flex flex-row gap-2">
             <DialogClose>
               <Button type="button" variant="outline" className="flex-1 h-9">
                 Cancel

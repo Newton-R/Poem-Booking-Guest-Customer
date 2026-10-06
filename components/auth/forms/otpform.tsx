@@ -47,10 +47,7 @@ export const OTPForm = () => {
         });
         Cookies.set(
           "token",
-          JSON.stringify({
-            refreshToken: response.data.refreshToken,
-            accessToken: response.data.accessToken,
-          }),
+          response.data.accessToken.slice(0, 10),
           {
             secure: window.location.protocol === "https:",
             sameSite: "strict",

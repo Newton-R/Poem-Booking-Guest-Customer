@@ -101,7 +101,7 @@ export const TopBar = () => {
           </HoverCardContent>
         </HoverCard>
         {!user ? (
-          <Link href={"/account"}>
+          <Link href={"/auth"}>
             <Button
               className={cn(
                 "text-[14px] bg-secondary-foreground hover:bg-secondary-foreground/80 h-9 text-white rounded-full p-3 px-4",

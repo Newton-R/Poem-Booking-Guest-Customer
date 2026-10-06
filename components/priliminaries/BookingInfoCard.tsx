@@ -35,6 +35,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { TransportBookingInfoCard } from "../buses/transportBookingInfoCard";
 import { DownloadGuestReceipt } from "../receiptTemplates/downloadTriggers/guestReceiptApartment";
+import { CancelBookingModal } from "../CancelBookingModal";
 interface BookingSuccessCardProps {
   booking: GuestBookingDetailsResponseData;
 }
@@ -57,32 +58,13 @@ export function BookingInfoCard({ booking }: BookingSuccessCardProps) {
     createdAt,
     guestCustomer,
   } = booking;
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const router = useRouter();
+
 
   const copyToClipboard = (value: string) => {
     navigator.clipboard.writeText(value);
   };
 
-  const { mutate, isPending } = useCancelBooking(
-    bookingReference,
-    guestCustomer.phoneNumber,
-  );
 
-  const handleCancel = () => {
-    mutate(
-      { ref: bookingReference, number: guestCustomer.phoneNumber },
-      {
-        onSuccess: (response) => {
-          toast.success("Booking cancelled successfully..");
-          router.push("/");
-        },
-        onError: (e) => {
-          toast.error(e.message ?? "Something went wrong");
-        },
-      },
-    );
-  };
 
   if (booking.bookingType === "transport") {
     return <TransportBookingInfoCard booking={booking} />;
@@ -210,46 +192,9 @@ export function BookingInfoCard({ booking }: BookingSuccessCardProps) {
 
         <Separator />
         <div className="flex flex-col md:flex-row gap-4">
-          <Dialog open={isOpen}>
-            <DialogTrigger className={"w-full"}>
-              <Button
-                onClick={() => setIsOpen(true)}
-                className={"w-full h-10"}
-                variant={"destructive"}
-              >
-                <HugeiconsIcon icon={Cancel01FreeIcons} /> Cancel Booking
-              </Button>
-            </DialogTrigger>
-            <DialogContent showCloseButton={false}>
-              <DialogTitle className={"text-xl font-bold"}>
-                Cancel Booking
-              </DialogTitle>
-              <DialogDescription>
-                Are you sure you want to cancel? This action can't be undone.
-              </DialogDescription>
-              <DialogFooter>
-                <Button
-                  onClick={handleCancel}
-                  type="button"
-                  disabled={isPending}
-                  variant={"destructive"}
-                  className={"h-9 min-w-30"}
-                >
-                  {isPending ? <Loader /> : "Cancel"}
-                </Button>
-                <DialogClose>
-                  <Button
-                    type="button"
-                    onClick={() => setIsOpen(false)}
-                    className={"p-2 w-full h-9"}
-                    variant={"outline"}
-                  >
-                    Keep Going
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+
+          {/* cancel booking dialog */}
+          <CancelBookingModal userRole="guest" bookingReference={bookingReference} phoneNumber={guestCustomer.phoneNumber} />
         </div>
       </CardContent>
       <CardFooter>
