@@ -20,6 +20,7 @@ import { EmptyCart } from "../emptystuff";
 import { formatPrice } from "@/lib/data";
 import { useUserStore } from "@/lib/useUserStore";
 import { Avatar, AvatarFallback } from "../ui/avatar";
+import { PoliciesDialog } from "../PolicyDialog";
 
 export const TopBar = () => {
   const pathname = usePathname();
@@ -32,7 +33,7 @@ export const TopBar = () => {
 
         {/* <span className="font-bold">Poem Booking</span> */}
       </div>
-      <div className="flex gap-6 items-center">
+      <div className="flex gap-4 items-center">
         <Link
           href={"/account/support"}
           className={cn(
@@ -48,6 +49,7 @@ export const TopBar = () => {
             size={20}
           />
         </Link>
+        <PoliciesDialog icon />
         <HoverCard>
           <HoverCardTrigger>
             <Link

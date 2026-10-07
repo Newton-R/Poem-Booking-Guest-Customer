@@ -310,6 +310,12 @@ const BusReceipt = ({ booking }: BusReceiptProps) => {
         </div>
 
         <div className="mt-2 flex flex-col md:flex-row gap-4">
+          <CancelBookingModal
+            bookingReference={booking.bookingReference}
+            userRole="customer"
+            redirectTo="/account/booking"
+            phoneNumber={String(booking.customerPhoneNumber)}
+          />
           <DownloadBusReceipt booking={booking} />
           {/* <Button className={"p-6 rounded-md flex-1"}>
             <HugeiconsIcon icon={Download} size={16} />
@@ -357,7 +363,8 @@ const HotelReciept = ({
             </span>
           </span>
           <p className="text-muted-foreground text-xs">
-            Thank you for choosing POEM Booking for your stay at {booking.items[0].service.name}.
+            Thank you for choosing POEM Booking for your stay at{" "}
+            {booking.items[0].service.name}.
           </p>
           <div className="flex flex-row gap-1 items-center">
             <span className="text-xs font-bold text-muted-foreground">
@@ -501,7 +508,12 @@ const HotelReciept = ({
           <span className="opacity-60">Contact POEM Support 24/7</span>
         </div>
         <div className="flex gap-4">
-          <CancelBookingModal userRole="customer" bookingReference={booking.bookingReference} phoneNumber={String(booking.customerPhoneNumber)} redirectTo={"/account/bookings"} />
+          <CancelBookingModal
+            userRole="customer"
+            bookingReference={booking.bookingReference}
+            phoneNumber={String(booking.customerPhoneNumber)}
+            redirectTo={"/account/booking"}
+          />
           <DownloadBookingReceipt
             booking={booking}
             customer={{

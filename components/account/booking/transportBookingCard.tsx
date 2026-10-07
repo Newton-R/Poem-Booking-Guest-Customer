@@ -118,16 +118,16 @@ export function TransportBookingCard({ booking }: TransportBookingCardProps) {
         </div>
 
         {/* Actions */}
-        <div className="flex mt-1 justify-between items-center gap-4">
+        <div className="flex mt-1 justify-end items-center gap-4">
           <Link href={`/account/booking/${booking.id}`}>
             <Button className={"p-4 w-40 rounded-md"}>VIEW RECEIPT</Button>
           </Link>
 
-          <Link href={`/account/booking/${booking.id}`}>
+          {/* <Link href={`/account/booking/${booking.id}`}>
             <Button variant={"link"} className={"text-[14px]"}>
               Download Receipt
             </Button>
-          </Link>
+          </Link> */}
         </div>
       </div>
     </div>
