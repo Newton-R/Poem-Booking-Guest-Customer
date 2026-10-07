@@ -35,10 +35,10 @@ interface HotelItemService {
   imageUrl: string;
   kind: string;
   location: {
-    cityName: "Douala";
-    address: "Boulevard de la Liberté, Akwa, Douala";
-    latitude: "4.047500";
-    longitude: "9.699700";
+    cityName: string;
+    address: string;
+    latitude: string;
+    longitude: string;
   };
   name: string;
   roomType: {
@@ -202,7 +202,13 @@ export type TransportBookingItem = {
 
 type BaseBookingData = {
   bookingReference: string;
-  bookingStatus: "confirmed" | "pending" | "failed" | "completed";
+  bookingStatus:
+    | "confirmed"
+    | "pending"
+    | "failed"
+    | "completed"
+    | "cancelled"
+    | "no_show";
   cancellationFee: string;
   checkedInAt: string;
   checkedInBy: string;

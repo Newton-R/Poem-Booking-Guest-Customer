@@ -32,6 +32,7 @@ import {
 import { TransportBookingCard } from "./transportBookingCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn, FallbackImage } from "@/lib/utils";
+import { PoliciesDialog } from "@/components/PolicyDialog";
 
 export const BookingCardSkeleton = () => {
   return (
@@ -192,16 +193,16 @@ const BookingHistoryCard = ({
           </div>
 
           {/* Actions */}
-          <div className="flex mt-1 justify-between items-center gap-4">
+          <div className="flex mt-1 justify-end items-center gap-4">
             <Link href={`/account/booking/${booking.id}`}>
               <Button className={"p-4 w-40 rounded-md"}>VIEW RECEIPT</Button>
             </Link>
 
-            <Link href={`/account/booking/${booking.id}`}>
+            {/* <Link href={`/account/booking/${booking.id}`}>
               <Button variant={"link"} className={"text-[14px]"}>
                 Download Receipt
               </Button>
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>
@@ -324,16 +325,16 @@ const BookingHistoryCard = ({
           </div>
 
           {/* Actions */}
-          <div className="flex mt-1 justify-between items-center gap-4">
+          <div className="flex mt-1 justify-end items-center gap-4">
             <Link href={`/account/booking/${booking.id}`}>
               <Button className={"p-4 w-40 rounded-md"}>VIEW RECEIPT</Button>
             </Link>
 
-            <Link href={`/account/booking/${booking.id}`}>
+            {/* <Link href={`/account/booking/${booking.id}`}>
               <Button variant={"link"} className={"text-[14px]"}>
                 Download Receipt
               </Button>
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>
@@ -354,7 +355,10 @@ const BookingHistoryBlock = ({
     (booking) => booking.bookingStatus === "confirmed",
   );
   const Failed = bookings.filter(
-    (booking) => booking.bookingStatus === "failed",
+    (booking) =>
+      booking.bookingStatus === "failed" ||
+      booking.bookingStatus === "cancelled" ||
+      booking.bookingStatus === "no_show",
   );
   const Pending = bookings.filter(
     (booking) => booking.bookingStatus === "pending",
@@ -364,15 +368,18 @@ const BookingHistoryBlock = ({
   );
   return (
     <Tabs defaultValue={"all"} className={"w-full "}>
-      <TabsList variant={"line"} className={"md:mb-4 mb-8 grid grid-cols-3 md:flex gap-2"}>
+      <TabsList
+        variant={"line"}
+        className={"md:mb-4 mb-8 grid grid-cols-3 md:flex gap-2"}
+      >
         <TabsTrigger value={"all"}>All ({bookings.length})</TabsTrigger>
         <TabsTrigger value={"Confirmed"}>
-          <div className="w-2 h-2 rounded-full shrink-0 bg-green-500" /> Confirmed (
-          {Confirmed.length})
+          <div className="w-2 h-2 rounded-full shrink-0 bg-green-500" />{" "}
+          Confirmed ({Confirmed.length})
         </TabsTrigger>
         <TabsTrigger value={"Complete"}>
-          <div className="w-2 h-2 rounded-full shrink-0 bg-purple-500" /> Completed (
-          {Completed.length})
+          <div className="w-2 h-2 rounded-full shrink-0 bg-purple-500" />{" "}
+          Completed ({Completed.length})
         </TabsTrigger>
         <TabsTrigger value={"Failed"}>
           <div className="w-2 h-2 rounded-full shrink-0 bg-red-500" /> Failed (
@@ -480,7 +487,9 @@ export const AllBookingBlock = () => {
       <DashIntro
         heading={"My Bookings"}
         description={"Manage your curated travel experiences across Cameroon."}
-      />
+      >
+        <PoliciesDialog />
+      </DashIntro>
       <div className="flex flex-col w-full gap-4">
         {isLoading || !data ? (
           <div className="flex flex-col gap-4">

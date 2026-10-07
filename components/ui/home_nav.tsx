@@ -21,6 +21,8 @@ import { formatPrice } from "@/lib/data";
 import { EmptyCart } from "../emptystuff";
 import { icon } from "leaflet";
 import { UserBlock } from "./userBlock";
+import { PoliciesDialog } from "../PolicyDialog";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 export const Links = [
   {
@@ -92,11 +94,11 @@ export const HomeNavbar = () => {
             ))}
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           <Link
             href={"/account/support"}
             className={cn(
-              "relative p-2 rounded-full",
+              "relative rounded-full",
               pathname === "/account/support"
                 ? " bg-bg-mute"
                 : "text-muted-foreground",
@@ -163,6 +165,14 @@ export const HomeNavbar = () => {
             </HoverCardContent>
           </HoverCard>
 
+          <Tooltip>
+            <TooltipTrigger
+              className={"flex items-center justify-center h-fit"}
+            >
+              <PoliciesDialog icon />
+            </TooltipTrigger>
+            <TooltipContent>Policies</TooltipContent>
+          </Tooltip>
           <UserBlock />
         </div>
       </div>
