@@ -9,6 +9,8 @@ import {
   CalendarCheck,
   Circle,
   CircleAlert,
+  Coins01FreeIcons,
+  ConnectFreeIcons,
   CustomerService01Icon,
   Down,
   Download,
@@ -23,6 +25,9 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { useGetRewards } from "@/lib/bearer/useGetRewards";
+import { LedgerRowData } from "@/lib/types/referral";
+import { format } from "date-fns";
+import { EmptyBlock } from "@/components/emptystuff";
 
 const UsedHistory = () => {
   return (
@@ -250,7 +255,17 @@ const ExpiredHistory = () => {
   );
 };
 
-export const AllHistory = () => {
+export const AllHistory = ({ data }: { data: LedgerRowData[] }) => {
+  if (data.length === 0) {
+    return (
+      <EmptyBlock
+        icon={Coins01FreeIcons}
+        variant="ghost"
+        title="No History"
+        description="You don't seem to have used any loyalty points within the system."
+      />
+    );
+  }
   return (
     <table className="rounded-2xl overflow-hidden w-full">
       <thead className="bg-bg-mute text-start">
@@ -261,23 +276,37 @@ export const AllHistory = () => {
         </tr>
       </thead>
       <tbody className="bg-white">
-        <tr>
+        {data.map((referral, i) => (
+          <tr key={i}>
+            <td className="p-4">{format(referral.createdAt, "MMM, d YYYY")}</td>
+            <td>{referral.transactionType}</td>
+            <td className="text-green-500">{referral.points} XP</td>
+          </tr>
+        ))}
+        {/* <tr>
           <td className="p-4">OCT 12, 2024</td>
           <td>Booking Douala Marina Suites</td>
           <td className="text-green-500">450 XP</td>
-        </tr>
-        <tr>
-          <td className="p-4">OCT 12, 2024</td>
-          <td>Booking Douala Marina Suites</td>
-          <td className="text-green-500">450 XP</td>
-        </tr>
+        </tr> */}
       </tbody>
     </table>
   );
 };
 
 export const PointsHistoryBlock = () => {
-  const { data, isLoading } = useGetRewards({ page: 0 });
+  const { data, isLoading, isError, refetch } = useGetRewards({ page: 0 });
+
+  if (!data) {
+    return (
+      <EmptyBlock
+        icon={ConnectFreeIcons}
+        variant="destructive"
+        title="Error getting data"
+        description="Check your internet and try again"
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col gap-6">
       <DashIntro
@@ -300,7 +329,7 @@ export const PointsHistoryBlock = () => {
             <TabsTrigger value={"expired"}>Expired</TabsTrigger>
           </TabsList>
           <TabsContent value={"all"}>
-            <AllHistory />
+            <AllHistory data={data.data.ledger.rows} />
           </TabsContent>
           <TabsContent value={"used"}>
             <UsedHistory />
