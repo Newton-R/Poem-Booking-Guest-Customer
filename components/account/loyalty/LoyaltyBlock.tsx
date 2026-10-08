@@ -1,16 +1,16 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Money, Star } from "@hugeicons/core-free-icons";
+import { ConnectFreeIcons, Money, Star } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import SafeImage from "@/components/ui/safe-image";
 import Link from "next/link";
 import React from "react";
 import { AllHistory } from "./HistoryBlock";
 import { useGetRewards } from "@/lib/bearer/useGetRewards";
+import { EmptyBlock } from "@/components/emptystuff";
+import { LoyaltyPageSkeleton } from "@/components/loaders/account/loyaltyPageSkeleton";
 const PointsRedeemCard = () => {
-  const { data, isLoading } = useGetRewards({ page: 0 });
-  console.log({ data });
   return (
     <div className="flex flex-col h-70 bg-white rounded-2xl overflow-hidden">
       <div className="flex flex-1 overflow-hidden">
@@ -41,6 +41,22 @@ const PointsRedeemCard = () => {
   );
 };
 export const LoyaltyBlock = () => {
+  const { data, isLoading } = useGetRewards({ page: 0 });
+
+  if (isLoading) {
+    return <LoyaltyPageSkeleton />;
+  }
+
+  if (!data) {
+    return (
+      <EmptyBlock
+        icon={ConnectFreeIcons}
+        variant="destructive"
+        title="Error getting data"
+        description="Check your internet and try again"
+      />
+    );
+  }
   return (
     <div className="flex flex-col gap-8">
       <div className="p-6 rounded-2xl bg-secondary-foreground text-white flex flex-col gap-4 md:gap-6">
@@ -60,16 +76,20 @@ export const LoyaltyBlock = () => {
           </div>
         </div>
         <span className="flex gap-1 text-xs items-end text-primary">
-          <span className="text-2xl md:text-4xl font-bold">245</span>
+          <span className="text-2xl md:text-4xl font-bold">
+            {data.data.lifetimePoints}
+          </span>
           FCFA
         </span>
 
         <div className="flex flex-col md:flex-row justify-between gap-4">
           <span className="text-primary flex mb-4 md:mb-0 gap-0.5 items-end">
-            <span className="text-2xl md:text-4xl font-bold">2,450</span>
+            <span className="text-2xl md:text-4xl font-bold">
+              {data.data.pointsBalance}
+            </span>
             <span>XP POINTS</span>
           </span>
-          <div className="flex gap-2.5 flex-1 md:flex-none flex-col items-center md:flex-row">
+          {/* <div className="flex gap-2.5 flex-1 md:flex-none flex-col items-center md:flex-row">
             <Button className={"p-5 w-full md:w-fit"}>Redeem Points</Button>
             <Button
               className={
@@ -79,10 +99,10 @@ export const LoyaltyBlock = () => {
             >
               How it works
             </Button>
-          </div>
+          </div> */}
         </div>
       </div>
-      <div className="w-full grid grid-cols-1 md:grid-cols-5 gap-6">
+      <div className="w-full ">
         <Tabs className="flex flex-col gap-4 md:col-span-3">
           <div className="flex justify-between items-center gap-2">
             <span className="font-bold text-xl">Points History</span>
@@ -90,15 +110,15 @@ export const LoyaltyBlock = () => {
               <Button variant={"link"}>View full Details</Button>
             </Link>
           </div>
-          <AllHistory />
+          <AllHistory data={data.data.ledger.rows} />
         </Tabs>
-        <div className="flex flex-col gap-6 col-span-1 md:col-span-2">
+        {/* <div className="flex flex-col gap-6 col-span-1 md:col-span-2">
           <span className="text-xl font-bold">Redeem Points</span>
-          {/* <HotelPointsCard /> */}
+          <HotelPointsCard />
           <PointsRedeemCard />
           <PointsRedeemCard />
 
-          {/* <div className="border-2 rounded-xl bg-primary/20 items-center justify-center border-dashed border-primary p-6 flex flex-col gap-4">
+          <div className="border-2 rounded-xl bg-primary/20 items-center justify-center border-dashed border-primary p-6 flex flex-col gap-4">
             <HugeiconsIcon
               icon={Money}
               size={30}
@@ -111,8 +131,8 @@ export const LoyaltyBlock = () => {
             </p>
             <span className="text-primary my-2">500 XP</span>
             <Button className={"p-4 w-full"}>Convert Now</Button>
-          </div> */}
-        </div>
+          </div>
+        </div> */}
       </div>
     </div>
   );
