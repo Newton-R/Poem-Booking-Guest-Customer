@@ -43,6 +43,7 @@ export interface BookingInitiatePayload {
 export interface CustomerBookingInitiatePayload {
   bookingType: "hotel" | "apartment" | "transport" | "mixed";
   promoCode?: string;
+  pointsToUse?: number;
   items: BookingItem[];
 }
 

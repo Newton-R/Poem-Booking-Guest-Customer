@@ -40,6 +40,7 @@ export interface ApartmentBookingPayload {
 export interface ApartmentCustomerBookingPayload {
   bookingType: "apartment";
   idempotencyKey?: string;
+  pointsToUse?: number;
   items: ApartmentBookingItem[];
 }
 

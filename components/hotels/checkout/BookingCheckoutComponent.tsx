@@ -36,6 +36,8 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { Suspense, useState } from "react";
 import { toast } from "sonner";
 import { useGetApartmentDetails } from "@/lib/public/useGetApartments";
+import { PointsSelectionDialog } from "./PointsSelectionModal";
+import { useGetReferalCode } from "@/lib/bearer/useGetReferalCode";
 
 export type BookingType = "hotel" | "apartment";
 
@@ -77,11 +79,14 @@ export const BookingCheckoutComponent = ({
     : Number(selectedApartment?.base_price_per_night ?? 0);
   const displayName = isHotel ? selectedRoom?.name : selectedApartment?.title;
 
+  // states
   const [bookingAsGuest, setBookingAsGuest] = useState(!userCookie);
   const [guestInfo, setGuestInfo] = useState(initialGuestInfo);
   const [promoCode, setPromoCode] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("poem_pay");
+  const [pointsAppointed, setAppointedPoints] = useState<number>(0);
 
+  // mutation
   const { mutate: createHotelGuest, isPending: hotelGuestPending } =
     useGuestBookingInfo();
   const { mutate: createHotelBooking, isPending: hotelBookingPending } =
@@ -120,43 +125,65 @@ export const BookingCheckoutComponent = ({
   const initiateBooking = () => {
     const item: BookingItem | ApartmentBookingItem = isHotel
       ? {
-        itemType: "hotel_room",
-        itemId: resourceId,
-        endDatetime: String(searchParams.get("checkOut")),
-        startDatetime: String(searchParams.get("checkIn")),
-        guests: [{ fullName: guestInfo.fullName, passengerType: "adult" }],
-        quantity: 1,
-      }
+          itemType: "hotel_room",
+          itemId: resourceId,
+          endDatetime: String(searchParams.get("checkOut")),
+          startDatetime: String(searchParams.get("checkIn")),
+          guests: [{ fullName: guestInfo.fullName, passengerType: "adult" }],
+          quantity: 1,
+        }
       : {
-        itemType: "apartment",
-        itemId: resourceId,
-        endDatetime: String(searchParams.get("checkOut")),
-        startDatetime: String(searchParams.get("checkIn")),
-        quantity: 1,
-      };
+          itemType: "apartment",
+          itemId: resourceId,
+          endDatetime: String(searchParams.get("checkOut")),
+          startDatetime: String(searchParams.get("checkIn")),
+          quantity: 1,
+        };
+
+    // user booking
 
     if (userCookie && !bookingAsGuest) {
       const onSuccess = (response: {
         data: { bookingReference: string; id: string };
       }) => {
-        toast.success("Booking initiated. Proceed to payment.");
+        toast.success("Booking initiated, Proceed to payment.");
         Cookies.remove("bookingAsGuest");
         goToPayment(response);
       };
       const onError = (error: Error) => toast.error(error.message);
       if (isHotel) {
         createCustomerHotelBooking(
-          { bookingType: "hotel", items: [item as BookingItem] },
+          pointsAppointed > 0
+            ? {
+                bookingType: "hotel",
+                pointsToUse: pointsAppointed,
+                items: [item as BookingItem],
+              }
+            : {
+                bookingType: "hotel",
+                items: [item as BookingItem],
+              },
           { onSuccess, onError },
         );
       } else {
         createCustomerApartmentBooking(
-          { bookingType: "apartment", items: [item as ApartmentBookingItem] },
+          pointsAppointed > 0
+            ? {
+                bookingType: "apartment",
+                pointsToUse: pointsAppointed,
+                items: [item as ApartmentBookingItem],
+              }
+            : {
+                bookingType: "apartment",
+                items: [item as ApartmentBookingItem],
+              },
           { onSuccess, onError },
         );
       }
       return;
     }
+
+    // guest booking initiation
 
     const createGuestBooking = (guestCustomerId: string) => {
       const onSuccess = (response: {
@@ -360,6 +387,8 @@ export const BookingCheckoutComponent = ({
             </div>
           </div>
         </div>
+
+        {/* booking info form */}
         <div className="md:col-span-2 flex flex-col gap-6">
           <div className="flex flex-col rounded-2xl border border-border shadow-md gap-4">
             <div className="flex flex-col gap-2 p-6">
@@ -404,13 +433,43 @@ export const BookingCheckoutComponent = ({
                     <span>Price Per Night</span>
                     <span>{formatPrice(price)}</span>
                   </div>
+                  {userCookie && (
+                    <div className="flex justify-between w-full text-muted-foreground items-center">
+                      <span>Point Deduction</span>
+                      <span className="text-green-500">
+                        {" "}
+                        - {formatPrice(pointsAppointed)}
+                      </span>
+                    </div>
+                  )}
+
                   <div className="flex justify-between w-full text-muted-foreground items-center">
                     <span>Total payable</span>
                     <span className="text-xl font-bold text-primary">
-                      {formatPrice(price * days)}
+                      {formatPrice(price * days - pointsAppointed)}
                     </span>
                   </div>
+
                   <div className="flex flex-col items-center justify-center gap-2 text-center">
+                    {userCookie && (
+                      <div className="flex gap-2 w-full">
+                        {pointsAppointed > 0 && (
+                          <Button
+                            onClick={() => setAppointedPoints(0)}
+                            variant={"destructive"}
+                            className={"h-9"}
+                          >
+                            Remove Points
+                          </Button>
+                        )}
+                        <PointsSelectionDialog
+                          onApply={(points) => {
+                            setAppointedPoints(points);
+                          }}
+                          orderTotal={price * days}
+                        />
+                      </div>
+                    )}
                     <Button
                       disabled={isPending}
                       onClick={initiateBooking}
