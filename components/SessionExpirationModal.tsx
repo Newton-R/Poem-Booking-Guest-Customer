@@ -1,7 +1,7 @@
 "use client";
 import { Logout02FreeIcons } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import React from "react";
+import React, { Suspense } from "react";
 import { Button } from "./ui/button";
 import { useSessionModal } from "@/lib/useSessionModal";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -45,5 +45,13 @@ export const SessionExpirationModal = () => {
         </Button>
       </div>
     </div>
+  );
+};
+
+export const SuspenseSessionEpirationModal = () => {
+  return (
+    <Suspense>
+      <SessionExpirationModal />
+    </Suspense>
   );
 };
