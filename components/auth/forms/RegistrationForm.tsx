@@ -7,8 +7,8 @@ import { RegistrationPayload } from "@/lib/types/auth";
 import { Eye, EyeClosedIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { Suspense, useState } from "react";
 import { toast } from "sonner";
 
 const InitialData: RegistrationPayload = {
@@ -17,11 +17,14 @@ const InitialData: RegistrationPayload = {
   phoneNumber: "",
   email: "",
   password: "",
+  referralCode: "",
 };
 
 export const RegistrationForm = () => {
   const [formData, setFormData] = useState<RegistrationPayload>(InitialData);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const searchParams = useSearchParams();
+  const refcode = searchParams.get("ref");
   const { mutate, isPending } = useRegister();
   const router = useRouter();
 
@@ -30,9 +33,13 @@ export const RegistrationForm = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const dataToBeSubmitted: RegistrationPayload = refcode
+    ? { ...formData, referralCode: refcode }
+    : formData;
+
   const handleFormSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    mutate(formData, {
+    mutate(dataToBeSubmitted, {
       onSuccess: (response) => {
         toast.success(response.data.message);
         router.push(`/auth/otp?phoneNumber=${formData.phoneNumber}`);
@@ -170,3 +177,11 @@ export const RegistrationForm = () => {
     </div>
   );
 };
+
+export function SuspenseRegistration() {
+  return (
+    <Suspense>
+      <RegistrationForm />
+    </Suspense>
+  );
+}

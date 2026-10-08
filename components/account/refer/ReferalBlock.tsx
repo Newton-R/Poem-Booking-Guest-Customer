@@ -1,14 +1,22 @@
+"use client";
+import { EmptyBlock } from "@/components/emptystuff";
+import { ReferalBlockSkeleton } from "@/components/loaders/account/referalBlock";
 import { Button } from "@/components/ui/button";
+import { useGetReferalCode } from "@/lib/bearer/useGetReferalCode";
 import { cn } from "@/lib/utils";
 import {
   Copy,
   Filter,
   Gift,
+  HandshakeFreeIcons,
   Share,
+  Tick,
   UserCheck,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon, IconSvgElement } from "@hugeicons/react";
-import React from "react";
+import { format } from "date-fns";
+import React, { useState } from "react";
+import { toast } from "sonner";
 
 interface StepsCard {
   icon: IconSvgElement;
@@ -41,6 +49,36 @@ const StepsCard = ({ icon, number, description, heading }: StepsCard) => {
 };
 
 export const ReferalBlock = () => {
+  const { data, isLoading, isError, refetch } = useGetReferalCode();
+  const [copied, setCopy] = useState<boolean>(false);
+
+  if (isLoading) {
+    return <ReferalBlockSkeleton />;
+  }
+
+  if (!data || isError) {
+    return (
+      <EmptyBlock
+        refetch={() => refetch()}
+        icon={HandshakeFreeIcons}
+        title="Error"
+        description="Something went wrong getting referral data."
+      />
+    );
+  }
+
+  const promoData = data.data;
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(promoData.referralLink);
+      setCopy(true);
+      toast.success("Promo code link copied");
+      setTimeout(() => setCopy(false), 2000);
+    } catch {
+      toast.error("Couldn't copy the code");
+    }
+  };
+  console.log({ data });
   return (
     <div className="flex flex-col gap-6">
       <div className="p-6 bg-secondary-foreground text-white flex flex-col gap-6 md:flex-row rounded-2xl">
@@ -54,16 +92,25 @@ export const ReferalBlock = () => {
             benefits for you and your friends.
           </p>
         </div>
-        <div className="border border-white/35 w-full md:w-[45%] flex rounded-2xl text-white flex-col items-center justify-center gap-5 p-6 bg-white/10">
+        <div className="border border-white/35 w-full md:w-[45%] flex rounded-2xl text-white flex-col items-center justify-center gap-2 p-4 bg-white/10">
           <span className="opacity-70">YOUR UNIQUE PROMO CODE</span>
-          <div className="border border-primary/15 bg-white/20 text-2xl flex items-center gap-2 rounded-md p-2">
-            <span className="shrink-0 font-bold">POEM-GOLD-2024</span>
-            <Button size={"icon-lg"}>
-              <HugeiconsIcon icon={Copy} size={20} />
+          <div className="border border-primary/15 bg-white/20 text-xl md:text-2xl flex items-center gap-1 rounded-md p-2">
+            <span className="shrink-0 font-bold">{promoData.code}</span>
+            <Button onClick={() => handleCopy()} size={"icon-lg"}>
+              {copied ? (
+                <HugeiconsIcon icon={Tick} size={20} />
+              ) : (
+                <HugeiconsIcon icon={Copy} size={20} />
+              )}
             </Button>
           </div>
-          <span className="text-xs opacity-70">SHARE VIA</span>
-          <div className="flex gap-3 items-center">social media links here</div>
+          {/* <span className="text-xs opacity-70">SHARE VIA</span> */}
+          <div className="flex gap-3 items-center">
+            <span>1 Referral =</span>
+            <span className="text-primary">
+              {promoData.rules.pointsPerReferral}xp
+            </span>
+          </div>
         </div>
       </div>
       <div className="flex flex-col items-center gap-4 justify-center">
@@ -97,44 +144,73 @@ confirmation."
           />
         </div>
       </div>
-      <div className="border border-border rounded-2xl bg-white overflow-hidden flex flex-col">
-        <div className="w-full flex items-center p-6 justify-between gap-6">
-          <span>Referral History</span>
-          <Button variant={"outline"} className={"p-4"}>
-            <HugeiconsIcon icon={Filter} size={18} />
-            Filter by Status
-          </Button>
+      {promoData.referrals.length === 0 ? (
+        <EmptyBlock
+          variant="ghost"
+          icon={HandshakeFreeIcons}
+          title="No Referrals"
+          description="Sorry. You currently don't seem to have any refferals. Try sharing your referral link."
+        />
+      ) : (
+        <div className="border border-border rounded-2xl bg-white overflow-hidden flex flex-col">
+          <div className="w-full flex items-center p-6 justify-between gap-6">
+            <span className="shrink-0">Referral History</span>
+            <Button variant={"outline"} className={"p-4"}>
+              <HugeiconsIcon icon={Filter} size={18} />
+              Filter by Status
+            </Button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-xl w-full">
+              <thead>
+                <tr className="bg-primary/40 text-xs ">
+                  <td className="p-6">DATE</td>
+                  <td>FRIEND NAME</td>
+                  <td>STATUS</td>
+                  <td>REWARDS EARNED</td>
+                </tr>
+              </thead>
+              <tbody>
+                {promoData.referrals.map((referral, i) => (
+                  <tr key={i}>
+                    <td className="p-6">
+                      {format(referral.qualifiedAt, "MMM d, YYYY")}
+                    </td>
+                    <td className="p-6">{referral.refereeName}</td>
+                    <td>
+                      <div
+                        className={cn(
+                          "flex gap-2 w-fit items-center p-1 text-xs font-bold rounded-full px-2",
+                          referral.status === "qualified"
+                            ? " text-green-500 bg-green-500/40"
+                            : " text-yellow-500 bg-yellow-500/40",
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "w-2 h-2 rounded-full ",
+                            referral.status === "qualified"
+                              ? "bg-green-500"
+                              : "bg-yellow-500",
+                          )}
+                        />
+                        <span className="first-letter:uppercase">
+                          {referral.status}
+                        </span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="text-muted-foreground font-bold">
+                        {referral.pointsAwarded} XP
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="min-w-xl w-full">
-            <thead>
-              <tr className="bg-primary/40 text-xs ">
-                <td className="p-6">DATE</td>
-                <td>FRIEND NAME</td>
-                <td>STATUS</td>
-                <td>REWARDS EARNED</td>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td className="p-6">Oct 25, 2023</td>
-                <td className="p-6">M*** B***</td>
-                <td>
-                  <div className="flex gap-2 w-fit items-center p-1 text-xs font-bold rounded-full text-green-500 bg-green-500/40 px-2">
-                    <div className="w-2 h-2 rounded-full bg-green-500" />
-                    <span>Completed Booking</span>
-                  </div>
-                </td>
-                <td>
-                  <span className="text-muted-foreground font-bold">
-                    500 XP
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

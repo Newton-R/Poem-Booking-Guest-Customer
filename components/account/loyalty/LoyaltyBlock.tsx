@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Money, Star } from "@hugeicons/core-free-icons";
@@ -6,7 +7,10 @@ import SafeImage from "@/components/ui/safe-image";
 import Link from "next/link";
 import React from "react";
 import { AllHistory } from "./HistoryBlock";
+import { useGetRewards } from "@/lib/bearer/useGetRewards";
 const PointsRedeemCard = () => {
+  const { data, isLoading } = useGetRewards({ page: 0 });
+  console.log({ data });
   return (
     <div className="flex flex-col h-70 bg-white rounded-2xl overflow-hidden">
       <div className="flex flex-1 overflow-hidden">

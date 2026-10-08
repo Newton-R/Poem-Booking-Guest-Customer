@@ -4,6 +4,7 @@ export interface RegistrationPayload {
   phoneNumber: string;
   email: string;
   password: string;
+  referralCode?: string;
 }
 
 export interface RegistrationResponse {

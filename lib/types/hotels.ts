@@ -1,5 +1,3 @@
-import { number } from "motion";
-
 export interface HotelImage {
   createdAt: string;
   hotelId: string;

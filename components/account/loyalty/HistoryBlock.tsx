@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { DashIntro } from "../DashIntro";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,6 +22,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import { useGetRewards } from "@/lib/bearer/useGetRewards";
 
 const UsedHistory = () => {
   return (
@@ -275,6 +277,7 @@ export const AllHistory = () => {
 };
 
 export const PointsHistoryBlock = () => {
+  const { data, isLoading } = useGetRewards({ page: 0 });
   return (
     <div className="flex flex-col gap-6">
       <DashIntro
