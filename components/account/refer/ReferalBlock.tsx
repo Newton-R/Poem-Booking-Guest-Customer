@@ -70,7 +70,9 @@ export const ReferalBlock = () => {
   const promoData = data.data;
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(promoData.referralLink);
+      await navigator.clipboard.writeText(
+        `https://poem-booking-guest.vercel.app/auth/register?ref=BKRWM5YEAU`,
+      );
       setCopy(true);
       toast.success("Promo code link copied");
       setTimeout(() => setCopy(false), 2000);
