@@ -278,7 +278,7 @@ export const AllHistory = ({ data }: { data: LedgerRowData[] }) => {
       <tbody className="bg-white">
         {data.map((referral, i) => (
           <tr key={i}>
-            <td className="p-4">{format(referral.createdAt, "MMM, d YYYY")}</td>
+            <td className="p-4">{format(referral.createdAt, "MMM, d yyyy")}</td>
             <td>{referral.transactionType}</td>
             <td className="text-green-500">{referral.points} XP</td>
           </tr>

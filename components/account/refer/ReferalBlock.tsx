@@ -176,7 +176,7 @@ confirmation."
                 {promoData.referrals.map((referral, i) => (
                   <tr key={i}>
                     <td className="p-6">
-                      {format(referral.qualifiedAt, "MMM d, YYYY")}
+                      {format(referral.attributedAt, "MMM d, yyyy")}
                     </td>
                     <td className="p-6">{referral.refereeName}</td>
                     <td>
